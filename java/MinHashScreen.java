@@ -10,19 +10,7 @@ import java.util.*;
 import java.lang.*;
 import java.util.Collection;
 
-public class MinHashScreen {
-  // User-specified Variables
-  int targetMatches;
-  int readLen;
-  double readErr;
-  String genomeFolder;
-  int k;
-  int numGenomes;
-  int[] sketch_size;
-  String[] genomeNames;
-  ArrayList<ArrayList<String>> sketch;
-  String screenType;
-  int window;
+public class MinHashScreen extends ScreenGenerator {
 
   public static void main(String[] args) throws Exception
   {
@@ -61,6 +49,7 @@ public class MinHashScreen {
       genomeLengths[i] = gnm.length();
       // System.out.println(genomeLengths[i]);
     }
+
 
     // Compute sketch size
     sketch_size = new int[numGenomes];
@@ -234,70 +223,6 @@ public class MinHashScreen {
         }
       }
     }
-  }
-
-  // ----- UTILITY FUNCTIONS ------
-  // Compute the sketch size, given a genome, read lengths, error rates and # of target matches
-  int getSketchSize(int genomeLength, int readLength, double readError, int targetMatches, int k){
-    double unaffectedChance = 1.0 - readError;
-    // System.out.println(unaffectedChance);
-    double multiplier = Math.pow(unaffectedChance, k);
-    // System.out.println(multiplier);
-
-    double genomeLengthD = (double) genomeLength;
-    double readLengthD = (double) readLength;
-    double targetMatchesD = (double) targetMatches;
-
-    double numerator = (targetMatchesD * genomeLengthD);
-    // System.out.println(numerator);
-    double denominator = (readLengthD * multiplier);
-    // System.out.println(denominator);
-
-    double num_sketches = numerator/denominator;
-
-    return (int) num_sketches;
-  }
-
-  // Generates the reverse complement of a DNA sequence
-  String reverseComplement(String sequence)
-  {
-    String reversed_tmp = sequence.replace("A", "t").replace("T", "a").replace("C", "g").replace("G", "c").toUpperCase();
-    String reversed = new StringBuffer(reversed_tmp).reverse().toString();
-    return reversed;
-  }
-
-  // ----- I/O HELPER FUNCTIONS ------
-  // Load genome from a given file
-  String getGenome(String fn) throws Exception
-  {
-    Scanner input = new Scanner(new FileInputStream(new File(fn)));
-    StringBuilder sb = new StringBuilder("");
-    while(input.hasNext())
-    {
-      String line = input.nextLine();
-      if(line.length() == 0 || line.startsWith(">"))
-      {
-        continue;
-      }
-      sb.append(line.toUpperCase());
-    }
-
-    String s = sb.toString();
-
-    return s;
-  }
-
-  // Loads all .fasta files in the genomes directory
-  List<String> getGenomeFiles(String directory)
-  {
-    List<String> textFiles = new ArrayList<String>();
-    File dir = new File(directory);
-    for (File file : dir.listFiles()) {
-      if (file.getName().endsWith((".fasta")) || file.getName().endsWith((".fna")) || file.getName().endsWith((".fa"))) {
-        textFiles.add(file.getName());
-      }
-    }
-    return textFiles;
   }
 
 }

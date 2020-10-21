@@ -41,8 +41,8 @@ public class ReadScreener {
     // UNIVERSAL PARAMETERS
 
     int k = 21;
-    boolean track_minimizers = true;
-    boolean track_reads = true;
+    boolean track_minimizers = false;
+    boolean track_reads = false;
 
     // Number of arguments
     int argNum = args.length;
@@ -97,33 +97,38 @@ public class ReadScreener {
     // Uniformly Sampled Screen
     if (argNum == 7 && args[6].equals("u")){
       tm = Integer.parseInt(args[5]);
-      sg = new ScreenGenerator(gf, g, rl, re, tm, k, args[6]);
+      UniformScreen us = new UniformScreen(gf, g, rl, re, tm, k, args[6]);
+      ReadScreener rs = new ReadScreener(ofn, us, gf, g, r, rf, rl, re, k, track_reads);
 
     // Minimizer Screen, with calculated window size
     } else if (argNum == 7 && args[6].equals("m")) {
-    tm = Integer.parseInt(args[5]);
-    sg = new ScreenGenerator(gf, g, rl, re, tm, k, args[6], "c", track_minimizers);
+      tm = Integer.parseInt(args[5]);
+      MinimizerScreen mzs = new MinimizerScreen(gf, g, rl, re, tm, k, args[6], "c", track_minimizers);
+      ReadScreener rs = new ReadScreener(ofn, mzs, gf, g, r, rf, rl, re, k, track_reads);
 
     // Fixed Size Screen
     } else if (argNum == 7 && args[5].equals("f")) {
       // Screen size
       int ss = Integer.parseInt(args[6]);
-      sg = new ScreenGenerator(gf, g, rl, re, k, args[5], ss);
+      MinHashScreen ms = new MinHashScreen(gf, g, rl, re, k, args[5], ss);
+      ReadScreener rs = new ReadScreener(ofn, ms, gf, g, r, rf, rl, re, k, track_reads);
 
     // Minimizer Screen, with provided window size
     } else if (argNum == 7 && args[5].equals("m")) {
       // Window size
       int ws = Integer.parseInt(args[6]);
-      sg = new ScreenGenerator(gf, g, rl, re, k, args[5], ws, "g", track_minimizers);
+      MinimizerScreen mzs = new MinimizerScreen(gf, g, rl, re, k, args[5], ws, "g", track_minimizers);
+      ReadScreener rs = new ReadScreener(ofn, mzs, gf, g, r, rf, rl, re, k, track_reads);
 
     // Default option - MinHash Screen
     } else {
       tm = Integer.parseInt(args[5]);
-      sg = new ScreenGenerator(gf, g, rl, re, tm, k);
+      MinHashScreen ms = new MinHashScreen(gf, g, rl, re, tm, k);
+      ReadScreener rs = new ReadScreener(ofn, ms, gf, g, r, rf, rl, re, k, track_reads);
     }
 
-    // Screen the reads
-    ReadScreener rs = new ReadScreener(ofn, sg, gf, g, r, rf, rl, re, k, track_reads);
+    System.out.println("Done!");
+
   }
 
   // Main function for screening reads
@@ -144,14 +149,11 @@ public class ReadScreener {
     this.numGenomes = g.length;
     this.window = sg.window;
 
-    // System.out.println(this.window);
-
     // Print Sketch Sizes
     for (int a = 0; a < numGenomes; a++)
     {
       System.out.println(genomeNames[a] + " " + sketch.get(a).size());
     }
-    // System.out.println(sketch.get(0));
 
     // For each readset
     System.out.println("Screening Reads...");
@@ -270,8 +272,6 @@ public class ReadScreener {
 
     //Save results
     saveResults(filename, readSets, genomeNames, sketch, totalReads, correctCounts, misCounts, insufCounts, tieCounts);
-
-    System.out.println("Done!");
   }
 
 
