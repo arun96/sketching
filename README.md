@@ -1,7 +1,7 @@
 # Sketching
 Code used to run the read classification experiments.
 
-This is very much unfinished/unpolished.
+This is very much unfinished/unpolished, and I will continue to add to it and update the README to reflect the changes.
 
 # Genomes
 Genomes can be downloaded here: https://drive.google.com/drive/folders/1c-6B-G1-RGbIqzDhxzkV5smyv8XB32Xa?usp=sharing
