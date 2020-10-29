@@ -23,14 +23,11 @@ public class ReadScreener {
   String genomeFolder;
   String readFolder;
   String[] genomeNames;
-  // String[] genomes;
   String[] readSets;
   int numGenomes;
-  ArrayList<ArrayList<String>> sketch;
+  ArrayList<HashSet<String>> sketch;
+  ArrayList<HashSet<Integer>> sketch_hash;
   int window;
-
-  // Removed the reads list for now - reads are loaded and then replaced, to allow for larger readsets to be tested
-  // ArrayList<ArrayList<String>> reads;
 
   // Variables that are mostly fixed
   //boolean saveFlag;
@@ -93,7 +90,6 @@ public class ReadScreener {
     // Number of target Matches - initialized to zero, then read in
     int tm = 0;
 
-    // TODO - clean this up
     // Uniformly Sampled Screen
     if (argNum == 7 && args[6].equals("u")){
       tm = Integer.parseInt(args[5]);
@@ -103,22 +99,22 @@ public class ReadScreener {
     // Minimizer Screen, with calculated window size
     } else if (argNum == 7 && args[6].equals("m")) {
       tm = Integer.parseInt(args[5]);
-      MinimizerScreen mzs = new MinimizerScreen(gf, g, rl, re, tm, k, args[6], "c", track_minimizers);
+      MinimizerScreen mzs = new MinimizerScreen(gf, g, rl, re, tm, k, args[6], track_minimizers);
       ReadScreener rs = new ReadScreener(ofn, mzs, gf, g, r, rf, rl, re, k, track_reads);
-
-    // Fixed Size Screen
-    } else if (argNum == 7 && args[5].equals("f")) {
-      // Screen size
-      int ss = Integer.parseInt(args[6]);
-      MinHashScreen ms = new MinHashScreen(gf, g, rl, re, k, args[5], ss);
-      ReadScreener rs = new ReadScreener(ofn, ms, gf, g, r, rf, rl, re, k, track_reads);
 
     // Minimizer Screen, with provided window size
     } else if (argNum == 7 && args[5].equals("m")) {
       // Window size
       int ws = Integer.parseInt(args[6]);
-      MinimizerScreen mzs = new MinimizerScreen(gf, g, rl, re, k, args[5], ws, "g", track_minimizers);
+      MinimizerScreen mzs = new MinimizerScreen(gf, g, rl, re, k, args[5], ws, track_minimizers);
       ReadScreener rs = new ReadScreener(ofn, mzs, gf, g, r, rf, rl, re, k, track_reads);
+
+    // Fixed Size MinHash Screen
+    } else if (argNum == 7 && args[5].equals("f")) {
+      // Screen size
+      int ss = Integer.parseInt(args[6]);
+      MinHashScreen ms = new MinHashScreen(gf, g, rl, re, k, args[5], ss);
+      ReadScreener rs = new ReadScreener(ofn, ms, gf, g, r, rf, rl, re, k, track_reads);
 
     // Default option - MinHash Screen
     } else {
@@ -137,6 +133,9 @@ public class ReadScreener {
 
     boolean READ_TRACKING = track_reads;
 
+    // TODO - make this a parameter.
+    boolean HASH_BASED = true;
+
     // Store all values
     this.readLen = readLength;
     this.readErr = readError;
@@ -146,13 +145,18 @@ public class ReadScreener {
     // this.genomes = sg.genomes;
     this.readSets = r;
     this.sketch = sg.sketch;
+    this.sketch_hash = sg.sketch_hash;
     this.numGenomes = g.length;
     this.window = sg.window;
 
     // Print Sketch Sizes
     for (int a = 0; a < numGenomes; a++)
     {
-      System.out.println(genomeNames[a] + " " + sketch.get(a).size());
+      if (HASH_BASED){
+        System.out.println(genomeNames[a] + " " + sketch_hash.get(a).size());
+      } else {
+        System.out.println(genomeNames[a] + " " + sketch.get(a).size());
+      }
     }
 
     // For each readset
@@ -164,13 +168,6 @@ public class ReadScreener {
     int[] misCounts = new int[numGenomes];
     int[] insufCounts = new int[numGenomes];
     int[] tieCounts = new int[numGenomes];
-
-    // Create HashSets of the Sketches
-    ArrayList<HashSet<String>> sketch_sets = new ArrayList<HashSet<String>>();
-    for (int y = 0; y < numGenomes; y++)
-    {
-      sketch_sets.add(new HashSet<String>(sketch.get(y)));
-    }
 
     // Matrix to track misclassifications
     // M[a][b] will track the number of times a is misclassified as b
@@ -206,18 +203,25 @@ public class ReadScreener {
         totalReads[rs]++;
 
         // Get read k-mers
-        ArrayList<String> readMers = getReadKmers(currRead);
-
-        // TODO - figure out minimizer read approach
-        // ArrayList<String> readMers;
-        // if (this.window > 0){
-        //   readMers = getReadMinimizers(currRead, window, k);
-        // } else {
-        //   readMers = getReadKmers(currRead);
-        // }
+        ArrayList<String> readMers = new ArrayList<String>();
+        ArrayList<Integer> readHashes = new ArrayList<Integer>();
+        if (HASH_BASED) {
+          if (this.window > 0) {
+            readHashes = getAllMinimizers(currRead, this.window, k);
+          } else {
+            readHashes = getReadKmersHash(currRead);
+          }
+        } else {
+          readMers = getReadKmers(currRead);
+        }
 
         // Get the number of matches for each read with each genome
-        int[] readScores = screenRead(sketch_sets, readMers);
+        int[] readScores;
+        if (HASH_BASED) {
+          readScores = screenReadHash(sketch_hash, readHashes);
+        } else {
+          readScores = screenRead(sketch, readMers);
+        }
 
         // Get predicted source
         int pred = getMaxIndex(readScores);
@@ -271,7 +275,7 @@ public class ReadScreener {
     printMatrix(miscount_matrix);
 
     //Save results
-    saveResults(filename, readSets, genomeNames, sketch, totalReads, correctCounts, misCounts, insufCounts, tieCounts);
+    saveResults(filename, readSets, genomeNames, sketch, sketch_hash, totalReads, correctCounts, misCounts, insufCounts, tieCounts);
   }
 
 
@@ -287,21 +291,33 @@ public class ReadScreener {
     {
       // Slice the kmer, and chose the canonical ones
       String readMer = read.substring(i, i+21);
-      String reversedMer = reverseComplement(readMer);
-      String selectedMer = "";
-      if (readMer.compareTo(reversedMer) > 0){
-        selectedMer = reversedMer;
-      } else {
-        selectedMer = readMer;
-      }
+      String selectedMer = getCanonical(readMer);
       readMers.add(selectedMer);
     }
 
     return readMers;
   }
 
+  // Break Read into Kmers - HASH VERSION
+  ArrayList<Integer> getReadKmersHash(String read)
+  {
+    int readLen = read.length();
+
+    ArrayList<Integer> readMers = new ArrayList<Integer>();
+
+    for (int i = 0; i < readLen-21; i++)
+    {
+      // Slice the kmer, and chose the canonical ones
+      String readMer = read.substring(i, i+21);
+      String selectedMer = getCanonical(readMer);
+      readMers.add(getHash(selectedMer));
+    }
+
+    return readMers;
+  }
+
   // Screen read kmers against screen
-  int[] screenRead(ArrayList<HashSet<String>> sketch_sets, ArrayList<String> readMers){
+  int[] screenRead(ArrayList<HashSet<String>> sketch, ArrayList<String> readMers){
 
     // Number of genomes in screen
     int num = sketch.size();
@@ -313,7 +329,26 @@ public class ReadScreener {
     for (int i = 0; i < num; i++)
     {
       // Get and store overlap
-      int score = getOverlap(sketch_sets.get(i), readMers);
+      int score = getOverlap(sketch.get(i), readMers);
+      scores[i] = score;
+    }
+    return scores;
+  }
+
+  // Screen read kmers against screen - HASH VERSION
+  int[] screenReadHash(ArrayList<HashSet<Integer>> sketch, ArrayList<Integer> readMers){
+
+    // Number of genomes in screen
+    int num = sketch.size();
+
+    // Track number of matches
+    int[] scores = new int[num];
+
+    // For each sketch in the screen
+    for (int i = 0; i < num; i++)
+    {
+      // Get and store overlap
+      int score = getOverlapHash(sketch.get(i), readMers);
       scores[i] = score;
     }
     return scores;
@@ -343,6 +378,31 @@ public class ReadScreener {
 
     // DEBUGGING - tracking number of duplicates
     //System.out.println(dupe);
+
+    return overlap;
+  }
+
+  // Finds number of shared elements between a sketch and a list of query kmers - HASH VERSION
+  int getOverlapHash(HashSet<Integer> sketch_set, ArrayList<Integer> readMers_list)
+  {
+    int overlap = 0;
+
+    // DEBUGGING - tracking number of duplicates
+    int dupe = 0;
+
+    // DEBUGGING - TRACKING THE NUMBER THAT ARE DUPLICATES
+    Set<Integer> already_counted  = new HashSet<Integer>();
+
+    for (int i = 0; i < readMers_list.size(); i++) {
+      if (sketch_set.contains(readMers_list.get(i))) {
+        if (already_counted.contains(readMers_list.get(i))) {
+          dupe++;
+        } else {
+          already_counted.add(readMers_list.get(i));
+          overlap++;
+        }
+      }
+    }
 
     return overlap;
   }
@@ -382,42 +442,56 @@ public class ReadScreener {
     return reversed;
   }
 
+  String getCanonical(String seq){
+    String reversed_mer = reverseComplement(seq);
+    String selected_mer = "";
+    if (seq.compareTo(reversed_mer) > 0){
+      selected_mer = reversed_mer;
+    } else {
+      selected_mer = seq;
+    }
+    return selected_mer;
+  }
+
+  int getHash(String seq){
+    return seq.hashCode();
+  }
 
   // ----- MINIMIZER HELPER FUNCTIONS ------
-  // Returns a list of minimizers from the reads
-  ArrayList<String> getReadMinimizers(String input_read, int window_size, int k) throws Exception
-  {
-    // Get read lengths
-    int read_len = input_read.length();
 
-    // ArrayList of Minimizers
-    ArrayList<String> read_minimizers = new ArrayList<String>();
+  ArrayList<Integer> getAllMinimizers(String g, int window_size, int k){
+    // Get number of kmers and windows in this string
+    int num_mers = g.length() - k + 1;
+    int num_windows = g.length() - window_size + 1;
 
-    // Iterate through the read
-    int p = 0;
-    while (p < read_len - window_size){
+    // Initialize data structures to store kmers and minimizers
+    int[] string_hashes = new int[num_mers];
+    HashSet<Integer> minimizers = new HashSet<Integer>();
 
-      // Get the minimizer
-      String current_window = input_read.substring(p, p+window_size);
-      String[] min_vals = getMinimizer(current_window, k);
-      String current_minimizer = min_vals[0];
-
-      // Get canonical
-      String reversed_minimizer = reverseComplement(current_minimizer);
-      String selected_minimizer = "";
-      if (current_minimizer.compareTo(reversed_minimizer) > 0){
-        selected_minimizer = reversed_minimizer;
-      } else {
-        selected_minimizer = current_minimizer;
-      }
-
-      // Add correct minimizer
-      read_minimizers.add(selected_minimizer);
+    // Get all the k-mer hashes from the input string
+    for (int i = 0; i < num_mers; i++){
+      string_hashes[i] = getHash(getCanonical(g.substring(i, i+k)));
     }
 
-    return read_minimizers;
+    //iterate through the windows
+    for (int j = 0; j < num_windows; j++){
+      // Find the minimal kmer hash for the window that starts at this point
+      int min_val = string_hashes[j];
+      // Look through all kmers in this window
+      for (int x = j + 1; x < (j + window_size - k); x++){
+        int curr = string_hashes[x];
+        if (curr < min_val) {
+          min_val = curr;
+        }
+      }
+      // Add this window's minimizer
+      minimizers.add(min_val);
+    }
+    ArrayList<Integer> minimizer_list = new ArrayList<Integer>(minimizers);
 
+    return minimizer_list;
   }
+
 
   // Helper function to get the lexicographic minimizer from a given window in a read
   String[] getMinimizer(String window, int k) throws Exception
@@ -487,14 +561,14 @@ public class ReadScreener {
   }
 
   // Helper function to write results to file
-  void saveResults(String filename, String[] readSets, String[] genomeNames, ArrayList<ArrayList<String>> sketch, int[] totalReads, int[] correctCounts, int[] misCounts, int[] insufCounts, int[] tieCounts) throws Exception
+  void saveResults(String filename, String[] readSets, String[] genomeNames, ArrayList<HashSet<String>> sketch, ArrayList<HashSet<Integer>> sketch_hash, int[] totalReads, int[] correctCounts, int[] misCounts, int[] insufCounts, int[] tieCounts) throws Exception
   {
     PrintWriter out = new PrintWriter(new File(filename));
     System.out.println("Saving results...");
     out.println("Genome Sketches:");
     for (int i = 0; i < genomeNames.length; i++)
     {
-      out.println(genomeNames[i] + " " + sketch.get(i).size());
+      out.println(genomeNames[i] + " " + sketch_hash.get(i).size());
     }
     out.println("Read Screening Results:");
     for (int i = 0; i < readSets.length; i++)
@@ -521,7 +595,7 @@ public class ReadScreener {
   // Helper function to save number of read matches
   void saveReadMatches(int order, ArrayList<Integer> match_list) throws Exception
   {
-    // TODO - re-run this
+    // TODO - fix.
     String filename = "./tmp/ZYMO/calc/read_matches_hash_double10_" + order + ".txt";
 
     StringBuilder sb = new StringBuilder();
@@ -537,7 +611,5 @@ public class ReadScreener {
     out.println(minimizer_string);
     out.close();
   }
-
-
 
 }

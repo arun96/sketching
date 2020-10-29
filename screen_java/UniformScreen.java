@@ -62,49 +62,33 @@ public class UniformScreen extends ScreenGenerator {
     // TODO - Turn this into a hash function. For now, it's just random start positions.
 
     // Store the sketch
-    sketch = new ArrayList<ArrayList<String>>();
+    sketch = new ArrayList<HashSet<String>>();
+    sketch_hash = new ArrayList<HashSet<Integer>>();
 
     // For each genome
     for (int x = 0; x < numGenomes; x++)
     {
       // Row corresponding to this genome
-      sketch.add(new ArrayList<String>());
-
-      // Set for tracking which kmers are in sketch
-      Set<String> sketch_set  = new HashSet<String>();
+      sketch.add(new HashSet<String>());
+      sketch_hash.add(new HashSet<Integer>());
 
       // distance between sketched k-mers
       int spacing = (int) genomeLengths[x]/sketch_size[x];
 
-      // For each sketch in a given genome (there are a total of sketch_size[x] of them)
+      // Jump through the genome and store the k-mers at those positions
       int p = 0;
-      while (p < sketch_size[x]){
+      while (p < (genomeLengths[x]-k)){
         // Get k-mer
-        int start = p * spacing;
+        int start = p;
         int end = start + k;
         String mer = genomes[x].substring(start, end);
 
-        // Get canonical kmer
-        String reversed_mer = reverseComplement(mer);
-        String selected_mer = "";
-        if (mer.compareTo(reversed_mer) > 0){
-          selected_mer = reversed_mer;
-        } else {
-          selected_mer = mer;
-        }
+        String selected_mer = getCanonical(mer);
+        int hash_val = getHash(selected_mer);
 
-        // TODO - find good solution for duplicate k-mers.
-
-        // If it is already in the sketch
-        if (sketch_set.contains(selected_mer)){
-          p++;
-          // continue;
-        // Add to sketch, increment count
-        } else {
-          sketch_set.add(selected_mer);
-          sketch.get(x).add(selected_mer);
-          p++;
-        }
+        sketch.get(x).add(selected_mer);
+        sketch_hash.get(x).add(hash_val);
+        p = p + spacing;
       }
     }
   }

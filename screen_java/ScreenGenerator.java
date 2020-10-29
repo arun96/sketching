@@ -24,7 +24,8 @@ public class ScreenGenerator {
   public int numGenomes;
   public int[] sketch_size;
   public String[] genomeNames;
-  public ArrayList<ArrayList<String>> sketch;
+  public ArrayList<HashSet<String>> sketch;
+  public ArrayList<HashSet<Integer>> sketch_hash;
   public String screenType;
   public int window;
 
@@ -58,17 +59,30 @@ public class ScreenGenerator {
   }
 
   // Generates the reverse complement of a DNA sequence
-  String reverseComplement(String sequence)
-  {
+  String reverseComplement(String sequence){
     String reversed_tmp = sequence.replace("A", "t").replace("T", "a").replace("C", "g").replace("G", "c").toUpperCase();
     String reversed = new StringBuffer(reversed_tmp).reverse().toString();
     return reversed;
   }
 
+  int getHash(String seq){
+    return seq.hashCode();
+  }
+
+  String getCanonical(String seq){
+    String reversed_mer = reverseComplement(seq);
+    String selected_mer = "";
+    if (seq.compareTo(reversed_mer) > 0){
+      selected_mer = reversed_mer;
+    } else {
+      selected_mer = seq;
+    }
+    return selected_mer;
+  }
+
   // ----- I/O HELPER FUNCTIONS ------
   // Load genome from a given file
-  String getGenome(String fn) throws Exception
-  {
+  String getGenome(String fn) throws Exception {
     Scanner input = new Scanner(new FileInputStream(new File(fn)));
     StringBuilder sb = new StringBuilder("");
     while(input.hasNext())
@@ -87,8 +101,7 @@ public class ScreenGenerator {
   }
 
   // Loads all .fasta files in the genomes directory
-  List<String> getGenomeFiles(String directory)
-  {
+  List<String> getGenomeFiles(String directory) {
     List<String> textFiles = new ArrayList<String>();
     File dir = new File(directory);
     for (File file : dir.listFiles()) {
@@ -99,63 +112,65 @@ public class ScreenGenerator {
     return textFiles;
   }
 
+  // MINHASH HELPER FUNCTIONS
 
-  // ----- MINIMIZER HELPER FUNCTIONS ------
-  // Helper function to get the lexicographic minimizer from a given window
-  String[] getMinimizer(String window, int k) throws Exception
-  {
-    String[] ret = new String[2];
-    String curr_str = window.substring(0, k);
-    String window_min_str = curr_str;
-    int min_loc = 0;
+  HashSet<Integer> getMinHashes(String g, int sketch_size, int k){
 
-    for (int i = 1; i < window.length() - k; i++){
+    int gl = g.length();
+    int boundary = gl - k;
+    HashSet<Integer> hashmers_set = new HashSet<Integer>();
 
-      // Get the next k-1 mer, and the next character
-      // curr_str = curr_str.substring(1, k) + window.charAt(i);
-      curr_str = window.substring(i, i+k);
 
-      // If it is smaller
-      if (window_min_str.compareTo(curr_str) > 0){
-        window_min_str = curr_str;
-        min_loc = i;
-      }
+    for (int p = 0; p < boundary; p++) {
+      int start = p;
+      int end = p + k;
+      String curr = g.substring(start, end);
+      hashmers_set.add(getHash(getCanonical(curr)));
     }
-    ret[0] = window_min_str;
-    ret[1] = Integer.toString(min_loc);
+    ArrayList<Integer> hashmers = new ArrayList<Integer>(hashmers_set);
+    Collections.sort(hashmers);
 
-    return ret;
+    HashSet<Integer> minhashvals = new HashSet<Integer>();
+
+    for (int q = 0; q < sketch_size; q++) {
+      minhashvals.add(hashmers.get(q));
+    }
+
+    return minhashvals;
   }
 
-  // Helper function to get the hash based minimizer from a given window
-  String[] getMinimizerHash(String window, int k) throws Exception
-  {
-    String[] ret = new String[2];
-    String curr_str = window.substring(0, k);
-    String window_min_str = curr_str;
-    int min_loc = 0;
-    int curr_min = curr_str.hashCode();
-    int window_min = curr_min;
+  // ----- MINIMIZER HELPER FUNCTIONS ------
 
-    for (int i = 1; i < window.length() - k; i++){
+  // Gets all minimizers from a given string
+  HashSet<Integer> getAllMinimizers(String g, int window_size, int k){
+    // Get number of kmers and windows in this string
+    int num_mers = g.length() - k + 1;
+    int num_windows = g.length() - window_size + 1;
 
-      // Get the next k-1 mer, and the next character
-      // curr_str = curr_str.substring(1, k) + window.charAt(i);
-      curr_str = window.substring(i, i+k);
-      curr_min = curr_str.hashCode();
+    // Initialize data structures to store kmers and minimizers
+    int[] string_hashes = new int[num_mers];
+    HashSet<Integer> minimizers = new HashSet<Integer>();
 
-      // If it is smaller
-      if (curr_min < window_min) {
-        // Update
-        window_min_str = curr_str;
-        window_min = curr_min;
-        min_loc = i;
-      }
+    // Get all the k-mer hashes from the input string
+    for (int i = 0; i < num_mers; i++){
+      string_hashes[i] = getHash(getCanonical(g.substring(i, i+k)));
     }
-    ret[0] = window_min_str;
-    ret[1] = Integer.toString(min_loc);
 
-    return ret;
+    //Iterate through the windows
+    for (int j = 0; j < num_windows; j++){
+      // Find the minimal kmer hash for the window that starts at this point
+      int min_val = string_hashes[j];
+      // Look through all kmers in this window
+      for (int x = j + 1; x < (j + window_size - k); x++){
+        int curr = string_hashes[x];
+        if (curr < min_val) {
+          min_val = curr;
+        }
+      }
+      // Add this window's minimizer
+      minimizers.add(min_val);
+    }
+    return minimizers;
   }
 
 
