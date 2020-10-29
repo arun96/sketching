@@ -8,7 +8,7 @@ This is very much unfinished/unpolished, and I will continue to add to it and up
 The poster displaying results of this work can be found here: https://drive.google.com/file/d/1gFN_F26f3UZwSZawbVyWXuP3DnGB9_sH/view?usp=sharing
 
 # Genomes
-The MBARC-26, ZYMO, and MBARC + ZYMO genomes can be downloaded here: https://drive.google.com/drive/folders/1c-6B-G1-RGbIqzDhxzkV5smyv8XB32Xa?usp=sharing. 
+The MBARC-26, ZYMO, and MBARC + ZYMO genomes can be downloaded here: https://drive.google.com/drive/folders/1c-6B-G1-RGbIqzDhxzkV5smyv8XB32Xa?usp=sharing.
 
 # Generating Reads
 The read simulator is a modified version of Melanie Kirsche's read simulator (https://github.com/schatzlab/centroTools/tree/master/java). To generate reads for a set of genomes, run `generate_reads.sh` using the following syntax:
@@ -32,25 +32,42 @@ By default, the normal distribution will be used. However, to use any of the oth
 # JAVA
 There are three distinct approaches used to generate the screen - a MinHash-based approach, a Minimizer-based approach, and a Uniform sampling approach. For the first two, we have the option of calculating the sketch/window size, but also the option to specify the sketch/window size that will be used.
 
+First, make sure to compile: `javac screen_java/*.java`
+
 ### MinHash with calculated sketch size
 
-TODO
+To use a MinHash-based approach to screen a generated set of reads against the set of genomes they were generated from, use the following syntax:
+```
+java -cp screen_java ReadScreener <Genomes Directory/> <File to Save Output to> <Reads Directory/> <Read Length> <Read Error Rate> <Number of Target Matches per Read>
+```
 
 ### MinHash with specified sketch size
 
-TODO
+To use a MinHash-based approach to screen a generated set of reads against the set of genomes they were generated from, but with a specified sketch size for all genomes, use the following syntax:
+```
+java -cp screen_java ReadScreener <Genomes Directory/> <File to Save Output to> <Reads Directory/> <Read Length> <Read Error Rate> f <Fixed Sketch Size>
+```
 
 ### Minimizer with calculated window size
 
-TODO
+To use a Minimizer-based approach to screen a generated set of reads against the set of genomes they were generated from, use the following syntax:
+```
+java -cp screen_java ReadScreener <Genomes Directory/> <File to Save Output to> <Reads Directory/> <Read Length> <Read Error Rate> <Number of Target Matches per Read> m
+```
 
 ### Minimizer with specified window size
 
-TODO
+To use a Minimizer-based approach to screen a generated set of reads against the set of genomes they were generated from, but with a specified window size, use the following syntax:
+```
+java -cp screen_java ReadScreener <Genomes Directory/> <File to Save Output to> <Reads Directory/> <Read Length> <Read Error Rate> m <Specified Window Size>
+```
 
 ### Uniform Sampling
 
-TODO
+To use a Uniform Sampling-based approach to screen a generated set of reads against the set of genomes they were generated from, use the following syntax:
+```
+java -cp screen_java ReadScreener <Genomes Directory/> <File to Save Output to> <Reads Directory/> <Read Length> <Read Error Rate> <Number of Target Matches per Read> u
+```
 
 # PYTHON
 The Python implementation is not up to date, and should not be used.
