@@ -53,4 +53,4 @@ TODO
 TODO
 
 # PYTHON
-The Python implementation is not up to date.
+The Python implementation is not up to date, and should not be used.
