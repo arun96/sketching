@@ -1,7 +1,3 @@
-/*
-* Generate the screen for input genomes
-*/
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.PrintWriter;
@@ -18,7 +14,7 @@ import java.util.Collection;
 // import com.google.common.hash.*;
 
 public class ScreenGenerator {
-  // User-specified Variables
+  // Key Variables
   public int targetMatches;
   public int readLen;
   public double readErr;
@@ -27,23 +23,18 @@ public class ScreenGenerator {
   public int numGenomes;
   public int[] sketch_size;
   public String[] genomeNames;
-  public ArrayList<HashSet<String>> sketch;
   public ArrayList<HashSet<Integer>> sketch_hash;
-  public String screenType;
   public int window;
 
   public static void main(String[] args) throws Exception
   {
-    // Constructor
   }
 
   // ----- UTILITY FUNCTIONS ------
   // Compute the sketch size, given a genome, read lengths, error rates and # of target matches
   int getSketchSize(int genomeLength, int readLength, double readError, int targetMatches, int k){
     double unaffectedChance = 1.0 - readError;
-    // System.out.println(unaffectedChance);
     double multiplier = Math.pow(unaffectedChance, k);
-    // System.out.println(multiplier);
 
     double genomeLengthD = (double) genomeLength;
     double readLengthD = (double) readLength;
@@ -53,7 +44,6 @@ public class ScreenGenerator {
     double denominator = (readLengthD * multiplier);
 
     double num_sketches = numerator/denominator;
-
     return (int) num_sketches;
   }
 
@@ -65,7 +55,12 @@ public class ScreenGenerator {
   }
 
   int getHash(String seq, String hashType){
-    return seq.hashCode();
+    if (hashType.equals("h")){
+      return seq.hashCode();
+    } else {
+      // TODO - change this.
+      return seq.hashCode();
+    }
   }
 
   String getHashName(String hashType){
@@ -105,9 +100,7 @@ public class ScreenGenerator {
       }
       sb.append(line.toUpperCase());
     }
-
     String s = sb.toString();
-
     return s;
   }
 
@@ -123,13 +116,11 @@ public class ScreenGenerator {
     return textFiles;
   }
 
-  // MINHASH HELPER FUNCTIONS
+  // ----- MINHASH HELPER FUNCTIONS -----
   HashSet<Integer> getMinHashes(String g, int sketch_size, int k, String hashType){
-
     int gl = g.length();
     int boundary = gl - k;
     HashSet<Integer> hashmers_set = new HashSet<Integer>();
-
 
     for (int p = 0; p < boundary; p++) {
       int start = p;
@@ -145,7 +136,6 @@ public class ScreenGenerator {
     for (int q = 0; q < sketch_size; q++) {
       minhashvals.add(hashmers.get(q));
     }
-
     return minhashvals;
   }
 
@@ -164,7 +154,6 @@ public class ScreenGenerator {
     for (int i = 0; i < num_mers; i++){
       string_hashes[i] = getHash(getCanonical(g.substring(i, i+k)), hashType);
     }
-
     //Iterate through the windows
     for (int j = 0; j < num_windows; j++){
       // Find the minimal kmer hash for the window that starts at this point
@@ -180,27 +169,5 @@ public class ScreenGenerator {
       minimizers.add(min_val);
     }
     return minimizers;
-  }
-
-
-  // ----- MINIMIZER TRACKING HELPER FUNCTIONS ------
-  // Helper Function to save the minimizers from the genome
-  void saveMinimizers(int order, ArrayList<Integer> minimizer_list) throws Exception
-  {
-    String filename = "./tmp/ZYMO/calc/minimizers_hash_double10_" + order + ".txt";
-
-    // String minimizer_string = String.join(",", minimizer_list);
-    StringBuilder sb = new StringBuilder();
-    for (int i = 0; i <= minimizer_list.size() - 1; i++)
-    {
-      int num = minimizer_list.get(i);
-      sb.append(num);
-      sb.append(",");
-    }
-    String minimizer_string = sb.toString();
-
-    PrintWriter out = new PrintWriter(new File(filename));
-    out.println(minimizer_string);
-    out.close();
   }
 }

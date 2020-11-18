@@ -14,16 +14,12 @@ public class MinHashScreen extends ScreenGenerator {
 
   public static void main(String[] args) throws Exception
   {
-
-    // Constructor
-
   }
 
   // Screen Generator for MinHash-based screen
   MinHashScreen(String gf, String[] g, int readLength, double readError, int tm, int kmer, String hashType) throws Exception
   {
     System.out.println("Generating MinHash-based Screen, using " + getHashName(hashType) + " hash function.");
-    this.screenType = "v";
 
     // Store variables
     this.targetMatches = tm;
@@ -59,14 +55,12 @@ public class MinHashScreen extends ScreenGenerator {
     // Get sketch using genomes and sketch sizes
 
     // Store the sketch
-    sketch = new ArrayList<HashSet<String>>();
     sketch_hash = new ArrayList<HashSet<Integer>>();
 
     // For each genome
     for (int x = 0; x < numGenomes; x++)
     {
       // Row corresponding to this genome
-      sketch.add(new HashSet<String>());
       sketch_hash.add(getMinHashes(genomes[x], sketch_size[x], k, hashType));
     }
   }
@@ -75,7 +69,6 @@ public class MinHashScreen extends ScreenGenerator {
   MinHashScreen(String gf, String[] g, int readLength, double readError, int kmer, String fixed, int fixedSize, String hashType) throws Exception
   {
     System.out.println("Generating MinHash-based screen with fixed size = " + fixedSize + ", using " + getHashName(hashType) + " hash function.");
-    this.screenType = "f";
 
     // Store variables
     this.targetMatches = 0;
@@ -111,15 +104,12 @@ public class MinHashScreen extends ScreenGenerator {
     // Get sketch using genomes and the fixed size
 
     // Store the sketch
-    sketch = new ArrayList<HashSet<String>>();
     sketch_hash = new ArrayList<HashSet<Integer>>();
 
     // For each genome
     for (int x = 0; x < numGenomes; x++)
     {
       // Row corresponding to this genome
-      sketch.add(new HashSet<String>());
-      // sketch_hash.add(new HashSet<Integer>());
       sketch_hash.add(getMinHashes(genomes[x], sketch_size[x], k, hashType));
     }
   }

@@ -14,17 +14,12 @@ public class UniformScreen extends ScreenGenerator {
 
   public static void main(String[] args) throws Exception
   {
-
-    // Constructor
-
   }
 
   //Screen Generator for Uniform Sampling
   UniformScreen(String gf, String[] g, int readLength, double readError, int tm, int kmer, String uniform, String hashType) throws Exception
   {
     System.out.println("Generating Uniformly Sampled Screen, using " + getHashName(hashType) + " hash function.");
-    this.screenType = "u";
-
 
     // Store variables
     this.targetMatches = tm;
@@ -61,14 +56,12 @@ public class UniformScreen extends ScreenGenerator {
     // Get sketch using genomes and sketch sizes
 
     // Store the sketch
-    sketch = new ArrayList<HashSet<String>>();
     sketch_hash = new ArrayList<HashSet<Integer>>();
 
     // For each genome
     for (int x = 0; x < numGenomes; x++)
     {
       // Row corresponding to this genome
-      sketch.add(new HashSet<String>());
       sketch_hash.add(new HashSet<Integer>());
 
       // distance between sketched k-mers
@@ -85,7 +78,6 @@ public class UniformScreen extends ScreenGenerator {
         String selected_mer = getCanonical(mer);
         int hash_val = getHash(selected_mer, hashType);
 
-        sketch.get(x).add(selected_mer);
         sketch_hash.get(x).add(hash_val);
         p = p + spacing;
       }

@@ -14,24 +14,17 @@ public class MinimizerScreen extends ScreenGenerator{
 
   public static void main(String[] args) throws Exception
   {
-
-    // Constructor
-
   }
 
   // Screen Generator for minimzer-based approach, with calculated windowsize
-  MinimizerScreen(String gf, String[] g, int readLength, double readError, int tm, int kmer, String mini, boolean track, String hashType) throws Exception
+  MinimizerScreen(String gf, String[] g, int readLength, double readError, int tm, int kmer, String mini, String hashType) throws Exception
   {
-    // TRUE if we want to save minimizer positions
-    boolean MINIMIZER_TRACKING = track;
-
     // Multiplier for adjusting window size - finalized on 2.0
     double multiplier = 2.0;
 
     System.out.println("Generating Minimizer-Based Screen with calculated Window Size, using " + getHashName(hashType) + " hash function.");
-    this.screenType = "v";
 
-    // Store variables
+    // Set variables
     this.targetMatches = tm;
     this.readLen = readLength;
     this.readErr = readError;
@@ -67,25 +60,19 @@ public class MinimizerScreen extends ScreenGenerator{
     this.window = window_sizes[0];
 
     // Get sketch using genomes and window sizes
-
-    sketch = new ArrayList<HashSet<String>>();
     sketch_hash = new ArrayList<HashSet<Integer>>();
 
     for (int x = 0; x < numGenomes; x++)
     {
       // Row corresponding to this genome
-      sketch.add(new HashSet<String>());
       HashSet<Integer> minimizers = getAllMinimizers(genomes[x], window_sizes[x], k, hashType);
       sketch_hash.add(minimizers);
     }
   }
 
   // Screen Generator for minimzer-based approach, with specified window size
-  MinimizerScreen(String gf, String[] g, int readLength, double readError, int kmer, String mini, int windowSize, boolean track, String hashType) throws Exception
+  MinimizerScreen(String gf, String[] g, int readLength, double readError, int kmer, String mini, int windowSize, String hashType) throws Exception
   {
-    // TRUE if we want to save minimizer positions
-    boolean MINIMIZER_TRACKING = track;
-
     System.out.println("Generating Minimizer-Based Screen with specified Window Size = " + windowSize + ", using " + getHashName(hashType) + " hash function.");
 
     // Store variables
@@ -122,17 +109,13 @@ public class MinimizerScreen extends ScreenGenerator{
     this.window = windowSize;
 
     // Get sketch using genomes and window sizes
-
-    sketch = new ArrayList<HashSet<String>>();
     sketch_hash = new ArrayList<HashSet<Integer>>();
 
     for (int x = 0; x < numGenomes; x++)
     {
       // Row corresponding to this genome
-      sketch.add(new HashSet<String>());
       HashSet<Integer> minimizers = getAllMinimizers(genomes[x], window_sizes[x], k, hashType);
       sketch_hash.add(minimizers);
     }
   }
-
 }
