@@ -14,6 +14,9 @@ import java.util.*;
 import java.lang.*;
 import java.util.Collection;
 
+// GUAVA
+// import com.google.common.hash.*;
+
 public class ScreenGenerator {
   // User-specified Variables
   public int targetMatches;
@@ -31,9 +34,7 @@ public class ScreenGenerator {
 
   public static void main(String[] args) throws Exception
   {
-
     // Constructor
-
   }
 
   // ----- UTILITY FUNCTIONS ------
@@ -49,9 +50,7 @@ public class ScreenGenerator {
     double targetMatchesD = (double) targetMatches;
 
     double numerator = (targetMatchesD * genomeLengthD);
-    // System.out.println(numerator);
     double denominator = (readLengthD * multiplier);
-    // System.out.println(denominator);
 
     double num_sketches = numerator/denominator;
 
@@ -65,8 +64,20 @@ public class ScreenGenerator {
     return reversed;
   }
 
-  int getHash(String seq){
+  int getHash(String seq, String hashType){
     return seq.hashCode();
+  }
+
+  String getHashName(String hashType){
+    String ret = "";
+    if (hashType.equals("h")) {
+      ret = "default";
+    } else if (hashType.equals("mmh3")) {
+      ret = "MurmurHash3";
+    } else {
+      ret = "UNKNOWN";
+    }
+    return ret;
   }
 
   String getCanonical(String seq){
@@ -113,8 +124,7 @@ public class ScreenGenerator {
   }
 
   // MINHASH HELPER FUNCTIONS
-
-  HashSet<Integer> getMinHashes(String g, int sketch_size, int k){
+  HashSet<Integer> getMinHashes(String g, int sketch_size, int k, String hashType){
 
     int gl = g.length();
     int boundary = gl - k;
@@ -125,7 +135,7 @@ public class ScreenGenerator {
       int start = p;
       int end = p + k;
       String curr = g.substring(start, end);
-      hashmers_set.add(getHash(getCanonical(curr)));
+      hashmers_set.add(getHash(getCanonical(curr), hashType));
     }
     ArrayList<Integer> hashmers = new ArrayList<Integer>(hashmers_set);
     Collections.sort(hashmers);
@@ -140,9 +150,8 @@ public class ScreenGenerator {
   }
 
   // ----- MINIMIZER HELPER FUNCTIONS ------
-
   // Gets all minimizers from a given string
-  HashSet<Integer> getAllMinimizers(String g, int window_size, int k){
+  HashSet<Integer> getAllMinimizers(String g, int window_size, int k, String hashType){
     // Get number of kmers and windows in this string
     int num_mers = g.length() - k + 1;
     int num_windows = g.length() - window_size + 1;
@@ -153,7 +162,7 @@ public class ScreenGenerator {
 
     // Get all the k-mer hashes from the input string
     for (int i = 0; i < num_mers; i++){
-      string_hashes[i] = getHash(getCanonical(g.substring(i, i+k)));
+      string_hashes[i] = getHash(getCanonical(g.substring(i, i+k)), hashType);
     }
 
     //Iterate through the windows

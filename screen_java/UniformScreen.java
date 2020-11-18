@@ -20,9 +20,9 @@ public class UniformScreen extends ScreenGenerator {
   }
 
   //Screen Generator for Uniform Sampling
-  UniformScreen(String gf, String[] g, int readLength, double readError, int tm, int kmer, String uniform) throws Exception
+  UniformScreen(String gf, String[] g, int readLength, double readError, int tm, int kmer, String uniform, String hashType) throws Exception
   {
-    System.out.println("Generating Uniformly Sampled Screen...");
+    System.out.println("Generating Uniformly Sampled Screen, using " + getHashName(hashType) + " hash function.");
     this.screenType = "u";
 
 
@@ -59,7 +59,6 @@ public class UniformScreen extends ScreenGenerator {
     }
 
     // Get sketch using genomes and sketch sizes
-    // TODO - Turn this into a hash function. For now, it's just random start positions.
 
     // Store the sketch
     sketch = new ArrayList<HashSet<String>>();
@@ -84,7 +83,7 @@ public class UniformScreen extends ScreenGenerator {
         String mer = genomes[x].substring(start, end);
 
         String selected_mer = getCanonical(mer);
-        int hash_val = getHash(selected_mer);
+        int hash_val = getHash(selected_mer, hashType);
 
         sketch.get(x).add(selected_mer);
         sketch_hash.get(x).add(hash_val);
