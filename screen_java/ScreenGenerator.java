@@ -62,7 +62,6 @@ public class ScreenGenerator {
     if (hashType.equals("h")){
       return seq.hashCode();
     } else if (hashType.equals("mmh3")) {
-      // TODO - fix this
       int hashVal = Hashing.murmur3_32().hashString(seq, StandardCharsets.UTF_8).asInt();
       return hashVal;
     } else if (hashType.equals("mmh3_128")) {
