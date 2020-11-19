@@ -57,7 +57,7 @@ public class ReadScreener {
     // Read error
     double read_error = Double.parseDouble(args[4]);
 
-    // Get a sorted list list of all genomes
+    // Get a sorted list list of all genomes in the input folder
     List<String> genomes_list = new ArrayList<String>();
     File dir = new File(genome_folder);
     for (File file : dir.listFiles()) {
@@ -69,7 +69,7 @@ public class ReadScreener {
     String[] genomes = new String[genomes_list.size()];
     genomes = genomes_list.toArray(genomes);
 
-    // Get a sorted list of all readsets
+    // Get a sorted list of all readsets in the input folder
     List<String> reads_list = new ArrayList<String>();
     File readDir = new File(read_folder);
     for (File readFile : readDir.listFiles()) {
