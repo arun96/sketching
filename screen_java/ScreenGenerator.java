@@ -61,10 +61,16 @@ public class ScreenGenerator {
   int getHash(String seq, String hashType){
     if (hashType.equals("h")){
       return seq.hashCode();
-    } else {
-      // TODO - change this.
+    } else if (hashType.equals("mmh3")) {
+      // TODO - fix this
       int hashVal = Hashing.murmur3_32().hashString(seq, StandardCharsets.UTF_8).asInt();
       return hashVal;
+    } else if (hashType.equals("mmh3_128")) {
+      int hashVal = Hashing.murmur3_128().hashString(seq, StandardCharsets.UTF_8).asInt();
+      return hashVal;
+    } else {
+      // Default - use the hashCode version
+      return seq.hashCode();
     }
   }
 

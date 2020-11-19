@@ -87,7 +87,7 @@ public class ReadScreener {
 
     // Hash options
     // TODO - Add more, and update "getHashName" in ScreenGenerator
-    List<String> hashTypes = Arrays.asList("h", "mmh3");
+    List<String> hashTypes = Arrays.asList("h", "mmh3", "mmh3_128");
     // Default is built-in hashcode
     String hashType = "h";
 
@@ -376,10 +376,16 @@ public class ReadScreener {
   int getHash(String seq, String hashType){
     if (hashType.equals("h")){
       return seq.hashCode();
-    } else {
+    } else if (hashType.equals("mmh3")) {
       // TODO - fix this
       int hashVal = Hashing.murmur3_32().hashString(seq, StandardCharsets.UTF_8).asInt();
       return hashVal;
+    } else if (hashType.equals("mmh3_128")) {
+      int hashVal = Hashing.murmur3_128().hashString(seq, StandardCharsets.UTF_8).asInt();
+      return hashVal;
+    } else {
+      // Default - use the hashCode version
+      return seq.hashCode();
     }
   }
 

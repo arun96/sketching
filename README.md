@@ -39,7 +39,10 @@ First, make sure to compile: `javac screen_java/*.java`
 At this point, the default hash function is Java's built in `hashCode()`. For the following section, if no hash function is specified, then this will be used. However, to specify a particular function, please use the following parameters:
 
 - `h`: Java's `hashCode()`. Default option.
-- `mmh3`: Google Guava's `MurmurHash3` implementation.
+- `mmh3`: Google Guava's 32-bit `MurmurHash3` implementation.
+- `mmh3_128`: Google Guava's 128-bit `MurmurHash3` implementation.
+
+The selected hash function will be used to generate the screen and to classify the reads.
 
 I will be adding more hash functions soon!
 
