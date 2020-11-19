@@ -54,6 +54,7 @@ public class ScreenGenerator {
     return reversed;
   }
 
+  // Given a string and the hash function to be used, returns the hashed sequence
   int getHash(String seq, String hashType){
     if (hashType.equals("h")){
       return seq.hashCode();
@@ -63,6 +64,7 @@ public class ScreenGenerator {
     }
   }
 
+  // Returns a user-interpretable name for the chosen hash function
   String getHashName(String hashType){
     String ret = "";
     if (hashType.equals("h")) {
@@ -74,7 +76,7 @@ public class ScreenGenerator {
     }
     return ret;
   }
-
+  // Get the lexicographically smaller of a k-mer and its reverse complement
   String getCanonical(String seq){
     String reversed_mer = reverseComplement(seq);
     String selected_mer = "";
@@ -87,6 +89,7 @@ public class ScreenGenerator {
   }
 
   // ----- I/O HELPER FUNCTIONS ------
+
   // Load genome from a given file
   String getGenome(String fn) throws Exception {
     Scanner input = new Scanner(new FileInputStream(new File(fn)));
@@ -104,7 +107,7 @@ public class ScreenGenerator {
     return s;
   }
 
-  // Loads all .fasta files in the genomes directory
+  // Loads all .fasta/.fna/.fa files in the genomes directory
   List<String> getGenomeFiles(String directory) {
     List<String> textFiles = new ArrayList<String>();
     File dir = new File(directory);
@@ -117,22 +120,28 @@ public class ScreenGenerator {
   }
 
   // ----- MINHASH HELPER FUNCTIONS -----
+
+  // Gets n minimal hashes from a given string
   HashSet<Integer> getMinHashes(String g, int sketch_size, int k, String hashType){
     int gl = g.length();
     int boundary = gl - k;
     HashSet<Integer> hashmers_set = new HashSet<Integer>();
 
+    // Build list of hashed mers
     for (int p = 0; p < boundary; p++) {
       int start = p;
       int end = p + k;
       String curr = g.substring(start, end);
       hashmers_set.add(getHash(getCanonical(curr), hashType));
     }
+
+    // Sort this list
     ArrayList<Integer> hashmers = new ArrayList<Integer>(hashmers_set);
     Collections.sort(hashmers);
 
     HashSet<Integer> minhashvals = new HashSet<Integer>();
 
+    // Return the n minimal ones
     for (int q = 0; q < sketch_size; q++) {
       minhashvals.add(hashmers.get(q));
     }

@@ -300,14 +300,17 @@ public class ReadScreener {
   int getOverlapHash(HashSet<Integer> sketch_set, ArrayList<Integer> readMers_list)
   {
     int overlap = 0;
+
     // DEBUGGING - tracking number of duplicates
     int dupe = 0;
-    // DEBUGGING - TRACKING THE NUMBER THAT ARE DUPLICATES
+    // DEBUGGING - track the number of duplicates k-mers
     Set<Integer> already_counted  = new HashSet<Integer>();
 
+    // Iterate through all the k-mers in the read, compare them to the sketch set
     for (int i = 0; i < readMers_list.size(); i++) {
       if (sketch_set.contains(readMers_list.get(i))) {
         if (already_counted.contains(readMers_list.get(i))) {
+          // DEBUGGING - keeping track of duplicate k-mers
           dupe++;
         } else {
           already_counted.add(readMers_list.get(i));
@@ -332,6 +335,7 @@ public class ReadScreener {
 
   // ----- UTILITY FUNCTIONS ------
   // Essentially argmax, but with default value 0
+  // Not using argmax, so that I can add a tie-breaking mechanism in there
   int getMaxIndex(int[] numArray){
     int max = 0;
     int max_pos = 0;
@@ -345,7 +349,7 @@ public class ReadScreener {
     return max_pos;
   }
 
-  // Get the reverse complement of a DNA sequence
+  // Get the reverse complement of a sequence
   String reverseComplement(String sequence)
   {
     String reversed_tmp = sequence.replace("A", "t").replace("T", "a").replace("C", "g").replace("G", "c").toUpperCase();
@@ -353,6 +357,7 @@ public class ReadScreener {
     return reversed;
   }
 
+  // Get the lexicographically smaller of a k-mer and its reverse complement
   String getCanonical(String seq){
     String reversed_mer = reverseComplement(seq);
     String selected_mer = "";
@@ -364,6 +369,7 @@ public class ReadScreener {
     return selected_mer;
   }
 
+  // Given a string and the hash function to be used, returns the hashed sequence
   int getHash(String seq, String hashType){
     if (hashType.equals("h")){
       return seq.hashCode();
@@ -374,6 +380,7 @@ public class ReadScreener {
   }
 
   // ----- MINIMIZER HELPER FUNCTIONS ------
+  // Gets all minimizers from a given string with specified window size and k
   ArrayList<Integer> getAllMinimizers(String g, int window_size, int k, String hashType){
     // Get number of kmers and windows in this string
     int num_mers = g.length() - k + 1;
@@ -407,7 +414,7 @@ public class ReadScreener {
   }
 
   // ----- I/O HELPER FUNCTIONS ------
-  // Load Reads from file
+  // Load Reads from a given file
   ArrayList<String> getReads(String fn) throws Exception
   {
     // ArrayList to store reads
@@ -432,7 +439,7 @@ public class ReadScreener {
     return read_list;
   }
 
-  // Loads all .fasta files in the genomes directory
+  // Loads all .fasta/.fa/.fna files in the genomes directory
   List<String> getGenomeFiles(String directory)
   {
     List<String> textFiles = new ArrayList<String>();
