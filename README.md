@@ -81,5 +81,9 @@ To use a Uniform Sampling-based approach to screen a generated set of reads agai
 java -cp screen_java:jars/\* ReadScreener <Genomes Directory/> <File to Save Output to> <Reads Directory/> <Read Length> <Read Error Rate> <Number of Target Matches per Read> u <Hash Function>
 ```
 
+### Using External JARs
+
+As I am not using Maven, I have manually included the JARs this project will use. The foremost of these is Google's `Guava`, which gives me access to hash function implementations, optimized data structures, and other nifty features. As I add more to this folder, I will update the README to include descriptions of each of them!
+
 # PYTHON
 The Python implementation is not up to date, and should not be used.
