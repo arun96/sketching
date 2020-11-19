@@ -10,9 +10,12 @@ import java.util.*;
 import java.lang.*;
 import java.util.stream.Collectors;
 import java.util.Collection;
+import java.nio.charset.StandardCharsets;
 
 // GUAVA
-// import com.google.common.hash.*;
+import com.google.common.hash.*;
+import com.google.common.hash.Hashing;
+import com.google.common.hash.HashFunction;
 
 public class ReadScreener {
   // Key Variables
@@ -375,7 +378,8 @@ public class ReadScreener {
       return seq.hashCode();
     } else {
       // TODO - fix this
-      return seq.hashCode();
+      int hashVal = Hashing.murmur3_32().hashString(seq, StandardCharsets.UTF_8).asInt();
+      return hashVal;
     }
   }
 

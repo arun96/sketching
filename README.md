@@ -34,39 +34,48 @@ There are three distinct approaches used to generate the screen - a MinHash-base
 
 First, make sure to compile: `javac screen_java/*.java`
 
+#### Hash Function Options
+
+At this point, the default hash function is Java's built in `hashCode()`. For the following section, if no hash function is specified, then this will be used. However, to specify a particular function, please use the following parameters:
+
+- `h`: Java's `hashCode()`. Default option.
+- `mmh3`: Google Guava's `MurmurHash3` implementation.
+
+I will be adding more hash functions soon!
+
 ### MinHash with calculated sketch size
 
 To use a MinHash-based approach to screen a generated set of reads against the set of genomes they were generated from, use the following syntax:
 ```
-java -cp screen_java ReadScreener <Genomes Directory/> <File to Save Output to> <Reads Directory/> <Read Length> <Read Error Rate> <Number of Target Matches per Read>
+java -cp screen_java:jars/\* ReadScreener <Genomes Directory/> <File to Save Output to> <Reads Directory/> <Read Length> <Read Error Rate> <Number of Target Matches per Read> <Hash Function>
 ```
 
 ### MinHash with specified sketch size
 
 To use a MinHash-based approach to screen a generated set of reads against the set of genomes they were generated from, but with a specified sketch size for all genomes, use the following syntax:
 ```
-java -cp screen_java ReadScreener <Genomes Directory/> <File to Save Output to> <Reads Directory/> <Read Length> <Read Error Rate> f <Fixed Sketch Size>
+java -cp screen_java:jars/\* ReadScreener <Genomes Directory/> <File to Save Output to> <Reads Directory/> <Read Length> <Read Error Rate> f <Fixed Sketch Size> <Hash Function>
 ```
 
 ### Minimizer with calculated window size
 
 To use a Minimizer-based approach to screen a generated set of reads against the set of genomes they were generated from, use the following syntax:
 ```
-java -cp screen_java ReadScreener <Genomes Directory/> <File to Save Output to> <Reads Directory/> <Read Length> <Read Error Rate> <Number of Target Matches per Read> m
+java -cp screen_java:jars/\* ReadScreener <Genomes Directory/> <File to Save Output to> <Reads Directory/> <Read Length> <Read Error Rate> <Number of Target Matches per Read> m <Hash Function>
 ```
 
 ### Minimizer with specified window size
 
 To use a Minimizer-based approach to screen a generated set of reads against the set of genomes they were generated from, but with a specified window size, use the following syntax:
 ```
-java -cp screen_java ReadScreener <Genomes Directory/> <File to Save Output to> <Reads Directory/> <Read Length> <Read Error Rate> m <Specified Window Size>
+java -cp screen_java:jars/\* ReadScreener <Genomes Directory/> <File to Save Output to> <Reads Directory/> <Read Length> <Read Error Rate> m <Specified Window Size> <Hash Function>
 ```
 
 ### Uniform Sampling
 
 To use a Uniform Sampling-based approach to screen a generated set of reads against the set of genomes they were generated from, use the following syntax:
 ```
-java -cp screen_java ReadScreener <Genomes Directory/> <File to Save Output to> <Reads Directory/> <Read Length> <Read Error Rate> <Number of Target Matches per Read> u
+java -cp screen_java:jars/\* ReadScreener <Genomes Directory/> <File to Save Output to> <Reads Directory/> <Read Length> <Read Error Rate> <Number of Target Matches per Read> u <Hash Function>
 ```
 
 # PYTHON

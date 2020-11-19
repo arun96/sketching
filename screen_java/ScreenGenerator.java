@@ -9,9 +9,12 @@ import java.util.TreeSet;
 import java.util.*;
 import java.lang.*;
 import java.util.Collection;
+import java.nio.charset.StandardCharsets;
 
 // GUAVA
-// import com.google.common.hash.*;
+import com.google.common.hash.*;
+import com.google.common.hash.Hashing;
+import com.google.common.hash.HashFunction;
 
 public class ScreenGenerator {
   // Key Variables
@@ -60,7 +63,8 @@ public class ScreenGenerator {
       return seq.hashCode();
     } else {
       // TODO - change this.
-      return seq.hashCode();
+      int hashVal = Hashing.murmur3_32().hashString(seq, StandardCharsets.UTF_8).asInt();
+      return hashVal;
     }
   }
 
