@@ -43,43 +43,43 @@ public class ReadScreener {
     int argNum = args.length;
 
     // Genome Folder
-    String gf = args[0];
+    String genome_folder = args[0];
 
     // Output file
     String ofn = args[1];
 
     // Read Folder
-    String rf = args[2];
+    String read_folder = args[2];
 
     // Read Length
-    int rl = Integer.parseInt(args[3]);
+    int read_length = Integer.parseInt(args[3]);
 
     // Read error
-    double re = Double.parseDouble(args[4]);
+    double read_error = Double.parseDouble(args[4]);
 
     // Get a sorted list list of all genomes
-    List<String> genomeNamesList = new ArrayList<String>();
-    File dir = new File(gf);
+    List<String> genomes_list = new ArrayList<String>();
+    File dir = new File(genome_folder);
     for (File file : dir.listFiles()) {
       if (file.getName().endsWith((".fasta")) || file.getName().endsWith((".fna")) || file.getName().endsWith((".fa"))) {
-        genomeNamesList.add(file.getName());
+        genomes_list.add(file.getName());
       }
     }
-    Collections.sort(genomeNamesList);
-    String[] g = new String[genomeNamesList.size()];
-    g = genomeNamesList.toArray(g);
+    Collections.sort(genomes_list);
+    String[] genomes = new String[genomes_list.size()];
+    genomes = genomes_list.toArray(genomes);
 
     // Get a sorted list of all readsets
-    List<String> readSetList = new ArrayList<String>();
-    File readDir = new File(rf);
+    List<String> reads_list = new ArrayList<String>();
+    File readDir = new File(read_folder);
     for (File readFile : readDir.listFiles()) {
       if (readFile.getName().endsWith((".fasta")) || readFile.getName().endsWith((".fna")) || readFile.getName().endsWith((".fa"))) {
-        readSetList.add(readFile.getName());
+        reads_list.add(readFile.getName());
       }
     }
-    Collections.sort(readSetList);
-    String[] r = new String[readSetList.size()];
-    r = readSetList.toArray(r);
+    Collections.sort(reads_list);
+    String[] read_sets = new String[reads_list.size()];
+    read_sets = reads_list.toArray(read_sets);
 
     // ----- SCREENING AND CLASSIFICATION -----
     // Number of target Matches - initialized to zero, then read in
@@ -94,16 +94,15 @@ public class ReadScreener {
     // Absolute base option - MinHash Screen
     if (argNum == 6){
       tm = Integer.parseInt(args[5]);
-      MinHashScreen ms = new MinHashScreen(gf, g, rl, re, tm, k, hashType);
-      ReadScreener rs = new ReadScreener(ofn, ms, gf, g, r, rf, rl, re, k, track_reads, hashType);
+      MinHashScreen ms = new MinHashScreen(genome_folder, genomes, read_length, read_error, tm, k, hashType);
+      ReadScreener rs = new ReadScreener(ofn, ms, genome_folder, genomes, read_sets, read_folder, read_length, read_error, k, track_reads, hashType);
 
     // MinHash Screen with specified hash function
     } else if ((argNum == 7) && hashTypes.contains(args[6])){
       tm = Integer.parseInt(args[5]);
       hashType = args[6];
-      MinHashScreen ms = new MinHashScreen(gf, g, rl, re, tm, k, hashType);
-      ReadScreener rs = new ReadScreener(ofn, ms, gf, g, r, rf, rl, re, k, track_reads, hashType);
-
+      MinHashScreen ms = new MinHashScreen(genome_folder, genomes, read_length, read_error, tm, k, hashType);
+      ReadScreener rs = new ReadScreener(ofn, ms, genome_folder, genomes, read_sets, read_folder, read_length, read_error, k, track_reads, hashType);
 
     // Remaining options - 7 parameters, 8 if specified hash function
     } else {
@@ -118,45 +117,49 @@ public class ReadScreener {
       // Uniformly Sampled Screen
       if (args[6].equals("u")){
         tm = Integer.parseInt(args[5]);
-        UniformScreen us = new UniformScreen(gf, g, rl, re, tm, k, args[6], hashType);
-        ReadScreener rs = new ReadScreener(ofn, us, gf, g, r, rf, rl, re, k, track_reads, hashType);
+        UniformScreen us = new UniformScreen(genome_folder, genomes, read_length, read_error, tm, k, args[6], hashType);
+        ReadScreener rs = new ReadScreener(ofn, us, genome_folder, genomes, read_sets, read_folder, read_length, read_error, k, track_reads, hashType);
 
       // Minimizer Screen, with calculated window size
       } else if (args[6].equals("m")) {
         tm = Integer.parseInt(args[5]);
-        MinimizerScreen mzs = new MinimizerScreen(gf, g, rl, re, tm, k, args[6], hashType);
-        ReadScreener rs = new ReadScreener(ofn, mzs, gf, g, r, rf, rl, re, k, track_reads, hashType);
+        MinimizerScreen mzs = new MinimizerScreen(genome_folder, genomes, read_length, read_error, tm, k, args[6], hashType);
+        ReadScreener rs = new ReadScreener(ofn, mzs, genome_folder, genomes, read_sets, read_folder, read_length, read_error, k, track_reads, hashType);
 
       // Minimizer Screen, with provided window size
       } else if (args[5].equals("m")) {
         // Window size
         int ws = Integer.parseInt(args[6]);
-        MinimizerScreen mzs = new MinimizerScreen(gf, g, rl, re, k, args[5], ws, hashType);
-        ReadScreener rs = new ReadScreener(ofn, mzs, gf, g, r, rf, rl, re, k, track_reads, hashType);
+        MinimizerScreen mzs = new MinimizerScreen(genome_folder, genomes, read_length, read_error, k, args[5], ws, hashType);
+        ReadScreener rs = new ReadScreener(ofn, mzs, genome_folder, genomes, read_sets, read_folder, read_length, read_error, k, track_reads, hashType);
 
       // Fixed Size MinHash Screen
       } else if (args[5].equals("f")) {
         // Screen size
         int ss = Integer.parseInt(args[6]);
-        MinHashScreen ms = new MinHashScreen(gf, g, rl, re, k, args[5], ss, hashType);
-        ReadScreener rs = new ReadScreener(ofn, ms, gf, g, r, rf, rl, re, k, track_reads, hashType);
+        MinHashScreen ms = new MinHashScreen(genome_folder, genomes, read_length, read_error, k, args[5], ss, hashType);
+        ReadScreener rs = new ReadScreener(ofn, ms, genome_folder, genomes, read_sets, read_folder, read_length, read_error, k, track_reads, hashType);
+
+      // Invalid parameters
       } else {
         System.out.println("Invalid input parameters - please read the README!");
       }
+
     }
     System.out.println("Done!");
   }
 
   // Main function for screening reads
-  ReadScreener(String filename, ScreenGenerator sg, String gf, String[] g, String[] r, String rf, int readLength, double readError, int k, boolean track_reads, String hashType) throws Exception
+  ReadScreener(String filename, ScreenGenerator sg, String genome_folder, String[] g, String[] r, String read_folder, int read_length, double read_error, int k, boolean track_reads, String hashType) throws Exception
   {
+    // Minimum number of matches to classify a read
     int threshold = 2;
 
     // Store all values
-    this.readLen = readLength;
-    this.readErr = readError;
-    this.genomeFolder = gf;
-    this.readFolder = rf;
+    this.readLen = read_length;
+    this.readErr = read_error;
+    this.genomeFolder = genome_folder;
+    this.readFolder = read_folder;
     this.genomeNames = g;
     this.readSets = r;
     this.sketch_hash = sg.sketch_hash;
