@@ -80,7 +80,9 @@ public class ScreenGenerator {
     if (hashType.equals("h")) {
       ret = "default";
     } else if (hashType.equals("mmh3")) {
-      ret = "MurmurHash3";
+      ret = "32-bit MurmurHash3";
+    } else if (hashType.equals("mmh3_128")) {
+      ret = "128-bit MurmurHash3";
     } else {
       ret = "UNKNOWN";
     }
