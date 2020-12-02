@@ -20,7 +20,7 @@ import com.google.common.hash.Hashing;
 import com.google.common.hash.HashFunction;
 
 
-public class ReadClassifier{
+public class ReadClassifier {
 
   // List of sketches
   ArrayList<HashSet<Integer>> sketch_hash;
@@ -35,7 +35,6 @@ public class ReadClassifier{
   ArrayList<Integer> read_hashes;
 
   // Parameters for deciding hashing method
-  String hash_type;
   int window;
 
   int k;
@@ -55,7 +54,7 @@ public class ReadClassifier{
   int tied;
 
 
-  ReadClassifier(ArrayList<HashSet<Integer>> sketch_hash, String read, String hash_type, int k, int window, int threshold, int source){
+  ReadClassifier(ArrayList<HashSet<Integer>> sketch_hash, String read, int window, int source){
 
     scores = new int[sketch_hash.size()];
 
@@ -65,13 +64,11 @@ public class ReadClassifier{
 
     this.read = read;
 
-    this.hash_type = hash_type;
-
-    this.k = k;
+    this.k = Settings.K;
 
     this.source = source;
 
-    this.threshold = threshold;
+    this.threshold = Settings.THRESHOLD;
 
     // read status
     predicted = 0;
@@ -88,9 +85,9 @@ public class ReadClassifier{
 
     // Get read k-mers
     if (window > 0) {
-      read_hashes = getAllMinimizers(read, window, k, hash_type);
+      read_hashes = getAllMinimizers(read, window, k);
     } else {
-      read_hashes = getReadKmersHash(read, k, hash_type);
+      read_hashes = getReadKmersHash(read, k);
     }
 
     int[] read_scores = screenReadHash(sketch_hash, read_hashes);
@@ -125,7 +122,7 @@ public class ReadClassifier{
 
   // ----- HELPER FUNCTIONS FOR SCREENING ------
   // Break Read into Kmers - HASH VERSION
-  ArrayList<Integer> getReadKmersHash(String r, int k, String hashType)
+  ArrayList<Integer> getReadKmersHash(String r, int k)
   {
     ArrayList<Integer> readMers = new ArrayList<Integer>();
 
@@ -140,7 +137,7 @@ public class ReadClassifier{
       // Slice the kmer, and chose the canonical ones
       String readMer = r.substring(i, i+k);
       String selectedMer = getCanonical(readMer);
-      readMers.add(getHash(selectedMer, hashType));
+      readMers.add(getHash(selectedMer));
     }
     return readMers;
   }
@@ -236,13 +233,13 @@ public class ReadClassifier{
   }
 
   // Given a string and the hash function to be used, returns the hashed sequence
-  int getHash(String seq, String hashType){
-    if (hashType.equals("h")){
+  int getHash(String seq){
+    if (Settings.HASH_TYPE.equals("h")){
       return seq.hashCode();
-    } else if (hashType.equals("mmh3")) {
+    } else if (Settings.HASH_TYPE.equals("mmh3")) {
       int hashVal = Hashing.murmur3_32().hashString(seq, StandardCharsets.UTF_8).asInt();
       return hashVal;
-    } else if (hashType.equals("mmh3_128")) {
+    } else if (Settings.HASH_TYPE.equals("mmh3_128")) {
       int hashVal = Hashing.murmur3_128().hashString(seq, StandardCharsets.UTF_8).asInt();
       return hashVal;
     } else {
@@ -253,7 +250,7 @@ public class ReadClassifier{
 
   // ----- MINIMIZER HELPER FUNCTIONS ------
   // Gets all minimizers from a given string with specified window size and k
-  ArrayList<Integer> getAllMinimizers(String g, int window_size, int k, String hashType){
+  ArrayList<Integer> getAllMinimizers(String g, int window_size, int k){
     // Get number of kmers and windows in this string
     int num_mers = g.length() - k + 1;
     int num_windows = g.length() - window_size + 1;
@@ -264,7 +261,7 @@ public class ReadClassifier{
 
     // Get all the k-mer hashes from the input string
     for (int i = 0; i < num_mers; i++){
-      string_hashes[i] = getHash(getCanonical(g.substring(i, i+k)), hashType);
+      string_hashes[i] = getHash(getCanonical(g.substring(i, i+k)));
     }
 
     //iterate through the windows

@@ -17,18 +17,18 @@ public class MinHashScreen extends ScreenGenerator {
   }
 
   // Screen Generator for MinHash-based screen
-  MinHashScreen(String gf, String[] g, int readLength, double readError, int tm, int kmer, String hashType) throws Exception
+  MinHashScreen() throws Exception
   {
-    System.out.println("Generating MinHash-based Screen, using " + getHashName(hashType) + " hash function.");
+    System.out.println("Generating MinHash-based Screen, using " + getHashName(Settings.HASH_TYPE) + " hash function.");
 
     // Store variables
-    this.targetMatches = tm;
-    this.readLen = readLength;
-    this.readErr = readError;
-    this.genomeFolder = gf;
-    this.k = kmer;
-    this.numGenomes = g.length;
-    this.genomeNames = g;
+    this.targetMatches = Settings.TARGET_MATCHES;
+    this.readLen = Settings.READ_LENGTH;
+    this.readErr = Settings.READ_ERROR;
+    this.genomeFolder = Settings.GENOME_FOLDER;
+    this.k = Settings.K;
+    this.genomeNames = Settings.GENOMES;
+    this.numGenomes = genomeNames.length;
     this.window = 0;
 
     // Get genome lengths
@@ -40,7 +40,7 @@ public class MinHashScreen extends ScreenGenerator {
     // Read in the genomes, save length and the genome
     for (int i = 0; i < numGenomes; i++)
     {
-      String gnm = getGenome(genomeFolder + g[i]);
+      String gnm = getGenome(genomeFolder + genomeNames[i]);
       genomes[i] = gnm;
       genomeLengths[i] = gnm.length();
     }
@@ -61,23 +61,23 @@ public class MinHashScreen extends ScreenGenerator {
     for (int x = 0; x < numGenomes; x++)
     {
       // Row corresponding to this genome
-      sketch_hash.add(getMinHashes(genomes[x], sketch_size[x], k, hashType));
+      sketch_hash.add(getMinHashes(genomes[x], sketch_size[x], k));
     }
   }
 
   // Screen Generator for fixed-size MinHash-based sketches
-  MinHashScreen(String gf, String[] g, int readLength, double readError, int kmer, String fixed, int fixedSize, String hashType) throws Exception
+  MinHashScreen(String fixed) throws Exception
   {
-    System.out.println("Generating MinHash-based screen with fixed size = " + fixedSize + ", using " + getHashName(hashType) + " hash function.");
+    System.out.println("Generating MinHash-based screen with fixed size = " + Settings.FIXED_SIZE + ", using " + getHashName(Settings.HASH_TYPE) + " hash function.");
 
     // Store variables
-    this.targetMatches = 0;
-    this.readLen = readLength;
-    this.readErr = readError;
-    this.genomeFolder = gf;
-    this.k = kmer;
-    this.numGenomes = g.length;
-    this.genomeNames = g;
+    this.targetMatches = Settings.TARGET_MATCHES;
+    this.readLen = Settings.READ_LENGTH;
+    this.readErr = Settings.READ_ERROR;
+    this.genomeFolder = Settings.GENOME_FOLDER;
+    this.k = Settings.K;
+    this.genomeNames = Settings.GENOMES;
+    this.numGenomes = genomeNames.length;
     this.window = 0;
 
     // Get genome lengths
@@ -89,7 +89,7 @@ public class MinHashScreen extends ScreenGenerator {
     // Read in the genomes, save length and the genome
     for (int i = 0; i < numGenomes; i++)
     {
-      String gnm = getGenome(genomeFolder + g[i]);
+      String gnm = getGenome(genomeFolder + genomeNames[i]);
       genomes[i] = gnm;
       genomeLengths[i] = gnm.length();
     }
@@ -98,7 +98,7 @@ public class MinHashScreen extends ScreenGenerator {
     sketch_size = new int[numGenomes];
     for (int j = 0; j < numGenomes; j++)
     {
-      sketch_size[j] = fixedSize;
+      sketch_size[j] = Settings.FIXED_SIZE;
     }
 
     // Get sketch using genomes and the fixed size
@@ -110,7 +110,7 @@ public class MinHashScreen extends ScreenGenerator {
     for (int x = 0; x < numGenomes; x++)
     {
       // Row corresponding to this genome
-      sketch_hash.add(getMinHashes(genomes[x], sketch_size[x], k, hashType));
+      sketch_hash.add(getMinHashes(genomes[x], sketch_size[x], k));
     }
   }
 }

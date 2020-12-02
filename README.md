@@ -32,7 +32,9 @@ By default, the normal distribution will be used. However, to use any of the oth
 # JAVA
 There are three distinct approaches used to generate the screen - a MinHash-based approach, a Minimizer-based approach, and a Uniform sampling approach. For the first two, we have the option of calculating the sketch/window size, but also the option to specify the sketch/window size that will be used.
 
-First, make sure to compile: `javac screen_java/*.java`
+First, make sure to compile: `javac -cp jars/\* screen_java/*.java`.
+
+For details on how to control the number of threads to use, look for the "Threads" section at the end of this README.
 
 #### Hash Function Options
 
@@ -50,38 +52,42 @@ I will be adding more hash functions soon!
 
 To use a MinHash-based approach to screen a generated set of reads against the set of genomes they were generated from, use the following syntax:
 ```
-java -cp screen_java:jars/\* ReadScreener <Genomes Directory/> <File to Save Output to> <Reads Directory/> <Read Length> <Read Error Rate> <Number of Target Matches per Read> <Hash Function>
+java -cp screen_java:jars/\* Main <Genomes Directory/> <File to Save Output to> <Reads Directory/> <Read Length> <Read Error Rate> <Number of Target Matches per Read> <Hash Function>
 ```
 
 ### MinHash with specified sketch size
 
 To use a MinHash-based approach to screen a generated set of reads against the set of genomes they were generated from, but with a specified sketch size for all genomes, use the following syntax:
 ```
-java -cp screen_java:jars/\* ReadScreener <Genomes Directory/> <File to Save Output to> <Reads Directory/> <Read Length> <Read Error Rate> f <Fixed Sketch Size> <Hash Function>
+java -cp screen_java:jars/\* Main <Genomes Directory/> <File to Save Output to> <Reads Directory/> <Read Length> <Read Error Rate> f <Fixed Sketch Size> <Hash Function>
 ```
 
 ### Minimizer with calculated window size
 
 To use a Minimizer-based approach to screen a generated set of reads against the set of genomes they were generated from, use the following syntax:
 ```
-java -cp screen_java:jars/\* ReadScreener <Genomes Directory/> <File to Save Output to> <Reads Directory/> <Read Length> <Read Error Rate> <Number of Target Matches per Read> m <Hash Function>
+java -cp screen_java:jars/\* Main <Genomes Directory/> <File to Save Output to> <Reads Directory/> <Read Length> <Read Error Rate> <Number of Target Matches per Read> m <Hash Function>
 ```
 
 ### Minimizer with specified window size
 
 To use a Minimizer-based approach to screen a generated set of reads against the set of genomes they were generated from, but with a specified window size, use the following syntax:
 ```
-java -cp screen_java:jars/\* ReadScreener <Genomes Directory/> <File to Save Output to> <Reads Directory/> <Read Length> <Read Error Rate> m <Specified Window Size> <Hash Function>
+java -cp screen_java:jars/\* Main <Genomes Directory/> <File to Save Output to> <Reads Directory/> <Read Length> <Read Error Rate> m <Specified Window Size> <Hash Function>
 ```
 
 ### Uniform Sampling
 
 To use a Uniform Sampling-based approach to screen a generated set of reads against the set of genomes they were generated from, use the following syntax:
 ```
-java -cp screen_java:jars/\* ReadScreener <Genomes Directory/> <File to Save Output to> <Reads Directory/> <Read Length> <Read Error Rate> <Number of Target Matches per Read> u <Hash Function>
+java -cp screen_java:jars/\* Main <Genomes Directory/> <File to Save Output to> <Reads Directory/> <Read Length> <Read Error Rate> <Number of Target Matches per Read> u <Hash Function>
 ```
 
-### Using External JARs
+## Threads
+
+By default, this program using 4 threads for read classification. I am working on making this a run-time parameter, but until then, you can change the number of threads by editing Line 67 in `Settings.java`. I will update this README when this changes!
+
+## Using External JARs
 
 As I am not using Maven, I have manually included the JARs this project will use. The foremost of these is Google's `Guava`, which gives me access to hash function implementations, optimized data structures, and other nifty features. As I add more to this folder, I will update the README to include descriptions of each of them!
 

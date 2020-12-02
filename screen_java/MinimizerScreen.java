@@ -17,21 +17,21 @@ public class MinimizerScreen extends ScreenGenerator{
   }
 
   // Screen Generator for minimzer-based approach, with calculated windowsize
-  MinimizerScreen(String gf, String[] g, int readLength, double readError, int tm, int kmer, String mini, String hashType) throws Exception
+  MinimizerScreen() throws Exception
   {
-    // Multiplier for adjusting window size - finalized on 2.0
+    // TODO - parameterize this? Multiplier for adjusting window size - finalized on 2.0
     double multiplier = 2.0;
 
-    System.out.println("Generating Minimizer-Based Screen with calculated Window Size, using " + getHashName(hashType) + " hash function.");
+    System.out.println("Generating Minimizer-Based Screen with calculated Window Size, using " + getHashName(Settings.HASH_TYPE) + " hash function.");
 
     // Set variables
-    this.targetMatches = tm;
-    this.readLen = readLength;
-    this.readErr = readError;
-    this.genomeFolder = gf;
-    this.k = kmer;
-    this.numGenomes = g.length;
-    this.genomeNames = g;
+    this.targetMatches = Settings.TARGET_MATCHES;
+    this.readLen = Settings.READ_LENGTH;
+    this.readErr = Settings.READ_ERROR;
+    this.genomeFolder = Settings.GENOME_FOLDER;
+    this.k = Settings.K;
+    this.genomeNames = Settings.GENOMES;
+    this.numGenomes = genomeNames.length;
 
     // Get genome lengths
     int[] genomeLengths = new int[numGenomes];
@@ -42,7 +42,7 @@ public class MinimizerScreen extends ScreenGenerator{
     // Read in the genomes, save length and the genome
     for (int i = 0; i < numGenomes; i++)
     {
-      String gnm = getGenome(genomeFolder + g[i]);
+      String gnm = getGenome(genomeFolder + genomeNames[i]);
       genomes[i] = gnm;
       genomeLengths[i] = gnm.length();
     }
@@ -65,25 +65,25 @@ public class MinimizerScreen extends ScreenGenerator{
     for (int x = 0; x < numGenomes; x++)
     {
       // Row corresponding to this genome
-      HashSet<Integer> minimizers = getAllMinimizers(genomes[x], window_sizes[x], k, hashType);
+      HashSet<Integer> minimizers = getAllMinimizers(genomes[x], window_sizes[x], k);
       sketch_hash.add(minimizers);
     }
   }
 
   // Screen Generator for minimzer-based approach, with specified window size
-  MinimizerScreen(String gf, String[] g, int readLength, double readError, int kmer, String mini, int windowSize, String hashType) throws Exception
+  MinimizerScreen(String fixed) throws Exception
   {
-    System.out.println("Generating Minimizer-Based Screen with specified Window Size = " + windowSize + ", using " + getHashName(hashType) + " hash function.");
+    System.out.println("Generating Minimizer-Based Screen with specified Window Size = " + Settings.FIXED_SIZE + ", using " + getHashName(Settings.HASH_TYPE) + " hash function.");
 
     // Store variables
-    this.targetMatches = 0;
-    this.readLen = readLength;
-    this.readErr = readError;
-    this.genomeFolder = gf;
-    this.k = kmer;
-    this.numGenomes = g.length;
-    this.genomeNames = g;
-    this.window = windowSize;
+    this.targetMatches = Settings.TARGET_MATCHES;
+    this.readLen = Settings.READ_LENGTH;
+    this.readErr = Settings.READ_ERROR;
+    this.genomeFolder = Settings.GENOME_FOLDER;
+    this.k = Settings.K;
+    this.genomeNames = Settings.GENOMES;
+    this.numGenomes = genomeNames.length;
+    this.window = Settings.FIXED_SIZE;
 
     // Get genome lengths
     int[] genomeLengths = new int[numGenomes];
@@ -94,7 +94,7 @@ public class MinimizerScreen extends ScreenGenerator{
     // Read in the genomes, save length and the genome
     for (int i = 0; i < numGenomes; i++)
     {
-      String gnm = getGenome(genomeFolder + g[i]);
+      String gnm = getGenome(genomeFolder + genomeNames[i]);
       genomes[i] = gnm;
       genomeLengths[i] = gnm.length();
     }
@@ -103,10 +103,10 @@ public class MinimizerScreen extends ScreenGenerator{
     int[] window_sizes = new int[numGenomes];
     for (int j = 0; j < numGenomes; j++)
     {
-      window_sizes[j] = windowSize;
+      window_sizes[j] = Settings.FIXED_SIZE;
     }
     // set the window size - agnostic of genomes
-    this.window = windowSize;
+    this.window = Settings.FIXED_SIZE;
 
     // Get sketch using genomes and window sizes
     sketch_hash = new ArrayList<HashSet<Integer>>();
@@ -114,7 +114,7 @@ public class MinimizerScreen extends ScreenGenerator{
     for (int x = 0; x < numGenomes; x++)
     {
       // Row corresponding to this genome
-      HashSet<Integer> minimizers = getAllMinimizers(genomes[x], window_sizes[x], k, hashType);
+      HashSet<Integer> minimizers = getAllMinimizers(genomes[x], window_sizes[x], k);
       sketch_hash.add(minimizers);
     }
   }

@@ -58,13 +58,13 @@ public class ScreenGenerator {
   }
 
   // Given a string and the hash function to be used, returns the hashed sequence
-  int getHash(String seq, String hashType){
-    if (hashType.equals("h")){
+  int getHash(String seq){
+    if (Settings.HASH_TYPE.equals("h")){
       return seq.hashCode();
-    } else if (hashType.equals("mmh3")) {
+    } else if (Settings.HASH_TYPE.equals("mmh3")) {
       int hashVal = Hashing.murmur3_32().hashString(seq, StandardCharsets.UTF_8).asInt();
       return hashVal;
-    } else if (hashType.equals("mmh3_128")) {
+    } else if (Settings.HASH_TYPE.equals("mmh3_128")) {
       int hashVal = Hashing.murmur3_128().hashString(seq, StandardCharsets.UTF_8).asInt();
       return hashVal;
     } else {
@@ -133,7 +133,7 @@ public class ScreenGenerator {
   // ----- MINHASH HELPER FUNCTIONS -----
 
   // Gets n minimal hashes from a given string
-  HashSet<Integer> getMinHashes(String g, int sketch_size, int k, String hashType){
+  HashSet<Integer> getMinHashes(String g, int sketch_size, int k){
     int gl = g.length();
     int boundary = gl - k;
     HashSet<Integer> hashmers_set = new HashSet<Integer>();
@@ -143,7 +143,7 @@ public class ScreenGenerator {
       int start = p;
       int end = p + k;
       String curr = g.substring(start, end);
-      hashmers_set.add(getHash(getCanonical(curr), hashType));
+      hashmers_set.add(getHash(getCanonical(curr)));
     }
 
     // Sort this list
@@ -161,7 +161,7 @@ public class ScreenGenerator {
 
   // ----- MINIMIZER HELPER FUNCTIONS ------
   // Gets all minimizers from a given string
-  HashSet<Integer> getAllMinimizers(String g, int window_size, int k, String hashType){
+  HashSet<Integer> getAllMinimizers(String g, int window_size, int k){
     // Get number of kmers and windows in this string
     int num_mers = g.length() - k + 1;
     int num_windows = g.length() - window_size + 1;
@@ -172,7 +172,7 @@ public class ScreenGenerator {
 
     // Get all the k-mer hashes from the input string
     for (int i = 0; i < num_mers; i++){
-      string_hashes[i] = getHash(getCanonical(g.substring(i, i+k)), hashType);
+      string_hashes[i] = getHash(getCanonical(g.substring(i, i+k)));
     }
     //Iterate through the windows
     for (int j = 0; j < num_windows; j++){

@@ -17,18 +17,18 @@ public class UniformScreen extends ScreenGenerator {
   }
 
   //Screen Generator for Uniform Sampling
-  UniformScreen(String gf, String[] g, int readLength, double readError, int tm, int kmer, String uniform, String hashType) throws Exception
+  UniformScreen() throws Exception
   {
-    System.out.println("Generating Uniformly Sampled Screen, using " + getHashName(hashType) + " hash function.");
+    System.out.println("Generating Uniformly Sampled Screen, using " + getHashName(Settings.HASH_TYPE) + " hash function.");
 
     // Store variables
-    this.targetMatches = tm;
-    this.readLen = readLength;
-    this.readErr = readError;
-    this.genomeFolder = gf;
-    this.k = kmer;
-    this.numGenomes = g.length;
-    this.genomeNames = g;
+    this.targetMatches = Settings.TARGET_MATCHES;
+    this.readLen = Settings.READ_LENGTH;
+    this.readErr = Settings.READ_ERROR;
+    this.genomeFolder = Settings.GENOME_FOLDER;
+    this.k = Settings.K;
+    this.genomeNames = Settings.GENOMES;
+    this.numGenomes = genomeNames.length;
     this.window = 0;
 
     // Get genome lengths
@@ -40,7 +40,7 @@ public class UniformScreen extends ScreenGenerator {
     // Read in the genomes, save length and the genome
     for (int i = 0; i < numGenomes; i++)
     {
-      String gnm = getGenome(genomeFolder + g[i]);
+      String gnm = getGenome(genomeFolder + genomeNames[i]);
       genomes[i] = gnm;
       genomeLengths[i] = gnm.length();
       // System.out.println(genomeLengths[i]);
@@ -76,7 +76,7 @@ public class UniformScreen extends ScreenGenerator {
         String mer = genomes[x].substring(start, end);
 
         String selected_mer = getCanonical(mer);
-        int hash_val = getHash(selected_mer, hashType);
+        int hash_val = getHash(selected_mer);
 
         sketch_hash.get(x).add(hash_val);
         p = p + spacing;

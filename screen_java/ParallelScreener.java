@@ -26,10 +26,8 @@ public class ParallelScreener{
   ArrayList<String> reads;
 
   // Specified parameters
-  String hash_type;
   int num_threads;
   int window;
-  int k;
 
   // Min Number of matches for read to be classified
   int threshold;
@@ -48,19 +46,17 @@ public class ParallelScreener{
   AtomicInteger ties = new AtomicInteger(0);
 
 
-  ParallelScreener(ArrayList<HashSet<Integer>> sketch_hash, ArrayList<String> reads, String hash_type, int k, int num_threads, int window, int source, int threshold){
+  ParallelScreener(ArrayList<HashSet<Integer>> sketch_hash, ArrayList<String> reads, int window, int source){
 
     // Store parameters
     this.sketch_hash = sketch_hash;
     this.reads = reads;
 
-    this.hash_type = hash_type;
-    this.num_threads = num_threads;
+    this.num_threads = Settings.NUM_THREADS;
     this.window = window;
-    this.k = k;
 
     this.source = source;
-    this.threshold = threshold;
+    this.threshold = Settings.THRESHOLD;
 
     this.totalReads = 0;
 
@@ -75,7 +71,7 @@ public class ParallelScreener{
 
 
   void run() throws Exception {
-    // TODO
+
     MyThread[] threads = new MyThread[num_threads];
   		for(int i = 0; i < num_threads; i++)
   		{
@@ -97,17 +93,15 @@ public class ParallelScreener{
 
     ;
 
-    //TODO - finish this.
-
     public void run() {
 
       while(!reads_to_process.isEmpty()) {
 
         String read = reads_to_process.poll();
-        ReadClassifier rc = new ReadClassifier(sketch_hash, read, hash_type, k, window, threshold, source);
+        ReadClassifier rc = new ReadClassifier(sketch_hash, read, window, source);
         rc.classifyRead();
 
-        // TODO - update counts
+        // Update counts
         correct.addAndGet(rc.correct);
         mis.addAndGet(rc.incorrect);
         insuf.addAndGet(rc.insufficient);
