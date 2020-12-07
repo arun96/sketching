@@ -24,7 +24,10 @@ import com.google.common.hash.HashFunction;
 
 public class Settings {
 
+  // Key Parameters
   static int K;
+  // Number of lines each read takes
+  static int READ_LINES;
 
   // READ PARAMS
   static int READ_LENGTH;
@@ -46,7 +49,6 @@ public class Settings {
   static String[] READ_SETS;
   static String[] GENOMES;
 
-
   // CHOICE OF SCREEN
   static boolean FIXED;
   static boolean MINHASH;
@@ -60,11 +62,21 @@ public class Settings {
   // MONITOR FOR ERROR
   static boolean BAD_INPUT;
 
+  // CHUNK BASED READ LOADING
+  static boolean IN_CHUNKS;
+  static int CHUNK;
+  static boolean CHUNK_UPDATES;
+
   static void parseArgs(String[] args) throws Exception {
 
     // TODO - make these parameters?
     K = 21;
     NUM_THREADS = 4;
+    READ_LINES = 2;
+    // Read Loading
+    IN_CHUNKS = false;
+    CHUNK = 3000;
+    CHUNK_UPDATES = false;
 
     // Defaults
     BAD_INPUT = false;

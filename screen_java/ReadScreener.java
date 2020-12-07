@@ -68,30 +68,86 @@ public class ReadScreener {
     // M[a][b] will track the number of times a is misclassified as b
     int[][] miscount_matrix = new int[numGenomes][numGenomes];
 
-     // For each organism/element of the screen
-    for (int source = 0; source < numGenomes; source++)
-    {
+    // Loading reads in specified numbers
+    if (Settings.IN_CHUNKS){
 
-      // Version for automatic loading
-      ArrayList<String> reads = getReads(readFolder + readSets[source]);
+      // For each organism/element of the screen
+     for (int source = 0; source < numGenomes; source++){
 
-      // For each read in the readset
-      int numReads = reads.size();
+       boolean fully_read = false;
 
-      //TODO - move to parallel
-      ParallelScreener ps = new ParallelScreener(sketch_hash, reads, window, source);
-      ps.run();
-      // Counts for this readset
-      totalReads[source] = ps.totalReads;
-      correctCounts[source] = ps.correct.intValue();
-      misCounts[source] = ps.mis.intValue();
-      insufCounts[source] = ps.insuf.intValue();
-      tieCounts[source] = ps.ties.intValue();
+       int chunk_count = 0;
 
-      // Print summary
-      System.out.println(readSets[source]);
-      System.out.println(totalReads[source] + " " + correctCounts[source] + " " + misCounts[source] + " " +  insufCounts[source] + " " + tieCounts[source]);
+       while (!fully_read){
+
+         ArrayList<String> reads = getReadsChunk(readFolder + readSets[source], chunk_count*Settings.CHUNK, Settings.CHUNK);
+
+         int numReads = reads.size();
+
+         //Screen these reads
+         ParallelScreener ps = new ParallelScreener(sketch_hash, reads, window, source);
+         ps.run();
+         // Counts for this readset
+         totalReads[source] += ps.totalReads;
+         correctCounts[source] += ps.correct.intValue();
+         misCounts[source] += ps.mis.intValue();
+         insufCounts[source] += ps.insuf.intValue();
+         tieCounts[source] += ps.ties.intValue();
+
+         // Print update
+         if (Settings.CHUNK_UPDATES) {
+           System.out.println(totalReads[source] + " " + correctCounts[source] + " " + misCounts[source] + " " +  insufCounts[source] + " " + tieCounts[source]);
+         }
+
+         // We have reached the end of the file
+         if (numReads < Settings.CHUNK) {
+           fully_read = true;
+           break;
+         }
+
+         // Move to next set of reads
+         chunk_count++;
+         
+       }
+
+       // Print summary
+       System.out.println(readSets[source]);
+       System.out.println(totalReads[source] + " " + correctCounts[source] + " " + misCounts[source] + " " +  insufCounts[source] + " " + tieCounts[source]);
+
+     }
+
+    // Load file by file
+    } else {
+
+      // For each organism/element of the screen
+     for (int source = 0; source < numGenomes; source++) {
+
+       // Version for automatic loading
+       ArrayList<String> reads = getReads(readFolder + readSets[source]);
+
+       // TODO - chunk based version
+
+       // For each read in the readset
+       int numReads = reads.size();
+
+       //TODO - add option to use smaller chunks of reads, instead of a whole file
+       ParallelScreener ps = new ParallelScreener(sketch_hash, reads, window, source);
+       ps.run();
+       // Counts for this readset
+       totalReads[source] = ps.totalReads;
+       correctCounts[source] = ps.correct.intValue();
+       misCounts[source] = ps.mis.intValue();
+       insufCounts[source] = ps.insuf.intValue();
+       tieCounts[source] = ps.ties.intValue();
+
+       // Print summary
+       System.out.println(readSets[source]);
+       System.out.println(totalReads[source] + " " + correctCounts[source] + " " + misCounts[source] + " " +  insufCounts[source] + " " + tieCounts[source]);
+     }
+
     }
+
+
 
     // Whole experiment summary
     System.out.println("Printing Results...");
@@ -132,6 +188,43 @@ public class ReadScreener {
       }
       // Else, add read to the reads ArrayList
       read_list.add(line.toUpperCase());
+    }
+    // List with all reads
+    return read_list;
+  }
+
+  // TODO - Load a specified section of reads from a given file
+  ArrayList<String> getReadsChunk(String fn, int start_point, int num_reads) throws Exception
+  {
+    // ArrayList to store reads
+    ArrayList<String> read_list = new ArrayList<String>();
+
+    // Scan file
+    Scanner input = new Scanner(new FileInputStream(new File(fn)));
+
+    // Counters to get the current chunk of reads
+    int counter = 0;
+    int start = (Settings.READ_LINES*start_point);
+    int limit = start + (Settings.READ_LINES*num_reads);
+
+    // While there is another line
+    while(input.hasNext())
+    {
+      String line = input.nextLine();
+
+      // If line has a valid read
+      if ((line.length() > 0) && !(line.startsWith(">"))) {
+        // If read is in desired range/chunk
+        if ((counter >= start) && (counter <= limit)) {
+          read_list.add(line.toUpperCase());
+        }
+      }
+      counter++;
+
+      // Break once you have crossed that chunk
+      if (counter > limit){
+        break;
+      }
     }
     // List with all reads
     return read_list;
