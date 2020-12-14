@@ -71,12 +71,14 @@ public class ReadScreener {
     // Loading reads in specified numbers
     if (Settings.IN_CHUNKS){
 
-      // For each organism/element of the screen
+      // For each organism/element's readset
      for (int source = 0; source < numGenomes; source++){
 
        boolean fully_read = false;
 
        int chunk_count = 0;
+
+       int read_start = 0;
 
        while (!fully_read){
 
@@ -85,7 +87,7 @@ public class ReadScreener {
          int numReads = reads.size();
 
          //Screen these reads
-         ParallelScreener ps = new ParallelScreener(sketch_hash, reads, window, source);
+         ParallelScreener ps = new ParallelScreener(sketch_hash, reads, window, source, read_start);
          ps.run();
          // Counts for this readset
          totalReads[source] += ps.totalReads;
@@ -105,9 +107,12 @@ public class ReadScreener {
            break;
          }
 
+         // Update read count
+         read_start += numReads;
+
          // Move to next set of reads
          chunk_count++;
-         
+
        }
 
        // Print summary
@@ -119,11 +124,13 @@ public class ReadScreener {
     // Load file by file
     } else {
 
-      // For each organism/element of the screen
+      // For each organism/element's readset
      for (int source = 0; source < numGenomes; source++) {
 
        // Version for automatic loading
        ArrayList<String> reads = getReads(readFolder + readSets[source]);
+
+       int read_start = 0;
 
        // TODO - chunk based version
 
@@ -131,7 +138,7 @@ public class ReadScreener {
        int numReads = reads.size();
 
        //TODO - add option to use smaller chunks of reads, instead of a whole file
-       ParallelScreener ps = new ParallelScreener(sketch_hash, reads, window, source);
+       ParallelScreener ps = new ParallelScreener(sketch_hash, reads, window, source, read_start);
        ps.run();
        // Counts for this readset
        totalReads[source] = ps.totalReads;

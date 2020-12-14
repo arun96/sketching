@@ -11,8 +11,6 @@ import java.lang.*;
 import java.util.stream.Collectors;
 import java.util.Collection;
 import java.nio.charset.StandardCharsets;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.atomic.AtomicInteger;
 
 // GUAVA
 import com.google.common.hash.*;
@@ -26,10 +24,14 @@ public class Main {
 
     Settings.parseArgs(args);
 
-    // Run the screen-generation and read classification processes
-    run();
+    if (Settings.SCREEN_ONLY) {
+      run_screen();
+    }
 
-    // TODO - any post processing?
+    else {
+      // Run the screen-generation and read classification processes
+      run();
+    }
 
   }
 
@@ -59,6 +61,40 @@ public class Main {
       } else if (Settings.UNIFORM) {
         UniformScreen screen = new UniformScreen();
         ReadScreener rs = new ReadScreener(screen);
+      } else {
+        System.out.println("Invalid input parameters - please read the README!");
+      }
+    }
+  }
+
+  // TODO - save screens (either as a whole, or individually)
+  static void run_screen() throws Exception {
+
+    System.out.println("Generating and saving screen!");
+
+    if (Settings.BAD_INPUT) {
+      System.out.println("Invalid input parameters - please read the README!");
+    } else {
+      if (Settings.MINHASH){
+        if (Settings.FIXED) {
+          MinHashScreen screen = new MinHashScreen("fixed");
+          SaveScreen SS = new SaveScreen(screen);
+        } else {
+          MinHashScreen screen = new MinHashScreen();
+          SaveScreen SS = new SaveScreen(screen);
+        }
+      } else if (Settings.MINIMIZER){
+        if (Settings.FIXED){
+          MinimizerScreen screen = new MinimizerScreen("fixed");
+          SaveScreen SS = new SaveScreen(screen);
+        } else {
+          MinimizerScreen screen = new MinimizerScreen();
+          SaveScreen SS = new SaveScreen(screen);
+        }
+
+      } else if (Settings.UNIFORM) {
+        UniformScreen screen = new UniformScreen();
+        SaveScreen SS = new SaveScreen(screen);
       } else {
         System.out.println("Invalid input parameters - please read the README!");
       }

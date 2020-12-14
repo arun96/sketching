@@ -38,15 +38,17 @@ public class ParallelScreener{
   // Total number of reads
   int totalReads;
 
-  // TODO - need some atomic integers to track total correct, incorrect, insuf and tied
-  // These will need to be updated too
+  // Counts
   AtomicInteger correct = new AtomicInteger(0);
   AtomicInteger mis = new AtomicInteger(0);
   AtomicInteger insuf = new AtomicInteger(0);
   AtomicInteger ties = new AtomicInteger(0);
 
+  // Keep track of reads
+  AtomicInteger read_number;
 
-  ParallelScreener(ArrayList<HashSet<Integer>> sketch_hash, ArrayList<String> reads, int window, int source){
+
+  ParallelScreener(ArrayList<HashSet<Integer>> sketch_hash, ArrayList<String> reads, int window, int source, int read_start){
 
     // Store parameters
     this.sketch_hash = sketch_hash;
@@ -59,6 +61,7 @@ public class ParallelScreener{
     this.threshold = Settings.THRESHOLD;
 
     this.totalReads = 0;
+    this.read_number = new AtomicInteger(read_start);
 
     reads_to_process = new ConcurrentLinkedQueue<String>();
     // Populate queue
@@ -90,15 +93,18 @@ public class ParallelScreener{
   }
 
   public class MyThread extends Thread {
-
     ;
-
     public void run() {
 
       while(!reads_to_process.isEmpty()) {
 
         String read = reads_to_process.poll();
-        ReadClassifier rc = new ReadClassifier(sketch_hash, read, window, source);
+        int curr_read = read_number.get();
+
+        // Update read number
+        read_number.incrementAndGet();
+
+        ReadClassifier rc = new ReadClassifier(sketch_hash, read, window, source, curr_read);
         rc.classifyRead();
 
         // Update counts

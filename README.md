@@ -89,13 +89,22 @@ java -cp screen_java:jars/\* Main <Genomes Directory/> <File to Save Output to> 
 
 By default, this program using 4 threads for read classification. I am working on making this a run-time parameter, but until then, you can change the number of threads by editing Line 67 in `Settings.java`. I will update this README when this changes!
 
-## Using External JARs
-
-As I am not using Maven, I have manually included the JARs this project will use. The foremost of these is Google's `Guava`, which gives me access to hash function implementations, optimized data structures, and other nifty features. As I add more to this folder, I will update the README to include descriptions of each of them!
-
 ## Loading fixed number of reads
 
 There is an option to load reads in fixed-size chunks, instead of a whole file at a time. The relevant lines are in `Settings.java`, lines 77-79 - set `IN_CHUNKS = true` to enable this option, then set `CHUNK` to be the number of reads to be loaded and processed at once, and finally `CHUNK_UPDATES = true` if you want an update on the classification rate to be printed after each chunk (if `false`, then the classification rate will only be printed after the entire read set is processed).
+
+## Screen/Sketch Generation Only
+
+If you wish to only generate screens/sketches for selected genomes, but not compare reads against them, use the following command:
+```
+java -cp mashscreen_java:jars/\* Main S <Genomes Directory/> <Folder to save screens to/> <Expected Read Length> <Expected Read Error Rate> <Expected Number of Target Matches per Read> <m/u/BLANK>
+```
+
+The screens/sketches will be saved in the specified directory in `.bin` files. I am currently working on adding functionality for loading saved screens, so that will be added very soon.
+
+## Using External JARs
+
+As I am not using Maven, I have manually included the JARs this project will use. The foremost of these is Google's `Guava`, which gives me access to hash function implementations, optimized data structures, and other nifty features. As I add more to this folder, I will update the README to include descriptions of each of them!
 
 # PYTHON
 The Python implementation is not up to date, and should not be used.

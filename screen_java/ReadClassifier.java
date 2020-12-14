@@ -45,6 +45,9 @@ public class ReadClassifier {
   // Min number of matches for read to be classified
   int threshold;
 
+  // Read's number
+  int read_number;
+
   // Keep track of the status of the read
   int predicted;
   int score;
@@ -54,7 +57,7 @@ public class ReadClassifier {
   int tied;
 
 
-  ReadClassifier(ArrayList<HashSet<Integer>> sketch_hash, String read, int window, int source){
+  ReadClassifier(ArrayList<HashSet<Integer>> sketch_hash, String read, int window, int source, int read_number){
 
     scores = new int[sketch_hash.size()];
 
@@ -70,6 +73,8 @@ public class ReadClassifier {
 
     this.threshold = Settings.THRESHOLD;
 
+    this.read_number = read_number;
+
     // read status
     predicted = 0;
     score = 0;
@@ -82,6 +87,8 @@ public class ReadClassifier {
 
   // TODO - return a misclassification matrix
   void classifyRead() {
+
+    // System.out.println(source + " " + read_number);
 
     // Get read k-mers
     if (window > 0) {
@@ -112,11 +119,18 @@ public class ReadClassifier {
       } else{
         // Misclassified - update counts
         incorrect++;
+        if (Settings.TRACK_MISCLASSIFIED){
+          System.out.println(source + " " + read_number);
+        }
         if (read_scores[predicted] == read_scores[source]){
           // Tie, but this time broken incorrectly
           tied++;
         }
       }
+    }
+
+    if (Settings.READ_LOGGING) {
+      saveReadResults("./mashscreen_java/test/logs/", source, read_number, source, predicted, read_scores[source], score);
     }
   }
 
@@ -282,5 +296,18 @@ public class ReadClassifier {
     return minimizer_list;
   }
 
+
+  // ----- READ LOGGING -----
+  // Save read details to a file
+  void saveReadResults(String location, int readset, int readnumber, int s, int p, int s_matches, int p_matches) {
+    String filename = location + readset + "_" + readnumber + ".log";
+    try {
+      PrintWriter out = new PrintWriter(new File(filename));
+      out.println(s + " " + p + " " + s_matches + " " + p_matches);
+      out.close();
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
 
 }
