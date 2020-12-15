@@ -95,10 +95,10 @@ public class Settings {
     SCREEN_ONLY = false;
     INDIVIDUAL_SCREENS = true;
 
+    // TODO - add a load screen from file option
+
     // Read logging
     READ_LOGGING = false;
-
-    // TODO - add a load screen from file option
 
     // Screen type
     FIXED = false;
@@ -134,6 +134,7 @@ public class Settings {
       SCREEN_LOCATION = args[2];
       READ_LENGTH = Integer.parseInt(args[3]);
       READ_ERROR = Double.parseDouble(args[4]);
+      TARGET_MATCHES = Integer.parseInt(args[5]);
 
       // Get a sorted list list of all genomes in the input folder
       List<String> genomes_list = new ArrayList<String>();
@@ -147,15 +148,31 @@ public class Settings {
       GENOMES = new String[genomes_list.size()];
       GENOMES = genomes_list.toArray(GENOMES);
 
-      TARGET_MATCHES = Integer.parseInt(args[5]);
-
       if (argNum == 6) {
-        MINHASH = false;
+        MINHASH = true;
       } else {
-        if (args[6].equals("m")) {
-          MINIMIZER = true;
-        } else if (args[6].equals("u")) {
-          UNIFORM = true;
+        if (argNum == 7 && hashTypes.contains(args[6])){
+          MINHASH = true;
+          HASH_TYPE = args[6];
+        } else {
+          if (argNum == 7) {
+            if (args[6].equals("m")) {
+              MINIMIZER = true;
+            } else if (args[6].equals("u")) {
+              UNIFORM = true;
+            }
+          } else {
+            if (args[6].equals("m") && hashTypes.contains(args[7])) {
+              MINIMIZER = true;
+              HASH_TYPE = args[7];
+            } else if (args[6].equals("u") && hashTypes.contains(args[7])) {
+              UNIFORM = true;
+              HASH_TYPE = args[7];
+            } else {
+              System.out.println("Invalid hash function specified - using default Java hash.");
+              BAD_INPUT = true;
+            }
+          }
         }
       }
 

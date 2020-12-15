@@ -97,7 +97,7 @@ There is an option to load reads in fixed-size chunks, instead of a whole file a
 
 If you wish to only generate screens/sketches for selected genomes, but not compare reads against them, use the following command:
 ```
-java -cp mashscreen_java:jars/\* Main S <Genomes Directory/> <Folder to save screens to/> <Expected Read Length> <Expected Read Error Rate> <Expected Number of Target Matches per Read> <m/u/BLANK>
+java -cp mashscreen_java:jars/\* Main S <Genomes Directory/> <Folder to save screens to/> <Expected Read Length> <Expected Read Error Rate> <Expected Number of Target Matches per Read> <m/u/BLANK> <Hash Function to use>
 ```
 
 The screens/sketches will be saved in the specified directory in `.bin` files. I am currently working on adding functionality for loading saved screens, so that will be added very soon.
