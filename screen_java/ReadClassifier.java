@@ -56,7 +56,6 @@ public class ReadClassifier {
   int insufficient;
   int tied;
 
-
   ReadClassifier(ArrayList<HashSet<Integer>> sketch_hash, String read, int window, int source, int read_number){
 
     scores = new int[sketch_hash.size()];
@@ -82,7 +81,6 @@ public class ReadClassifier {
     incorrect = 0;
     insufficient = 0;
     tied = 0;
-
   }
 
   // TODO - return a misclassification matrix
@@ -129,8 +127,9 @@ public class ReadClassifier {
       }
     }
 
+    // TODO - change this to a relative path
     if (Settings.READ_LOGGING) {
-      saveReadResults("./mashscreen_java/test/logs/", source, read_number, source, predicted, read_scores[source], score);
+      saveReadResults(Settings.READ_LOCATION, source, read_number, source, predicted, read_scores[source], score);
     }
   }
 
@@ -295,7 +294,6 @@ public class ReadClassifier {
     ArrayList<Integer> minimizer_list = new ArrayList<Integer>(minimizers);
     return minimizer_list;
   }
-
 
   // ----- READ LOGGING -----
   // Save read details to a file

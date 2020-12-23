@@ -58,6 +58,7 @@ public class Settings {
 
   // SAVE READ RESULTS
   static boolean READ_LOGGING;
+  static String READ_LOCATION;
 
   // MONITOR FOR ERROR
   static boolean BAD_INPUT;
@@ -74,7 +75,7 @@ public class Settings {
 
   static void parseArgs(String[] args) throws Exception {
 
-    // TODO: Make these parameters?
+    // TODO: Make these parameters
 
     // Experiment parameters
     K = 21;
@@ -99,6 +100,7 @@ public class Settings {
 
     // Read logging
     READ_LOGGING = false;
+    READ_LOCATION = "./mashscreen_java/test/logs/";
 
     // Screen type
     FIXED = false;
@@ -112,6 +114,7 @@ public class Settings {
     TRACK_MISCLASSIFIED = false;
 
     // Hash options
+
     // TODO - Add more, and update "getHashName" in ScreenGenerator
     List<String> hashTypes = Arrays.asList("h", "mmh3", "mmh3_128");
     // Default is built-in hashcode
@@ -129,6 +132,7 @@ public class Settings {
     // If Screen-Only - TODO: add option for fixed size screens
     if (args[0].equals("S") || args[0].equals("s")) {
 
+      // Set params
       SCREEN_ONLY = true;
       GENOME_FOLDER = args[1];
       SCREEN_LOCATION = args[2];
@@ -148,19 +152,26 @@ public class Settings {
       GENOMES = new String[genomes_list.size()];
       GENOMES = genomes_list.toArray(GENOMES);
 
+      // Argument parsing
+
+      // Default MinHash with default hash function
       if (argNum == 6) {
         MINHASH = true;
       } else {
+        // MinHash with specified hash function
         if (argNum == 7 && hashTypes.contains(args[6])){
           MINHASH = true;
           HASH_TYPE = args[6];
+
         } else {
+          // Minimizer or uniform with default hash
           if (argNum == 7) {
             if (args[6].equals("m")) {
               MINIMIZER = true;
             } else if (args[6].equals("u")) {
               UNIFORM = true;
             }
+          // Hash Function is specified too
           } else {
             if (args[6].equals("m") && hashTypes.contains(args[7])) {
               MINIMIZER = true;
@@ -176,7 +187,7 @@ public class Settings {
         }
       }
 
-    // Default option
+    // Default option - screen generation and read screening
     } else {
 
       GENOME_FOLDER = args[0];

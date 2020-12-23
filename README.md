@@ -29,7 +29,7 @@ By default, this script will generate reads with read lengths that are normally 
 
 By default, the normal distribution will be used. However, to use any of the other four options, simply add the appropriate string (`XL/E/EM/EL`) as an additional parameter when generating reads.
 
-# JAVA
+# Java Implementation
 There are three distinct approaches used to generate the screen - a MinHash-based approach, a Minimizer-based approach, and a Uniform sampling approach. For the first two, we have the option of calculating the sketch/window size, but also the option to specify the sketch/window size that will be used.
 
 First, make sure to compile: `javac -cp jars/\* screen_java/*.java`.
@@ -91,7 +91,7 @@ By default, this program using 4 threads for read classification. I am working o
 
 ## Loading fixed number of reads
 
-There is an option to load reads in fixed-size chunks, instead of a whole file at a time. The relevant lines are in `Settings.java`, lines 77-79 - set `IN_CHUNKS = true` to enable this option, then set `CHUNK` to be the number of reads to be loaded and processed at once, and finally `CHUNK_UPDATES = true` if you want an update on the classification rate to be printed after each chunk (if `false`, then the classification rate will only be printed after the entire read set is processed).
+There is an option to load reads in fixed-size chunks, instead of a whole file at a time. The relevant lines are in `Settings.java`, lines 86-88 - set `IN_CHUNKS = true` to enable this option, then set `CHUNK` to be the number of reads to be loaded and processed at once, and finally `CHUNK_UPDATES = true` if you want an update on the classification rate to be printed after each chunk (if `false`, then the classification rate will only be printed after the entire read set is processed).
 
 ## Screen/Sketch Generation Only
 
@@ -102,9 +102,18 @@ java -cp mashscreen_java:jars/\* Main S <Genomes Directory/> <Folder to save scr
 
 The screens/sketches will be saved in the specified directory in `.bin` files. I am currently working on adding functionality for loading saved screens, so that will be added very soon.
 
+## Read Logging
+
+To save results for each individual read, please modify the parameters `READ_LOGGING` and `READ_LOCATION` in `Setting.java`. If the latter is set to `true`, then for each read, a `.log` file will be saved with the true source of the read, the predicted source, and the number of matches in each case.
+
 ## Using External JARs
 
 As I am not using Maven, I have manually included the JARs this project will use. The foremost of these is Google's `Guava`, which gives me access to hash function implementations, optimized data structures, and other nifty features. As I add more to this folder, I will update the README to include descriptions of each of them!
 
-# PYTHON
-The Python implementation is not up to date, and should not be used.
+# Analyzing Results
+
+TODO - this is still new, and I will update this over the coming weeks.
+
+In the `analysis` folder, you can find some scripts that are useful for analyzing the results of the screening process.
+- `extract_results.py`: Use `python3 extract_results.py <Path to output file>` to generate a summary of the experiment. This will give you the total number of correctly and incorrectly classified reads, as well as a few other metrics. It will also generate a histogram with the classification accuracy of reads from each organism.
+- `aggregate_read_logs.py`: Use `python3 aggregate_read_logs.py <Path to folder with read logs> <numbers of members in the community` to get a matrix showing how many reads were correctly or incorrectly classified to each member of the community. This is only available if you generated individual log files for each read, by setting the `READ_LOGGING` option in `Settings.java` to `true`. The matrix is interpreted as follows - the value at` Matrix[x][y]` is the number of reads from organism `x` that were classified as being from organism `y`.
