@@ -67,7 +67,7 @@ public class SaveScreen {
     fos.close();
   }
 
-  // TODO - write this.
+  // TODO - clean this up
   void saveToFileWhole(ArrayList<HashSet<Integer>> sketch, String f) throws Exception {
     FileOutputStream fos = new FileOutputStream(f);
     ObjectOutputStream oos = new ObjectOutputStream(fos);

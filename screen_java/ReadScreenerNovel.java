@@ -17,7 +17,7 @@ import com.google.common.hash.*;
 import com.google.common.hash.Hashing;
 import com.google.common.hash.HashFunction;
 
-public class ReadScreener {
+public class ReadScreenerNovel {
   // Key Variables
   int readLen;
   int k;
@@ -33,7 +33,7 @@ public class ReadScreener {
   int window;
 
   // Main function for screening reads
-  ReadScreener(ScreenGenerator sg) throws Exception
+  ReadScreenerNovel(ScreenGenerator sg) throws Exception
   {
 
     // Get the sketch and experiment parameters saved
@@ -57,20 +57,23 @@ public class ReadScreener {
       System.out.println(genomeNames[a] + " " + sketch_hash.get(a).size());
     }
 
-    System.out.println("Screening Reads...");
+    // TODO - add option to screen reads independently of the genomes
+    // Add ability to track classifications
 
-    // Initialize count arrays to track accuracy
-    int[] totalReads = new int[numGenomes];
-    int[] correctCounts = new int[numGenomes];
-    int[] misCounts = new int[numGenomes];
-    int[] insufCounts = new int[numGenomes];
-    int[] tieCounts = new int[numGenomes];
+    System.out.println("Screening Reads - read results will be saved in: " + Settings.READ_LOCATION);
+
+    // TODO - add something to store the classifications
+
+    // Track total reads, assignments, insufficient, and ties
+    int[] totalReads = new int[numReadSets];
+    int[] insufCounts = new int[numReadSets];
+    int[] tieCounts = new int[numReadSets];
 
     // Loading reads in specified numbers
     if (Settings.IN_CHUNKS){
 
       // For each organism/element's readset
-     for (int source = 0; source < numReadSets; source++){
+     for (int r = 0; r < numReadSets; r++){
 
        boolean fully_read = false;
 
@@ -80,23 +83,22 @@ public class ReadScreener {
 
        while (!fully_read){
 
-         ArrayList<String> reads = getReadsChunk(readFolder + readSets[source], chunk_count*Settings.CHUNK, Settings.CHUNK);
+         ArrayList<String> reads = getReadsChunk(readFolder + readSets[r], chunk_count*Settings.CHUNK, Settings.CHUNK);
 
          int numReads = reads.size();
 
          //Screen these reads
-         ParallelScreener ps = new ParallelScreener(sketch_hash, reads, window, source, read_start);
+         ParallelScreenerNovel ps = new ParallelScreenerNovel(sketch_hash, r, reads, window, read_start);
          ps.run();
+
          // Counts for this readset
-         totalReads[source] += ps.totalReads;
-         correctCounts[source] += ps.correct.intValue();
-         misCounts[source] += ps.mis.intValue();
-         insufCounts[source] += ps.insuf.intValue();
-         tieCounts[source] += ps.ties.intValue();
+         totalReads[r] += ps.totalReads;
+         insufCounts[r] += ps.insuf.intValue();
+         tieCounts[r] += ps.ties.intValue();
 
          // Print update
          if (Settings.CHUNK_UPDATES) {
-           System.out.println(totalReads[source] + " " + correctCounts[source] + " " + misCounts[source] + " " +  insufCounts[source] + " " + tieCounts[source]);
+           System.out.println(totalReads[r]);
          }
 
          // We have reached the end of the file
@@ -114,8 +116,9 @@ public class ReadScreener {
        }
 
        // Print summary
-       System.out.println(readSets[source]);
-       System.out.println(totalReads[source] + " " + correctCounts[source] + " " + misCounts[source] + " " +  insufCounts[source] + " " + tieCounts[source]);
+       // TODO - fix this for read sets distinct from genomes
+       System.out.println(readSets[r]);
+       System.out.println(totalReads[r] + " " + insufCounts[r] + " " + tieCounts[r]);
 
      }
 
@@ -123,28 +126,27 @@ public class ReadScreener {
     } else {
 
       // For each organism/element's readset
-     for (int source = 0; source < numGenomes; source++) {
+     for (int r = 0; r < numGenomes; r++) {
 
        // Version for automatic loading
-       ArrayList<String> reads = getReads(readFolder + readSets[source]);
+       ArrayList<String> reads = getReads(readFolder + readSets[r]);
 
        int read_start = 0;
 
        // For each read in the readset
        int numReads = reads.size();
 
-       ParallelScreener ps = new ParallelScreener(sketch_hash, reads, window, source, read_start);
+       ParallelScreenerNovel ps = new ParallelScreenerNovel(sketch_hash, r, reads, window, read_start);
        ps.run();
        // Counts for this readset
-       totalReads[source] = ps.totalReads;
-       correctCounts[source] = ps.correct.intValue();
-       misCounts[source] = ps.mis.intValue();
-       insufCounts[source] = ps.insuf.intValue();
-       tieCounts[source] = ps.ties.intValue();
+       totalReads[r] = ps.totalReads;
+       insufCounts[r] = ps.insuf.intValue();
+       tieCounts[r] = ps.ties.intValue();
 
        // Print summary
-       System.out.println(readSets[source]);
-       System.out.println(totalReads[source] + " " + correctCounts[source] + " " + misCounts[source] + " " +  insufCounts[source] + " " + tieCounts[source]);
+       // TODO - fix this for read sets distinct from genomes
+       System.out.println(readSets[r]);
+       System.out.println(totalReads[r] + " " + insufCounts[r] + " " + tieCounts[r]);
      }
 
     }
@@ -153,10 +155,6 @@ public class ReadScreener {
     System.out.println("Printing Results...");
     System.out.println("Number of Reads:");
     System.out.println(Arrays.toString(totalReads));
-    System.out.println("Number Correctly Classified:");
-    System.out.println(Arrays.toString(correctCounts));
-    System.out.println("Number Incorrectly Classified:");
-    System.out.println(Arrays.toString(misCounts));
     System.out.println("Number Not Classified:");
     System.out.println(Arrays.toString(insufCounts));
 
@@ -164,7 +162,7 @@ public class ReadScreener {
     // printMatrix(miscount_matrix);
 
     //Save results
-    saveResults(Settings.OUTPUT_FILE, readSets, genomeNames, sketch_hash, totalReads, correctCounts, misCounts, insufCounts, tieCounts);
+    saveResults(Settings.OUTPUT_FILE, readSets, genomeNames, sketch_hash, totalReads, insufCounts, tieCounts);
   }
 
   // ----- I/O HELPER FUNCTIONS ------
@@ -231,7 +229,7 @@ public class ReadScreener {
   }
 
   // Helper function to write results to file
-  void saveResults(String filename, String[] readSets, String[] genomeNames, ArrayList<HashSet<Integer>> sketch_hash, int[] totalReads, int[] correctCounts, int[] misCounts, int[] insufCounts, int[] tieCounts) throws Exception
+  void saveResults(String filename, String[] readSets, String[] genomeNames, ArrayList<HashSet<Integer>> sketch_hash, int[] totalReads, int[] insufCounts, int[] tieCounts) throws Exception
   {
     PrintWriter out = new PrintWriter(new File(filename));
     System.out.println("Saving results...");
@@ -244,7 +242,7 @@ public class ReadScreener {
     for (int i = 0; i < readSets.length; i++)
     {
       out.println(readSets[i]);
-      out.println(totalReads[i] + " " + correctCounts[i] + " " + misCounts[i] + " " + insufCounts[i] + " " + tieCounts[i]);
+      out.println(totalReads[i] + " " + insufCounts[i] + " " + tieCounts[i]);
     }
     out.close();
   }

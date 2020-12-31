@@ -14,7 +14,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class ParallelScreener{
+public class ParallelScreenerNovel{
 
   // Concurrent List of reads to be processed
   ConcurrentLinkedQueue<String> reads_to_process;
@@ -32,15 +32,13 @@ public class ParallelScreener{
   // Min Number of matches for read to be classified
   int threshold;
 
-  // Source of these reads
-  int source;
-
   // Total number of reads
   int totalReads;
 
+  // The readset being classified
+  int readSet;
+
   // Counts
-  AtomicInteger correct = new AtomicInteger(0);
-  AtomicInteger mis = new AtomicInteger(0);
   AtomicInteger insuf = new AtomicInteger(0);
   AtomicInteger ties = new AtomicInteger(0);
 
@@ -48,7 +46,7 @@ public class ParallelScreener{
   AtomicInteger read_number;
 
 
-  ParallelScreener(ArrayList<HashSet<Integer>> sketch_hash, ArrayList<String> reads, int window, int source, int read_start){
+  ParallelScreenerNovel(ArrayList<HashSet<Integer>> sketch_hash, int readSet, ArrayList<String> reads, int window, int read_start){
 
     // Store parameters
     this.sketch_hash = sketch_hash;
@@ -57,11 +55,11 @@ public class ParallelScreener{
     this.num_threads = Settings.NUM_THREADS;
     this.window = window;
 
-    this.source = source;
     this.threshold = Settings.THRESHOLD;
 
     this.totalReads = 0;
     this.read_number = new AtomicInteger(read_start);
+    this.readSet = readSet;
 
     reads_to_process = new ConcurrentLinkedQueue<String>();
     // Populate queue
@@ -104,12 +102,10 @@ public class ParallelScreener{
         // Update read number
         read_number.incrementAndGet();
 
-        ReadClassifier rc = new ReadClassifier(sketch_hash, read, window, source, curr_read);
+        ReadClassifierNovel rc = new ReadClassifierNovel(sketch_hash, readSet, read, window, curr_read);
         rc.classifyRead();
 
         // Update counts
-        correct.addAndGet(rc.correct);
-        mis.addAndGet(rc.incorrect);
         insuf.addAndGet(rc.insufficient);
         ties.addAndGet(rc.tied);
       }

@@ -20,7 +20,7 @@ import com.google.common.hash.Hashing;
 import com.google.common.hash.HashFunction;
 
 
-public class ReadClassifier {
+public class ReadClassifierNovel {
 
   // List of sketches
   ArrayList<HashSet<Integer>> sketch_hash;
@@ -39,24 +39,20 @@ public class ReadClassifier {
 
   int k;
 
-  // True Source of the read
-  int source;
-
   // Min number of matches for read to be classified
   int threshold;
 
-  // Read's number
+  // Read's number and Read Set
   int read_number;
+  int read_set;
 
   // Keep track of the status of the read
   int predicted;
   int score;
-  int correct;
-  int incorrect;
   int insufficient;
   int tied;
 
-  ReadClassifier(ArrayList<HashSet<Integer>> sketch_hash, String read, int window, int source, int read_number){
+  ReadClassifierNovel(ArrayList<HashSet<Integer>> sketch_hash, int readSet, String read, int window, int read_number){
 
     scores = new int[sketch_hash.size()];
 
@@ -68,17 +64,15 @@ public class ReadClassifier {
 
     this.k = Settings.K;
 
-    this.source = source;
-
     this.threshold = Settings.THRESHOLD;
 
     this.read_number = read_number;
 
+    this.read_set = readSet;
+
     // read status
     predicted = 0;
     score = 0;
-    correct = 0;
-    incorrect = 0;
     insufficient = 0;
     tied = 0;
   }
@@ -102,34 +96,17 @@ public class ReadClassifier {
     score = read_scores[predicted];
     // System.out.println(score);
 
-    // Update counts
-    if (predicted == source && read_scores[predicted] > threshold) {
-      // Correctly classified
-      correct++;
-      if (sameCounts(read_scores, predicted) > 0) {
-        // Tie was broken correctly
-        tied++;
-      }
+    // Check if tied or insufficient
+    if (read_scores[predicted] == 0){
+      insufficient++;
     } else {
-      if (read_scores[predicted] == 0){
-        // Not enough to classify - should not happen
-        insufficient++;
-      } else{
-        // Misclassified - update counts
-        incorrect++;
-        if (Settings.TRACK_MISCLASSIFIED){
-          System.out.println(source + " " + read_number);
-        }
-        if (read_scores[predicted] == read_scores[source]){
-          // Tie, but this time broken incorrectly
-          tied++;
-        }
+      if (sameCounts(read_scores, predicted) > 0) {
+        tied++;
       }
     }
 
-    if (Settings.READ_LOGGING) {
-      saveReadResults(Settings.READ_LOCATION, source, read_number, source, predicted, read_scores[source], score);
-    }
+    // saveReadResults(Settings.READ_LOCATION, read_set, read_number, predicted, score, tied);
+    saveReadResults(Settings.READ_LOCATION, read_set, read_number, read_scores);
   }
 
   // ----- HELPER FUNCTIONS FOR SCREENING ------
@@ -296,11 +273,11 @@ public class ReadClassifier {
 
   // ----- READ LOGGING -----
   // Save read details to a file
-  void saveReadResults(String location, int readset, int readnumber, int s, int p, int s_matches, int p_matches) {
+  void saveReadResults(String location, int readset, int readnumber, int[] readscores) {
     String filename = location + readset + "_" + readnumber + ".log";
     try {
       PrintWriter out = new PrintWriter(new File(filename));
-      out.println(s + " " + p + " " + s_matches + " " + p_matches);
+      out.println(Arrays.toString(readscores));
       out.close();
     } catch (Exception e) {
       e.printStackTrace();

@@ -17,7 +17,7 @@ import com.google.common.hash.*;
 import com.google.common.hash.Hashing;
 import com.google.common.hash.HashFunction;
 
-// TODO - fix this eventually
+// Main function
 public class Main {
 
   public static void main(String[] args) throws Exception {
@@ -37,37 +37,69 @@ public class Main {
 
   static void run() throws Exception {
 
-    // TODO
+    // TODO - add option for non-matched read screening
+
+    // Runs the read screening
     if (Settings.BAD_INPUT) {
       System.out.println("Invalid input parameters - please read the README!");
     } else {
       if (Settings.MINHASH){
         if (Settings.FIXED) {
           MinHashScreen screen = new MinHashScreen("fixed");
-          ReadScreener rs = new ReadScreener(screen);
+
+          if (Settings.MATCHED_READS_GENOMES) {
+            ReadScreener rs = new ReadScreener(screen);
+          } else {
+            ReadScreenerNovel rs = new ReadScreenerNovel(screen);
+          }
+
         } else {
           MinHashScreen screen = new MinHashScreen();
-          ReadScreener rs = new ReadScreener(screen);
+
+          if (Settings.MATCHED_READS_GENOMES) {
+            ReadScreener rs = new ReadScreener(screen);
+          } else {
+            ReadScreenerNovel rs = new ReadScreenerNovel(screen);
+          }
+
         }
       } else if (Settings.MINIMIZER){
         if (Settings.FIXED){
           MinimizerScreen screen = new MinimizerScreen("fixed");
-          ReadScreener rs = new ReadScreener(screen);
+
+          if (Settings.MATCHED_READS_GENOMES) {
+            ReadScreener rs = new ReadScreener(screen);
+          } else {
+            ReadScreenerNovel rs = new ReadScreenerNovel(screen);
+          }
+
         } else {
           MinimizerScreen screen = new MinimizerScreen();
-          ReadScreener rs = new ReadScreener(screen);
+
+          if (Settings.MATCHED_READS_GENOMES) {
+            ReadScreener rs = new ReadScreener(screen);
+          } else {
+            ReadScreenerNovel rs = new ReadScreenerNovel(screen);
+          }
+
         }
 
       } else if (Settings.UNIFORM) {
         UniformScreen screen = new UniformScreen();
-        ReadScreener rs = new ReadScreener(screen);
+
+        if (Settings.MATCHED_READS_GENOMES) {
+          ReadScreener rs = new ReadScreener(screen);
+        } else {
+          ReadScreenerNovel rs = new ReadScreenerNovel(screen);
+        }
+
       } else {
         System.out.println("Invalid input parameters - please read the README!");
       }
     }
   }
 
-  // TODO - save screens (either as a whole, or individually)
+  // Save screens (either as a whole, or individually)
   static void run_screen() throws Exception {
 
     System.out.println("Generating and saving screen!");

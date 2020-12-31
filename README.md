@@ -32,7 +32,13 @@ By default, the normal distribution will be used. However, to use any of the oth
 # Java Implementation
 There are three distinct approaches used to generate the screen - a MinHash-based approach, a Minimizer-based approach, and a Uniform sampling approach. For the first two, we have the option of calculating the sketch/window size, but also the option to specify the sketch/window size that will be used.
 
-First, make sure to compile: `javac -cp jars/\* screen_java/*.java`.
+Now, there are multiple options for what to do with the generated screen.
+
+-  To just generate a screen, and not classify any reads, please also see the "Screen/Sketch Generation Only" section of the README.
+- To run the kinds of experiments I ran, select a set of genomes, simulate reads as specified above, and follow the instructions below to test the classification of those reads.
+- To classify a brand new set of reads against this screen, see the "Classifying novel reads" section towards the end of the README.
+
+As always, make sure to compile: `javac -cp jars/\* screen_java/*.java`.
 
 For details on how to control the number of threads to use, look for the "Threads" section at the end of this README.
 
@@ -87,11 +93,11 @@ java -cp screen_java:jars/\* Main <Genomes Directory/> <File to Save Output to> 
 
 ## Threads
 
-By default, this program using 4 threads for read classification. I am working on making this a run-time parameter, but until then, you can change the number of threads by editing Line 67 in `Settings.java`. I will update this README when this changes!
+By default, this program using 4 threads for read classification. I am working on making this a run-time parameter, but until then, you can change the number of threads by editing Line 85 in `Settings.java`. I will update this README when this changes!
 
 ## Loading fixed number of reads
 
-There is an option to load reads in fixed-size chunks, instead of a whole file at a time. The relevant lines are in `Settings.java`, lines 86-88 - set `IN_CHUNKS = true` to enable this option, then set `CHUNK` to be the number of reads to be loaded and processed at once, and finally `CHUNK_UPDATES = true` if you want an update on the classification rate to be printed after each chunk (if `false`, then the classification rate will only be printed after the entire read set is processed).
+There is an option to load reads in fixed-size chunks, instead of a whole file at a time. The relevant lines are in `Settings.java`, lines 89-91 - set `IN_CHUNKS = true` to enable this option, then set `CHUNK` to be the number of reads to be loaded and processed at once, and finally `CHUNK_UPDATES = true` if you want an update on the classification rate to be printed after each chunk (if `false`, then the classification rate will only be printed after the entire read set is processed). By default, the reads will be loaded and classified in chunks of 2000.
 
 ## Screen/Sketch Generation Only
 
@@ -104,7 +110,11 @@ The screens/sketches will be saved in the specified directory in `.bin` files. I
 
 ## Read Logging
 
-To save results for each individual read, please modify the parameters `READ_LOGGING` and `READ_LOCATION` in `Setting.java`. If the latter is set to `true`, then for each read, a `.log` file will be saved with the true source of the read, the predicted source, and the number of matches in each case.
+To save results for each individual read, please modify the parameters `READ_LOGGING` and `READ_LOCATION` in `Setting.java`. If the latter is set to `true`, then for each read, a `.log` file will be saved with the true source of the read, the predicted source, and the number of matches in each case. By default, `READ_LOGGING` is set to `false` if the read sets are generated from the genomes used in the screen (and therefore a ground truth is known), but log files will be saved to `READ_LOCATION` if new read sets are being classified (with no ground truth).
+
+## Classifying Novel Reads
+
+If the number of read sets does not match the number of elements in the screen, then we treat these read sets as novel, and therefore cannot be sure which genomes they truly come from. The code will still classify every read in every readset, but instead of outputting results for the number of classified/misclassified reads, it will save the output of each read's classification (i.e. how many matches it has to each element of the screen) to the location specified in `READ_LOCATION` in `Setting.java`. These results can be analyzed using the provided Python helper scripts (outlined in the "Analyzing Results" section below).
 
 ## Using External JARs
 
@@ -117,3 +127,4 @@ TODO - this is still new, and I will update this over the coming weeks.
 In the `analysis` folder, you can find some scripts that are useful for analyzing the results of the screening process.
 - `extract_results.py`: Use `python3 extract_results.py <Path to output file>` to generate a summary of the experiment. This will give you the total number of correctly and incorrectly classified reads, as well as a few other metrics. It will also generate a histogram with the classification accuracy of reads from each organism.
 - `aggregate_read_logs.py`: Use `python3 aggregate_read_logs.py <Path to folder with read logs> <numbers of members in the community` to get a matrix showing how many reads were correctly or incorrectly classified to each member of the community. This is only available if you generated individual log files for each read, by setting the `READ_LOGGING` option in `Settings.java` to `true`. The matrix is interpreted as follows - the value at` Matrix[x][y]` is the number of reads from organism `x` that were classified as being from organism `y`.
+- `aggregate_classification_logs.py`: Use `python3 aggregate_classification_logs.py <Path to folder with read logs>` to generate a series of histograms showing the breakdown of how many reads were classified to each genome in the screen for each readset that was classified. The folder containing these log files will be the location stored in the `READ_LOCATION` parameter in `Settings.java`.

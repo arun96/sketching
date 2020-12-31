@@ -45,6 +45,9 @@ public class Settings {
   static String[] READ_SETS;
   static String[] GENOMES;
 
+  // TODO - set this
+  static boolean MATCHED_READS_GENOMES;
+
   // CHOICE OF SCREEN
   static boolean FIXED;
   static boolean MINHASH;
@@ -95,12 +98,12 @@ public class Settings {
     // Screen only option
     SCREEN_ONLY = false;
     INDIVIDUAL_SCREENS = true;
-
     // TODO - add a load screen from file option
 
     // Read logging
     READ_LOGGING = false;
-    READ_LOCATION = "./mashscreen_java/test/logs/";
+    // TODO - make this a parameter
+    READ_LOCATION = "./mashscreen_java/test/logs_ZScreen_MReads/";
 
     // Screen type
     FIXED = false;
@@ -108,7 +111,7 @@ public class Settings {
     UNIFORM = false;
     MINIMIZER = false;
 
-    // For debugging - TODO: maybe remove
+    // For debugging
     TRACK_MINIMIZERS = false;
     TRACK_READS = false;
     TRACK_MISCLASSIFIED = false;
@@ -219,6 +222,15 @@ public class Settings {
       Collections.sort(reads_list);
       READ_SETS = new String[reads_list.size()];
       READ_SETS = reads_list.toArray(READ_SETS);
+
+      // Check to see if the number of genomes matches the number of reads - if it does, then assume they are matching
+      // TODO - make this a parameter
+      if (GENOMES.length == READ_SETS.length){
+        MATCHED_READS_GENOMES = true;
+      } else {
+        MATCHED_READS_GENOMES = false;
+        READ_LOGGING = true;
+      }
 
       // PARSE TO FIGURE OUT WHICH SCREEN TO USE
 
