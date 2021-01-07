@@ -24,6 +24,8 @@ public class Main {
 
     Settings.parseArgs(args);
 
+    // System.out.println(Settings.READ_LENGTH + " " + Settings.READ_ERROR + " " + Settings.TARGET_MATCHES);
+
     if (Settings.SCREEN_ONLY) {
       run_screen();
     }
@@ -36,9 +38,6 @@ public class Main {
   }
 
   static void run() throws Exception {
-
-    // TODO - add option for non-matched read screening
-
     // Runs the read screening
     if (Settings.BAD_INPUT) {
       System.out.println("Invalid input parameters - please read the README!");
