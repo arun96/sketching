@@ -239,7 +239,7 @@ public class Settings {
     if (cmd.hasOption("sl")) {
       SCREEN_LOCATION = cmd.getOptionValue("sl");
     } else {
-      SCREEN_LOCATION = "./screens";
+      SCREEN_LOCATION = "./screens/";
     }
 
     // Read Logging Options
@@ -252,7 +252,7 @@ public class Settings {
     if (cmd.hasOption("rlc")) {
       READ_LOCATION = cmd.getOptionValue("rlc");
     } else {
-      READ_LOCATION = "./logs";
+      READ_LOCATION = "./logs/";
     }
 
     // KEY PARAMETERS
