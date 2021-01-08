@@ -1,5 +1,5 @@
 # Overview
-Code used to run the read classification experiments.
+Code used to run my sketching read classification experiments.
 
 This is very much unfinished/unpolished, and I will continue to add to it and update the README to reflect the changes.
 
@@ -30,17 +30,100 @@ By default, this script will generate reads with read lengths that are normally 
 By default, the normal distribution will be used. However, to use any of the other four options, simply add the appropriate string (`XL/E/EM/EL`) as an additional parameter when generating reads.
 
 # Java Implementation
-There are three distinct approaches used to generate the screen - a MinHash-based approach, a Minimizer-based approach, and a Uniform sampling approach. For the first two, we have the option of calculating the sketch/window size, but also the option to specify the sketch/window size that will be used.
+The Java implementation provides a way to generate a "screen" (sketched representation) of an input set of genomes, and either save the screen or classify input reads against this screen. For read classification, these may be reads drawn from the same set of genomes in the screen (either simulated using the approach above, or from another source), or a totally different set of reads.
 
-Now, there are multiple options for what to do with the generated screen.
+There are three distinct approaches for screen-generation: a MinHash-based approach, a Minimizer-based approach, and a Uniform sampling approach. For each of these approaches, the size of the screen can either be calculated based on user-specified input parameters (the expected read length, the expected read error, the sizes of the genomes, and the number of shared samples each read should aim to have with its correct genome), or can be specified ahead of time by the user.
 
--  To just generate a screen, and not classify any reads, please also see the "Screen/Sketch Generation Only" section of the README.
-- To run the kinds of experiments I ran, select a set of genomes, simulate reads as specified above, and follow the instructions below to test the classification of those reads.
-- To classify a brand new set of reads against this screen, see the "Classifying novel reads" section towards the end of the README.
+To see details of how to do any of the experiments outlined above, or how to adjust certain options/settings, please read the following sections of the README.
 
 As always, make sure to compile: `javac -cp jars/\* screen_java/*.java`.
 
-For details on how to control the number of threads to use, look for the "Threads" section at the end of this README.
+### Brief overview of the approach
+
+For an input set of genomes, using the specified screen generation approach, a reduced representation of the genomes is generated. This may then be saved to a file.
+
+If there are reads to be classified against the selected screen, the reads are loaded in (either one file at a time, or a specified number of reads at a time), and each read is compared against the reduced representations of the genome. The genome with which a given read shares the most hashed k-mers is the predicted source for the read.
+
+If the reads and the genomes are "matched" (i.e. if there is one read set for each genome, and thus the ground truth is known), we are able to give a summary of the classification accuracy on each read set (we can also save a simple log file for each read, with the true source and the predicted source, and the number of matches with each). If the source of the reads is not known (i.e. they are "unmatched"), then a log file is generated for each read, showing the number of matches it had with each genome in the screen.
+
+Finally, there are some Python scripts that can be used to aggregate and analyze individual read log files.
+
+### Running the code and explanation of parameters
+
+To run the code, please run:
+```
+java -cp screen_java:jars/\* Main <options>
+```
+
+This code uses the `commons.cli` argument parser, so the order of arguments does not matter. Below is a breakdown of the parameters/arguments that can be used.
+
+Key Parameters:
+- `-g/--genome <Directory>`: The directory containing the genomes that are to be sketched into a screen.
+- `-r/--reads <Directory>`: The directory containing the reads that are to be classified against the screen. Only not necessary if we are in "screen-only" mode (`-so/--screen-only`).
+- `-rl/--read-length <Integer>`: The expected read length of reads that will be classified against this screen. Not necessary if a fixed size screen (`-f`) is being generated.
+- `-re/--read-error <Double>`: The expected error rate of reads that will be classified against this screen. Not necessary if a fixed size screen (`-f`) is being generated.
+- `-tm/--target-matches <Integer>`: The target number of matches between a read and its correct source in the screen. Not necessary if a fixed size screen (`-f`) is being generated.
+- `-s/--screen-type`: The method of screen-generation to be used for this screen. Choose between MinHash-based (default), [m]inimizer based, or [u]niform sampling.
+- `-hf/--hash <Hash Type>`: The hash function to use throughout the process. Choose between Java's built in hashcode (default), [mmh3] (MurmurHash3) or [mmh3_128] (the 128-bit variant of MurmurHash3).
+
+Matched Reads/Genomes vs Classification without a ground truth:
+- `-um/--unmatched`: Use this parameter if the reads and the genomes do not correspond - by default, the code will assume that there is a matching read set for each genome (generated using the simulator above), and will proceed with classification assuming there is some ground truth. If this option is selected, detailed classification logs will be saved for each read, and no accuracy metrics will be printed. NOTE: Over time, this will become the default, and a parameter will be needed to indicate the genomes and reads are matched. In this mode, read logging is enabled by default.
+
+Fixed Size Screens:
+- `-f/--fixed <Integer>`: Use if the screen size should not be calculated, but instead the specified size should be used for all screens.
+
+Read Loading:
+- `-c/--chunks`: Use if a specified number of reads should loaded at a time (i.e. in "chunks"), instead of one file at a time.
+- `-cs/--chunk-size <Integer>`: If `-c` is used, then `-cs` will specify the "chunk" size.
+- `-cu/--chunk-updates`: If `-c` is used, then enabling `-cu` will print an update after each chunk is processed.
+
+Read Logging:
+- `-rlg/--read-logging`: Use if read-logging should be enabled. This is enabled by default in unmatched mode (`-um`).
+- `rlc/--read-location <Directory>`: The directory that read logs should be saved to. They will be named with the naming convention `<Readset Number>_<Read_Number>.log` - for example, `3_23.log` is the log for the 24th read from the 3rd read set.
+
+"Screen Only":
+- `-so/--screen-only`: Use if you only want to generate the screen, but not classify any reads.
+- `-sl/--screen-location <Directory>`: Specifies the location where the generated screens will be saved. Screens will be saved in `.bin` files with names matching the input genome files.
+- `-cmbs/--combined-screens`: Save all screens as one large `.bin` file. By default, they are saved separately.
+
+Experiment Parameters
+- `-k/--kmer <Integer>`: The k-mer size to use. By default, it is 21.
+- `-nt/--num-threads <Integer>`: The number of threads to use during read classification. By default, it is 4.
+- `-rlns/--read-lines`: The number of lines in the read fasta/fastq file that are dedicated to a single read. By default, it is 2 (read name + the read itself), but this could be 4 in some cases.
+
+### Syntax Examples
+
+#### Example 1: MinHash-based Screen with corresponding read sets (of reads with average length 10k, error rate 1%)
+To generate a MinHash-based screen for a set of genomes, and then run a corresponding set of reads (i.e. one read set for each genome) against the screen, all while using the default hash function, please run the following:
+
+```
+java -cp screen_java:jars/\* Main -g <Genomes Directory> -r <Reads Directory> -o <Log File location> -rl <Expected Read Length = 10000> -re <Expected Read Error = 0.01> -tm <Number of target matches per read>
+```
+
+#### Example 2: Minimizer-based Screen with corresponding read sets, with a specified number of reads loaded at a time, and the mmh3 hash function
+
+```
+java -cp screen_java:jars/\* Main -g <Genomes Directory> -r <Reads Directory> -o <Log File location> -rl <Expected Read Length> -re <Expected Read Error> -tm <Number of target matches per read> -s M -c -cs <Number of reads to be loaded at a time> -hf mmh3
+```
+
+#### Example 3: Uniform-sampling Screen of a fixed size with corresponding read sets, with a specified number of reads loaded at a time, the default hash function, with read logging active
+
+```
+java -cp screen_java:jars/\* Main -g <Genomes Directory> -r <Reads Directory> -o <Log File location> -f <Screen Size> -c -cs <Number of reads to be loaded at a time> -rlg -rlc <Location to save the read logs>
+```
+
+#### Example 4: MinHash-based Screen with novel/unmatched read sets, with a specified number of reads loaded at a time, the default hash function, with read logging active
+
+```
+java -cp screen_java:jars/\* Main -g <Genomes Directory> -r <Reads Directory> -o <Log File location> -rl <Expected Read Length> -re <Expected Read Error> -tm <Number of target matches per read> -um  -c -cs <Number of reads to be loaded at a time> -rlg -rlc <Location to save the read logs>
+```
+
+#### Example 5: Minimizer-based Screen, without any reads to be classified, using the 128-bit mmh3 hash function
+```
+java -cp screen_java:jars/\* Main -g <Genomes Directory> -r <Reads Directory> -o <Log File location> -rl <Expected Read Length> -re <Expected Read Error> -tm <Number of target matches per read> -hf mmh3_128 -so -sl <Location to save the generated screens>
+```
+
+### Further implementation details
 
 #### Hash Function Options
 
@@ -54,77 +137,38 @@ The selected hash function will be used to generate the screen and to classify t
 
 I will be adding more hash functions soon!
 
-### MinHash with calculated sketch size
+#### Threads
 
-To use a MinHash-based approach to screen a generated set of reads against the set of genomes they were generated from, use the following syntax:
-```
-java -cp screen_java:jars/\* Main <Genomes Directory/> <File to Save Output to> <Reads Directory/> <Read Length> <Read Error Rate> <Number of Target Matches per Read> <Hash Function>
-```
+The number of threads determines the number of reads processed at once. Going forward, I hope to parallelize the process of screen generation too.
 
-### MinHash with specified sketch size
+#### Read Loading
 
-To use a MinHash-based approach to screen a generated set of reads against the set of genomes they were generated from, but with a specified sketch size for all genomes, use the following syntax:
-```
-java -cp screen_java:jars/\* Main <Genomes Directory/> <File to Save Output to> <Reads Directory/> <Read Length> <Read Error Rate> f <Fixed Sketch Size> <Hash Function>
-```
+As specified above, if `-c` is used, then reads will be loaded in chunks of the size specified by `-cs`. This is recommended for large read files, so that too much memory is not used.
 
-### Minimizer with calculated window size
+#### Screen/Sketch Generation Only
 
-To use a Minimizer-based approach to screen a generated set of reads against the set of genomes they were generated from, use the following syntax:
-```
-java -cp screen_java:jars/\* Main <Genomes Directory/> <File to Save Output to> <Reads Directory/> <Read Length> <Read Error Rate> <Number of Target Matches per Read> m <Hash Function>
-```
+Currently, there is only an option to save the generated screens. I am working on adding an option to load and use saved screens.
 
-### Minimizer with specified window size
+#### Read Logging
 
-To use a Minimizer-based approach to screen a generated set of reads against the set of genomes they were generated from, but with a specified window size, use the following syntax:
-```
-java -cp screen_java:jars/\* Main <Genomes Directory/> <File to Save Output to> <Reads Directory/> <Read Length> <Read Error Rate> m <Specified Window Size> <Hash Function>
-```
+When running in matched mode (and the `-rlg` option is used), read logs will be saved to the location specified by `-rlc`. The logs will be a single line, with four numbers - the true source of the read, the predicted source, and the matches with each. The log files will be named `<ReadSet>_<ReadNumber>.log`.
 
-### Uniform Sampling
+When running in unmatched mode (`-um`),read logs are generated by default, and saved to the location specified by `-rlc`. The logs will be a single line, with each number corresponding the number of matches between the current read and each element of the screen. The log files will be named `<ReadSet>_<ReadNumber>.log`.
 
-To use a Uniform Sampling-based approach to screen a generated set of reads against the set of genomes they were generated from, use the following syntax:
-```
-java -cp screen_java:jars/\* Main <Genomes Directory/> <File to Save Output to> <Reads Directory/> <Read Length> <Read Error Rate> <Number of Target Matches per Read> u <Hash Function>
-```
+Python helper scripts for aggregating these log files and summarizing results are included, and are described below.
 
-# ADDITIONAL OPTIONS
+#### Using External JARs
 
-## Threads
+As I am not using Maven, I have manually included the JARs this project will use. The foremost of these is Google's `Guava`, which gives me access to hash function implementations, optimized data structures, and other nifty features. Other include JARs are:
+- `commons.cli`: This is the library used for command line argument parsing.
 
-By default, this program using 4 threads for read classification. I am working on making this a run-time parameter, but until then, you can change the number of threads by editing Line 85 in `Settings.java`. I will update this README when this changes!
-
-## Loading fixed number of reads
-
-There is an option to load reads in fixed-size chunks, instead of a whole file at a time. The relevant lines are in `Settings.java`, lines 89-91 - set `IN_CHUNKS = true` to enable this option, then set `CHUNK` to be the number of reads to be loaded and processed at once, and finally `CHUNK_UPDATES = true` if you want an update on the classification rate to be printed after each chunk (if `false`, then the classification rate will only be printed after the entire read set is processed). By default, the reads will be loaded and classified in chunks of 2000.
-
-## Screen/Sketch Generation Only
-
-If you wish to only generate screens/sketches for selected genomes, but not compare reads against them, use the following command:
-```
-java -cp mashscreen_java:jars/\* Main S <Genomes Directory/> <Folder to save screens to/> <Expected Read Length> <Expected Read Error Rate> <Expected Number of Target Matches per Read> <m/u/BLANK> <Hash Function to use>
-```
-
-The screens/sketches will be saved in the specified directory in `.bin` files. I am currently working on adding functionality for loading saved screens, so that will be added very soon.
-
-## Read Logging
-
-To save results for each individual read, please modify the parameters `READ_LOGGING` and `READ_LOCATION` in `Setting.java`. If the latter is set to `true`, then for each read, a `.log` file will be saved with the true source of the read, the predicted source, and the number of matches in each case. By default, `READ_LOGGING` is set to `false` if the read sets are generated from the genomes used in the screen (and therefore a ground truth is known), but log files will be saved to `READ_LOCATION` if new read sets are being classified (with no ground truth).
-
-## Classifying Novel Reads
-
-If the number of read sets does not match the number of elements in the screen, then we treat these read sets as novel, and therefore cannot be sure which genomes they truly come from. The code will still classify every read in every readset, but instead of outputting results for the number of classified/misclassified reads, it will save the output of each read's classification (i.e. how many matches it has to each element of the screen) to the location specified in `READ_LOCATION` in `Setting.java`. These results can be analyzed using the provided Python helper scripts (outlined in the "Analyzing Results" section below).
-
-## Using External JARs
-
-As I am not using Maven, I have manually included the JARs this project will use. The foremost of these is Google's `Guava`, which gives me access to hash function implementations, optimized data structures, and other nifty features. As I add more to this folder, I will update the README to include descriptions of each of them!
+As I add more to this folder, I will update the README to include descriptions of each of them!
 
 # Analyzing Results
 
-TODO - this is still new, and I will update this over the coming weeks.
+This is still new, and I will update this over the coming weeks.
 
 In the `analysis` folder, you can find some scripts that are useful for analyzing the results of the screening process.
 - `extract_results.py`: Use `python3 extract_results.py <Path to output file>` to generate a summary of the experiment. This will give you the total number of correctly and incorrectly classified reads, as well as a few other metrics. It will also generate a histogram with the classification accuracy of reads from each organism.
-- `aggregate_read_logs.py`: Use `python3 aggregate_read_logs.py <Path to folder with read logs> <numbers of members in the community` to get a matrix showing how many reads were correctly or incorrectly classified to each member of the community. This is only available if you generated individual log files for each read, by setting the `READ_LOGGING` option in `Settings.java` to `true`. The matrix is interpreted as follows - the value at` Matrix[x][y]` is the number of reads from organism `x` that were classified as being from organism `y`.
-- `aggregate_classification_logs.py`: Use `python3 aggregate_classification_logs.py <Path to folder with read logs>` to generate a series of histograms showing the breakdown of how many reads were classified to each genome in the screen for each readset that was classified. The folder containing these log files will be the location stored in the `READ_LOCATION` parameter in `Settings.java`.
+- `aggregate_read_logs.py`: This is for analyzing results at the end of a matched run. Use `python3 aggregate_read_logs.py <Path to folder with read logs> <numbers of members in the community>` to get a matrix showing how many reads were correctly or incorrectly classified to each member of the community. The matrix is interpreted as follows - the value at` Matrix[x][y]` is the number of reads from organism `x` that were classified as being from organism `y`. Note that this can only be used in matched mode, if read logging was enabled.
+- `aggregate_classification_logs.py`: This is for analyzing results at the end of an unmatched run. Use `python3 aggregate_classification_logs.py <Path to folder with read logs>` to generate a series of histograms showing the breakdown of how many reads were classified to each genome in the screen for each readset that was classified. The folder containing these log files will be the location stored in the `READ_LOCATION` parameter in `Settings.java`.

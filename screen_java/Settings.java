@@ -110,7 +110,7 @@ public class Settings {
     screen_only.setRequired(false);
     options.addOption(screen_only);
 
-    Option individual_screens = new Option("is", "individual-screens", false, "If only doing screen generation save each genome separately (default = true)");
+    Option individual_screens = new Option("cmbs", "combined-screens", false, "If only doing screen generation save all screens together (default = false, screens saved separately)");
     individual_screens.setRequired(false);
     options.addOption(individual_screens);
 
@@ -132,7 +132,7 @@ public class Settings {
     options.addOption(genome_folder);
 
     Option read_folder = new Option("r", "reads", true, "Directory containing reads");
-    read_folder.setRequired(true);
+    read_folder.setRequired(false);
     options.addOption(read_folder);
 
     Option read_length = new Option("rl", "read-length", true, "Read Lengths");
@@ -155,11 +155,11 @@ public class Settings {
     output_file.setRequired(false);
     options.addOption(output_file);
 
-    Option hash_type = new Option("h", "hash", true, "Which hash function to use (default = Java's built in Hashcode, options = hashcode, [mmh3], [mmh3-128])");
+    Option hash_type = new Option("hf", "hash", true, "Which hash function to use (default = Java's built in Hashcode, options = hashcode, [mmh3], [mmh3-128])");
     hash_type.setRequired(false);
     options.addOption(hash_type);
 
-    Option fixed = new Option("f", "fixed", true, "If the screen size should be fixed, then specify what size it the screens should be");
+    Option fixed = new Option("f", "fixed", true, "If the screen size should be fixed, then please specify the size. For minimizer-based screens, this will be used window size.");
     fixed.setRequired(false);
     options.addOption(fixed);
 
@@ -230,10 +230,10 @@ public class Settings {
       SCREEN_ONLY = false;
     }
 
-    if (cmd.hasOption("is")) {
-      INDIVIDUAL_SCREENS = true;
-    } else {
+    if (cmd.hasOption("cmbs")) {
       INDIVIDUAL_SCREENS = false;
+    } else {
+      INDIVIDUAL_SCREENS = true;
     }
 
     if (cmd.hasOption("sl")) {
@@ -332,8 +332,8 @@ public class Settings {
 
     // Hash Function being used
     List<String> hashTypes = Arrays.asList("h", "mmh3", "mmh3_128");
-    if (cmd.hasOption("h")) {
-      String selected_hash = cmd.getOptionValue("h");
+    if (cmd.hasOption("hf")) {
+      String selected_hash = cmd.getOptionValue("hf");
       if (hashTypes.contains(selected_hash)){
         HASH_TYPE = selected_hash;
       } else {
