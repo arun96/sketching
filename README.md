@@ -112,10 +112,10 @@ java -cp screen_java:jars/\* Main -g <Genomes Directory> -r <Reads Directory> -o
 java -cp screen_java:jars/\* Main -g <Genomes Directory> -r <Reads Directory> -o <Log File location> -f <Screen Size> -c -cs <Number of reads to be loaded at a time> -rlg -rlc <Location to save the read logs>
 ```
 
-#### Example 4: MinHash-based Screen with novel/unmatched read sets, with a specified number of reads loaded at a time, the default hash function, with read logging active
+#### Example 4: MinHash-based Screen with novel/unmatched read sets, with a specified number of reads loaded at a time, the default hash function
 
 ```
-java -cp screen_java:jars/\* Main -g <Genomes Directory> -r <Reads Directory> -o <Log File location> -rl <Expected Read Length> -re <Expected Read Error> -tm <Number of target matches per read> -um  -c -cs <Number of reads to be loaded at a time> -rlg -rlc <Location to save the read logs>
+java -cp screen_java:jars/\* Main -g <Genomes Directory> -r <Reads Directory> -o <Log File location> -rl <Expected Read Length> -re <Expected Read Error> -tm <Number of target matches per read> -um  -c -cs <Number of reads to be loaded at a time> -rlc <Location to save the read logs>
 ```
 
 #### Example 5: Minimizer-based Screen, without any reads to be classified, using the 128-bit mmh3 hash function
