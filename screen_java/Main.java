@@ -24,6 +24,16 @@ public class Main {
 
     Settings.parseArgs(args);
 
+    if (Settings.MATCHED_READS_GENOMES) {
+      System.out.println("Running experiment with matched genomes and reads - accuracy will be computed and output.");
+    } else {
+      System.out.println("Running experiment unmatched genomes and reads - read classification results can be found in log files.");
+    }
+
+    if (Settings.READ_LOGGING){
+      System.out.println("Read Logging is enabled - logs will be saved here: " + Settings.READ_LOCATION);
+    }
+
     // System.out.println(Settings.READ_LENGTH + " " + Settings.READ_ERROR + " " + Settings.TARGET_MATCHES);
 
     if (Settings.SCREEN_ONLY) {

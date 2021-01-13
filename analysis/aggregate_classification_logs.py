@@ -46,5 +46,6 @@ for i in range(0, prefix_count):
     # plt.hist(predictions[i], bins = list(range(0, screen_size)))
     plt.xlabel('Predicted Genome')
     plt.ylabel('Frequency')
+    plt.xlim([0, prefix_count])
     plt.title("Readset " + str(i))
     plt.show()

@@ -128,7 +128,7 @@ public class ReadClassifier {
     }
 
     if (Settings.READ_LOGGING) {
-      saveReadResults(Settings.READ_LOCATION, source, read_number, source, predicted, read_scores[source], score);
+      saveReadResults(Settings.READ_LOCATION, source, read_number, read_scores, source);
     }
   }
 
@@ -296,13 +296,31 @@ public class ReadClassifier {
 
   // ----- READ LOGGING -----
   // Save read details to a file
-  void saveReadResults(String location, int readset, int readnumber, int s, int p, int s_matches, int p_matches) {
+
+  // OLD
+  // void saveReadResults(String location, int readset, int readnumber, int s, int p, int s_matches, int p_matches) {
+  //   String filename = location + readset + "_" + readnumber + ".log";
+  //   try {
+  //     PrintWriter out = new PrintWriter(new File(filename));
+  //     out.println(s + " " + p + " " + s_matches + " " + p_matches);
+  //     out.close();
+  //   } catch (Exception e) {
+  //     e.printStackTrace();
+  //   }
+  // }
+
+  void saveReadResults(String location, int readset, int readnumber, int[] readscores, int s) {
     String filename = location + readset + "_" + readnumber + ".log";
     try {
       PrintWriter out = new PrintWriter(new File(filename));
-      out.println(s + " " + p + " " + s_matches + " " + p_matches);
+      out.println(Arrays.toString(readscores));
+      out.println(s);
       out.close();
     } catch (Exception e) {
+
+      // Debugging
+      // System.out.println(readnumber);
+
       e.printStackTrace();
     }
   }
