@@ -58,7 +58,7 @@ java -cp screen_java:jars/\* Main <options>
 This code uses the `commons.cli` argument parser, so the order of arguments does not matter. Below is a breakdown of the parameters/arguments that can be used.
 
 Key Parameters:
-- `-g/--genome <Directory>`: The directory containing the genomes that are to be sketched into a screen.
+- `-g/--genome <Directory>`: The directory containing the genomes that are to be sketched into a screen. Only not necessary if we are using pre-generated screens (`-ls/--load-screens`). In this situation, the pre-generated screens stored at `-sl` will be used.
 - `-r/--reads <Directory>`: The directory containing the reads that are to be classified against the screen. Only not necessary if we are in "screen-only" mode (`-so/--screen-only`).
 - `-rl/--read-length <Integer>`: The expected read length of reads that will be classified against this screen. Not necessary if a fixed size screen (`-f`) is being generated.
 - `-re/--read-error <Double>`: The expected error rate of reads that will be classified against this screen. Not necessary if a fixed size screen (`-f`) is being generated.
@@ -70,7 +70,7 @@ Matched Reads/Genomes vs Classification without a ground truth:
 - `-um/--unmatched`: Use this parameter if the reads and the genomes do not correspond - by default, the code will assume that there is a matching read set for each genome (generated using the simulator above), and will proceed with classification assuming there is some ground truth. If this option is selected, detailed classification logs will be saved for each read, and no accuracy metrics will be printed. NOTE: Over time, this will become the default, and a parameter will be needed to indicate the genomes and reads are matched. In this mode, read logging is enabled by default.
 
 Fixed Size Screens:
-- `-f/--fixed <Integer>`: Use if the screen size should not be calculated, but instead the specified size should be used for all screens.
+- `-f/--fixed <Integer>`: Use if the screen size should not be calculated, but instead the specified size/window size should be used for all screens. For uniform and MinHash screens, this will be the sketch size. For Minimizer-based screens, this will be the window size.
 
 Read Loading:
 - `-c/--chunks`: Use if a specified number of reads should loaded at a time (i.e. in "chunks"), instead of one file at a time.
@@ -83,8 +83,11 @@ Read Logging:
 
 "Screen Only":
 - `-so/--screen-only`: Use if you only want to generate the screen, but not classify any reads.
-- `-sl/--screen-location <Directory>`: Specifies the location where the generated screens will be saved. Screens will be saved in `.bin` files with names matching the input genome files.
-- `-cmbs/--combined-screens`: Save all screens as one large `.bin` file. By default, they are saved separately.
+- `-sl/--screen-location <Directory>`: Used for both screen-generation and loading pre-generated screens. Specifies the location where the generated screens will be saved. Screens will be saved in `.bin` files with names matching the input genome files.
+
+Load Pre-Generated Screen:
+- `-ls/--load-screen`: Use this if you want to use a pre-generated screen, and supply the input reads to classify against it. Please remember to set matched/unmatched (`-um`) depending on the type of classification you want to do.
+- - `-sl/--screen-location <Directory>`: Used for both screen-generation and loading pre-generated screens. Specifies the location where the pre-generated screens will be loaded from. Pre-generated screens will be loaded from `.bin` files with names matching the input genome files.
 
 Experiment Parameters
 - `-k/--kmer <Integer>`: The k-mer size to use. By default, it is 21.
@@ -103,24 +106,24 @@ java -cp screen_java:jars/\* Main -g <Genomes Directory> -r <Reads Directory> -o
 #### Example 2: Minimizer-based Screen with corresponding read sets, with a specified number of reads loaded at a time, and the mmh3 hash function
 
 ```
-java -cp screen_java:jars/\* Main -g <Genomes Directory> -r <Reads Directory> -o <Log File location> -rl <Expected Read Length> -re <Expected Read Error> -tm <Number of target matches per read> -s M -c -cs <Number of reads to be loaded at a time> -hf mmh3
+java -cp screen_java:jars/\* Main -g <Genomes Directory> -r <Reads Directory> -o <Log File location> -s m -rl <Expected Read Length> -re <Expected Read Error> -tm <Number of target matches per read> -s M -c -cs <Number of reads to be loaded at a time> -hf mmh3
 ```
 
 #### Example 3: Uniform-sampling Screen of a fixed size with corresponding read sets, with a specified number of reads loaded at a time, the default hash function, with read logging active
 
 ```
-java -cp screen_java:jars/\* Main -g <Genomes Directory> -r <Reads Directory> -o <Log File location> -f <Screen Size> -c -cs <Number of reads to be loaded at a time> -rlg -rlc <Location to save the read logs>
+java -cp screen_java:jars/\* Main -g <Genomes Directory> -r <Reads Directory> -o <Log File location> -s u -f <Screen Size> -c -cs <Number of reads to be loaded at a time> -rlg -rlc <Location to save the read logs>
 ```
 
-#### Example 4: MinHash-based Screen with novel/unmatched read sets, with a specified number of reads loaded at a time, the default hash function
+#### Example 4: MinHash-based Screen with novel/unmatched read sets, with a specified number of reads loaded at a time, the default hash function, using 4 threads
 
 ```
-java -cp screen_java:jars/\* Main -g <Genomes Directory> -r <Reads Directory> -o <Log File location> -rl <Expected Read Length> -re <Expected Read Error> -tm <Number of target matches per read> -um  -c -cs <Number of reads to be loaded at a time> -rlc <Location to save the read logs>
+java -cp screen_java:jars/\* Main -g <Genomes Directory> -r <Reads Directory> -o <Log File location> -rl <Expected Read Length> -re <Expected Read Error> -tm <Number of target matches per read> -um  -c -cs <Number of reads to be loaded at a time> -rlc <Location to save the read logs> -nt 4
 ```
 
 #### Example 5: Minimizer-based Screen, without any reads to be classified, using the 128-bit mmh3 hash function
 ```
-java -cp screen_java:jars/\* Main -g <Genomes Directory> -r <Reads Directory> -o <Log File location> -rl <Expected Read Length> -re <Expected Read Error> -tm <Number of target matches per read> -hf mmh3_128 -so -sl <Location to save the generated screens>
+java -cp screen_java:jars/\* Main -g <Genomes Directory> -r <Reads Directory> -o <Log File location> -s m -rl <Expected Read Length> -re <Expected Read Error> -tm <Number of target matches per read> -hf mmh3_128 -so -sl <Location to save the generated screens>
 ```
 
 ### Further implementation details

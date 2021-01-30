@@ -118,4 +118,23 @@ public class MinimizerScreen extends ScreenGenerator{
       sketch_hash.add(minimizers);
     }
   }
+
+  // Option for pre-generated screens
+  MinimizerScreen(String[] genomes, ArrayList<HashSet<Integer>> sketch) throws Exception {
+    System.out.println("Creating Minimizer-Based Screen...");
+    this.targetMatches = Settings.TARGET_MATCHES;
+    this.readLen = Settings.READ_LENGTH;
+    this.readErr = Settings.READ_ERROR;
+    this.genomeFolder = Settings.SCREEN_LOCATION;
+    this.k = Settings.K;
+    this.genomeNames = genomes;
+    this.numGenomes = genomeNames.length;
+    sketch_hash = sketch;
+    if (Settings.FIXED){
+        this.window = Settings.FIXED_SIZE;
+    } else {
+      this.window = (int) (((readLen * Math.pow((1 - readErr), k))/ (targetMatches)) * 2.0);
+    }
+  }
+
 }

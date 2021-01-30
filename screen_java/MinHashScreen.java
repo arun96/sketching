@@ -113,4 +113,19 @@ public class MinHashScreen extends ScreenGenerator {
       sketch_hash.add(getMinHashes(genomes[x], sketch_size[x], k));
     }
   }
+
+  // Option for pre-generated screens
+  MinHashScreen(String[] genomes, ArrayList<HashSet<Integer>> sketch) throws Exception {
+    System.out.println("Creating MinHash-based Screen...");
+    this.targetMatches = Settings.TARGET_MATCHES;
+    this.readLen = Settings.READ_LENGTH;
+    this.readErr = Settings.READ_ERROR;
+    this.genomeFolder = Settings.SCREEN_LOCATION;
+    this.k = Settings.K;
+    this.genomeNames = genomes;
+    this.numGenomes = genomeNames.length;
+    this.window = 0;
+    sketch_hash = sketch;
+  }
+
 }

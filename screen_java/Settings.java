@@ -74,8 +74,11 @@ public class Settings {
 
   // SCREEN GENERATION WITHOUT READ SCREENING
   static boolean SCREEN_ONLY;
-  static boolean INDIVIDUAL_SCREENS;
   static String SCREEN_LOCATION;
+
+  // LOAD PRE-GENERATED SCREEN
+  static boolean LOAD_SCREEN;
+  // uses the same screen-location parameter to load
 
   static void parseArgs(String[] args) throws Exception {
 
@@ -110,11 +113,11 @@ public class Settings {
     screen_only.setRequired(false);
     options.addOption(screen_only);
 
-    Option individual_screens = new Option("cmbs", "combined-screens", false, "If only doing screen generation save all screens together (default = false, screens saved separately)");
-    individual_screens.setRequired(false);
-    options.addOption(individual_screens);
+    Option load_screen = new Option("ls", "load-screen", false, "Use pre-generated screen (default = false)");
+    load_screen.setRequired(false);
+    options.addOption(load_screen);
 
-    Option screen_location = new Option("sl", "screen-location", true, "Where to save screen (default = ./screens)");
+    Option screen_location = new Option("sl", "screen-location", true, "Where to save screen/load screen from (default = ./screens)");
     screen_location.setRequired(false);
     options.addOption(screen_location);
 
@@ -128,7 +131,7 @@ public class Settings {
 
     // Main parameters
     Option genome_folder = new Option("g", "genome", true, "Directory containing genomes");
-    genome_folder.setRequired(true);
+    genome_folder.setRequired(false);
     options.addOption(genome_folder);
 
     Option read_folder = new Option("r", "reads", true, "Directory containing reads");
@@ -230,16 +233,17 @@ public class Settings {
       SCREEN_ONLY = false;
     }
 
-    if (cmd.hasOption("cmbs")) {
-      INDIVIDUAL_SCREENS = false;
-    } else {
-      INDIVIDUAL_SCREENS = true;
-    }
-
     if (cmd.hasOption("sl")) {
       SCREEN_LOCATION = cmd.getOptionValue("sl");
     } else {
       SCREEN_LOCATION = "./screens/";
+    }
+
+    // Load pre-generated screen options
+    if (cmd.hasOption("ls")) {
+      LOAD_SCREEN = true;
+    } else {
+      LOAD_SCREEN = false;
     }
 
     // Read Logging Options
@@ -355,6 +359,18 @@ public class Settings {
     TRACK_READS = false;
     TRACK_MISCLASSIFIED = false;
 
+
+    // Check that all essential parameters are present if in screen-only/load screen modes
+    if (!(SCREEN_ONLY) && (READS_FOLDER == null)) {
+      BAD_INPUT = true;
+    }
+    if (!(LOAD_SCREEN) && (GENOME_FOLDER == null)) {
+      BAD_INPUT = true;
+    }
+    if ((SCREEN_ONLY) && (LOAD_SCREEN)) {
+      BAD_INPUT = true;
+    }
+
     // Check if anything is broken by now
     if (BAD_INPUT) {
       return;
@@ -373,6 +389,22 @@ public class Settings {
       Collections.sort(genomes_list);
       GENOMES = new String[genomes_list.size()];
       GENOMES = genomes_list.toArray(GENOMES);
+
+    // Load a pre-generated screen - TODO: FINISH THIS
+    } else if (LOAD_SCREEN) {
+
+      // Get a sorted list of all readsets in the input folder
+      List<String> reads_list = new ArrayList<String>();
+      File readDir = new File(READS_FOLDER);
+      for (File readFile : readDir.listFiles()) {
+        if (readFile.getName().endsWith((".fasta")) || readFile.getName().endsWith((".fna")) || readFile.getName().endsWith((".fa"))) {
+          reads_list.add(readFile.getName());
+        }
+      }
+      Collections.sort(reads_list);
+      READ_SETS = new String[reads_list.size()];
+      READ_SETS = reads_list.toArray(READ_SETS);
+
 
     // Default option - screen generation and read screening
     } else {
