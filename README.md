@@ -87,7 +87,7 @@ Read Logging:
 
 Load Pre-Generated Screen:
 - `-ls/--load-screen`: Use this if you want to use a pre-generated screen, and supply the input reads to classify against it. Please remember to set matched/unmatched (`-um`) depending on the type of classification you want to do.
-- - `-sl/--screen-location <Directory>`: Used for both screen-generation and loading pre-generated screens. Specifies the location where the pre-generated screens will be loaded from. Pre-generated screens will be loaded from `.bin` files with names matching the input genome files.
+- `-sl/--screen-location <Directory>`: Used for both screen-generation and loading pre-generated screens. Specifies the location where the pre-generated screens will be loaded from. Pre-generated screens will be loaded from `.bin` files with names matching the input genome files.
 
 Experiment Parameters
 - `-k/--kmer <Integer>`: The k-mer size to use. By default, it is 21.
