@@ -86,7 +86,7 @@ Read Logging:
 - `-sl/--screen-location <Directory>`: Used for both screen-generation and loading pre-generated screens. Specifies the location where the generated screens will be saved. Screens will be saved in `.bin` files with names matching the input genome files.
 
 Load Pre-Generated Screen:
-- `-ls/--load-screen`: Use this if you want to use a pre-generated screen, and supply the input reads to classify against it. Please remember to set matched/unmatched (`-um`) depending on the type of classification you want to do.
+- `-ls/--load-screen`: Use this if you want to use a pre-generated screen, and supply the input reads to classify against it. Please remember to set matched/unmatched (`-um`) depending on the type of classification you want to do, and please specify the error rate, read length and target matches used when generating this screen.
 - `-sl/--screen-location <Directory>`: Used for both screen-generation and loading pre-generated screens. Specifies the location where the pre-generated screens will be loaded from. Pre-generated screens will be loaded from `.bin` files with names matching the input genome files.
 
 Experiment Parameters
@@ -150,7 +150,7 @@ As specified above, if `-c` is used, then reads will be loaded in chunks of the 
 
 #### Screen/Sketch Generation Only
 
-Currently, there is only an option to save the generated screens. I am working on adding an option to load and use saved screens.
+You can generate and save a screen for a later experiment, or load an existing screen. To do these, please use the `-so` or `-ls` parameters respectively, with `-sl` specifying which location the screens are to be saved to/loaded from.
 
 #### Read Logging
 

@@ -44,12 +44,12 @@ public class LoadScreen {
     // READ IN SKETCHES FROM THESE FILES
     int num_sketches = genomeNames.length;
 
+    sketch = new ArrayList<HashSet<Integer>>();
+
     for (int i = 0; i < num_sketches; i++){
       String filename = Settings.SCREEN_LOCATION + genomeNames[i];
-      // TODO - deebug this.
-      // System.out.println(filename);
       HashSet<Integer> s = loadSketch(filename);
-      sketch.add(s);
+      this.sketch.add(s);
     }
 
     System.out.println("Screens loaded!");
@@ -58,9 +58,11 @@ public class LoadScreen {
 
   HashSet<Integer> loadSketch(String f) throws Exception {
     FileInputStream fis = new FileInputStream(f);
+    // System.out.println("File Stream Started");
     ObjectInputStream ois = new ObjectInputStream(fis);
-    // TODO - debug this.
+    // System.out.println("Object Stream Started");
     HashSet<Integer> s = (HashSet<Integer>) ois.readObject();
+    // System.out.println("Object Loaded");
     return s;
   }
 
