@@ -80,6 +80,10 @@ public class Settings {
   static boolean LOAD_SCREEN;
   // uses the same screen-location parameter to load
 
+  // CLUSTER PARAMETERS
+  static int CLUSTER_SKETCH_SIZE;
+  static int MAX_CLUSTER_SIZE;
+
   static void parseArgs(String[] args) throws Exception {
 
     // Input options
@@ -97,6 +101,8 @@ public class Settings {
     read_lines.setRequired(false);
     options.addOption(read_lines);
 
+
+    // Chunk parameters
     Option in_chunks = new Option("c", "chunks", false, "Load read in chunks (default = false)");
     in_chunks.setRequired(false);
     options.addOption(in_chunks);
@@ -109,6 +115,7 @@ public class Settings {
     chunk_updates.setRequired(false);
     options.addOption(chunk_updates);
 
+    // Save/load screen
     Option screen_only = new Option("so", "screen-only", false, "Only generate screen (default = false)");
     screen_only.setRequired(false);
     options.addOption(screen_only);
@@ -121,6 +128,7 @@ public class Settings {
     screen_location.setRequired(false);
     options.addOption(screen_location);
 
+    // Read Logging
     Option read_logging = new Option("rlg", "read-logging", false, "Save read logs (default = true)");
     read_logging.setRequired(false);
     options.addOption(read_logging);
@@ -128,6 +136,16 @@ public class Settings {
     Option read_location = new Option("rlc", "read-location", true, "Directory for read logs (default = ./logs)");
     read_location.setRequired(false);
     options.addOption(read_location);
+
+    // Cluster Parameters
+    Option cluster_size = new Option("css", "cluster-sketch-size", true, "Size of sketch used for cluster generation (default = 1000)");
+    cluster_size.setRequired(false);
+    options.addOption(cluster_size);
+
+    Option max_cluster = new Option("mcs", "max-cluster-size", true, "The maximum number of sketches that can be combined in a single cluster (default = no max)");
+    max_cluster.setRequired(false);
+    options.addOption(max_cluster);
+
 
     // Main parameters
     Option genome_folder = new Option("g", "genome", true, "Directory containing genomes");
@@ -257,6 +275,20 @@ public class Settings {
       READ_LOCATION = cmd.getOptionValue("rlc");
     } else {
       READ_LOCATION = "./logs/";
+    }
+
+    // Clustering options
+    if (cmd.hasOption("css")) {
+      CLUSTER_SKETCH_SIZE = Integer.parseInt(cmd.getOptionValue("css"));
+    } else {
+      CLUSTER_SKETCH_SIZE = 1000;
+    }
+
+    if (cmd.hasOption("mcs")) {
+      MAX_CLUSTER_SIZE = Integer.parseInt(cmd.getOptionValue("mcs"));
+    } else {
+      // By default, set to 0 - TODO: make this consistent
+      MAX_CLUSTER_SIZE = 0;
     }
 
     // KEY PARAMETERS
