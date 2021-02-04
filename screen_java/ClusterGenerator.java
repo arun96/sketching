@@ -19,6 +19,11 @@ import com.google.common.hash.*;
 import com.google.common.hash.Hashing;
 import com.google.common.hash.HashFunction;
 
+// CLUSTERING
+import com.clust4j.algo.*;
+
+import org.apache.commons.math3.linear.Array2DRowRealMatrix;
+
 public class ClusterGenerator{
 
 
@@ -52,9 +57,16 @@ public class ClusterGenerator{
     // See the matrix
     // printMatrix(similarity_matrix);
 
+    // Clustering - clust4j
+    System.out.println("Clustering genomes...");
+    final Array2DRowRealMatrix mat = new Array2DRowRealMatrix(similarity_matrix);
+    HierarchicalAgglomerativeParameters cluster_params = new HierarchicalAgglomerativeParameters();
+    cluster_params.setNumClusters(Settings.NUM_CLUSTERS);
+    HierarchicalAgglomerative a = cluster_params.fitNewModel(mat);
+    int[] results = a.getLabels();
+    System.out.println(Arrays.toString(results));
+    System.out.println("Assigned clusters - combining sketches...");
 
-    // Clustering
-    
 
   }
 

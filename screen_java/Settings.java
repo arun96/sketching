@@ -81,10 +81,14 @@ public class Settings {
   // uses the same screen-location parameter to load
 
   // CLUSTER PARAMETERS
+  static boolean CLUSTER_BASED;
   static int CLUSTER_SKETCH_SIZE;
-  static int MAX_CLUSTER_SIZE;
+  static int NUM_CLUSTERS;
 
   static void parseArgs(String[] args) throws Exception {
+
+    // Default number of clusters - TODO: fix this
+    int nc = 4;
 
     // Input options
     Options options = new Options();
@@ -138,13 +142,17 @@ public class Settings {
     options.addOption(read_location);
 
     // Cluster Parameters
+    Option cluster = new Option("ct", "cluster", false, "Use cluster-based approach (default = false).");
+    cluster.setRequired(false);
+    options.addOption(cluster);
+
     Option cluster_size = new Option("css", "cluster-sketch-size", true, "Size of sketch used for cluster generation (default = 1000)");
     cluster_size.setRequired(false);
     options.addOption(cluster_size);
 
-    Option max_cluster = new Option("mcs", "max-cluster-size", true, "The maximum number of sketches that can be combined in a single cluster (default = no max)");
-    max_cluster.setRequired(false);
-    options.addOption(max_cluster);
+    Option num_clusters = new Option("ncs", "num-clusters", true, "The number of clusters to break the input genomes into (default = 4)");
+    num_clusters.setRequired(false);
+    options.addOption(num_clusters);
 
 
     // Main parameters
@@ -278,17 +286,25 @@ public class Settings {
     }
 
     // Clustering options
+    // Read Logging Options
+    if (cmd.hasOption("ct")) {
+      CLUSTER_BASED = true;
+    } else {
+      CLUSTER_BASED = false;
+    }
+
+
     if (cmd.hasOption("css")) {
       CLUSTER_SKETCH_SIZE = Integer.parseInt(cmd.getOptionValue("css"));
     } else {
       CLUSTER_SKETCH_SIZE = 1000;
     }
 
-    if (cmd.hasOption("mcs")) {
-      MAX_CLUSTER_SIZE = Integer.parseInt(cmd.getOptionValue("mcs"));
+    if (cmd.hasOption("ncs")) {
+      NUM_CLUSTERS = Integer.parseInt(cmd.getOptionValue("ncs"));
     } else {
-      // By default, set to 0 - TODO: make this consistent
-      MAX_CLUSTER_SIZE = 0;
+      // By default, set to 4  - TODO make this more consistent
+      NUM_CLUSTERS = nc;
     }
 
     // KEY PARAMETERS

@@ -24,7 +24,9 @@ public class Main {
 
     Settings.parseArgs(args);
 
-    // ClusterGenerator c = new ClusterGenerator();
+    if (Settings.CLUSTER_BASED) {
+      ClusterGenerator c = new ClusterGenerator();
+    }
 
     if (Settings.MATCHED_READS_GENOMES) {
       System.out.println("Running experiment with matched genomes and reads - accuracy will be computed and output.");
