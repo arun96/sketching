@@ -29,10 +29,9 @@ public class ClusterGenerator{
 
   ArrayList<ArrayList<Integer>> clusters;
   double[][] similarity_matrix;
+  int [] cluster_assignments;
 
   ClusterGenerator() throws Exception{
-
-    System.out.println("Clustering Genomes...");
 
     int numGenomes = Settings.GENOMES.length;
     ArrayList<HashSet<Integer>> sketch = new ArrayList<HashSet<Integer>>();
@@ -58,14 +57,12 @@ public class ClusterGenerator{
     // printMatrix(similarity_matrix);
 
     // Clustering - clust4j
-    System.out.println("Clustering genomes...");
     final Array2DRowRealMatrix mat = new Array2DRowRealMatrix(similarity_matrix);
     HierarchicalAgglomerativeParameters cluster_params = new HierarchicalAgglomerativeParameters();
     cluster_params.setNumClusters(Settings.NUM_CLUSTERS);
     HierarchicalAgglomerative a = cluster_params.fitNewModel(mat);
-    int[] results = a.getLabels();
-    System.out.println(Arrays.toString(results));
-    System.out.println("Assigned clusters - combining sketches...");
+    cluster_assignments = a.getLabels();
+    // System.out.println(Arrays.toString(cluster_assignments));
 
 
   }

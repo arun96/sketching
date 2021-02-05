@@ -19,7 +19,7 @@ public class MinimizerScreen extends ScreenGenerator{
   // Screen Generator for minimzer-based approach, with calculated windowsize
   MinimizerScreen() throws Exception
   {
-    // TODO - parameterize this? Multiplier for adjusting window size - finalized on 2.0
+    // Multiplier so that on average samples are window distance apart
     double multiplier = 2.0;
 
     System.out.println("Generating Minimizer-Based Screen with calculated Window Size, using " + getHashName(Settings.HASH_TYPE) + " hash function.");

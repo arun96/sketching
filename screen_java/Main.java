@@ -24,10 +24,6 @@ public class Main {
 
     Settings.parseArgs(args);
 
-    if (Settings.CLUSTER_BASED) {
-      ClusterGenerator c = new ClusterGenerator();
-    }
-
     if (Settings.MATCHED_READS_GENOMES) {
       System.out.println("Running experiment with matched genomes and reads - accuracy will be computed and output.");
     } else {
@@ -46,6 +42,8 @@ public class Main {
     } else if (Settings.LOAD_SCREEN) {
       System.out.println("Loading pre-generated screen from: " + Settings.SCREEN_LOCATION);
       run_load();
+    } else if (Settings.CLUSTER_BASED) {
+      run_cluster();
     } else {
       // Run the screen-generation and read classification processes
       run();
@@ -198,6 +196,105 @@ public class Main {
           ReadScreenerNovel rs = new ReadScreenerNovel(screen);
         }
 
+
+      } else {
+        System.out.println("Invalid input parameters - please read the README!");
+      }
+    }
+  }
+
+  static void run_cluster() throws Exception {
+    System.out.println("Clustering genomes...");
+    ClusterGenerator c = new ClusterGenerator();
+    System.out.println("Clusters generated:");
+    System.out.println(Arrays.toString(c.cluster_assignments));
+    int [] cluster_assignments = c.cluster_assignments;
+    System.out.println("Starting Screen Generation and Classification...");
+
+    // Runs the read screening
+
+    // TODO - finish clustering the sketches into ClusterScreen
+
+    if (Settings.BAD_INPUT) {
+      System.out.println("Invalid input parameters - please read the README!");
+    } else {
+      if (Settings.MINHASH){
+        if (Settings.FIXED) {
+          MinHashScreen screen = new MinHashScreen("fixed");
+
+          // TODO - group screens based on cluster_assignments
+          ClusterScreen cs = new ClusterScreen(screen, cluster_assignments);
+
+          if (Settings.MATCHED_READS_GENOMES) {
+            ReadScreener rs = new ReadScreener(screen);
+          } else {
+            ReadScreenerNovel rs = new ReadScreenerNovel(screen);
+          }
+
+        } else {
+          MinHashScreen screen = new MinHashScreen();
+
+          // TODO - group screens based on cluster_assignments
+          ClusterScreen cs = new ClusterScreen(screen, cluster_assignments);
+
+          if (Settings.MATCHED_READS_GENOMES) {
+            ReadScreener rs = new ReadScreener(screen);
+          } else {
+            ReadScreenerNovel rs = new ReadScreenerNovel(screen);
+          }
+
+        }
+      } else if (Settings.MINIMIZER){
+        if (Settings.FIXED){
+          MinimizerScreen screen = new MinimizerScreen("fixed");
+
+          // TODO - group screens based on cluster_assignments
+          ClusterScreen cs = new ClusterScreen(screen, cluster_assignments);
+
+          if (Settings.MATCHED_READS_GENOMES) {
+            ReadScreener rs = new ReadScreener(screen);
+          } else {
+            ReadScreenerNovel rs = new ReadScreenerNovel(screen);
+          }
+
+        } else {
+          MinimizerScreen screen = new MinimizerScreen();
+
+          // TODO - group screens based on cluster_assignments
+          ClusterScreen cs = new ClusterScreen(screen, cluster_assignments);
+
+          if (Settings.MATCHED_READS_GENOMES) {
+            ReadScreener rs = new ReadScreener(screen);
+          } else {
+            ReadScreenerNovel rs = new ReadScreenerNovel(screen);
+          }
+
+        }
+
+      } else if (Settings.UNIFORM) {
+        if (Settings.FIXED){
+          UniformScreen screen = new UniformScreen("fixed");
+
+          // TODO - group screens based on cluster_assignments
+          ClusterScreen cs = new ClusterScreen(screen, cluster_assignments);
+
+          if (Settings.MATCHED_READS_GENOMES) {
+            ReadScreener rs = new ReadScreener(screen);
+          } else {
+            ReadScreenerNovel rs = new ReadScreenerNovel(screen);
+          }
+        } else {
+          UniformScreen screen = new UniformScreen();
+
+          // TODO - group screens based on cluster_assignments
+          ClusterScreen cs = new ClusterScreen(screen, cluster_assignments);
+
+          if (Settings.MATCHED_READS_GENOMES) {
+            ReadScreener rs = new ReadScreener(screen);
+          } else {
+            ReadScreenerNovel rs = new ReadScreenerNovel(screen);
+          }
+        }
 
       } else {
         System.out.println("Invalid input parameters - please read the README!");

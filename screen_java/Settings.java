@@ -87,7 +87,7 @@ public class Settings {
 
   static void parseArgs(String[] args) throws Exception {
 
-    // Default number of clusters - TODO: fix this
+    // Default number of clusters - TODO: decide on this?
     int nc = 4;
 
     // Input options
@@ -146,7 +146,7 @@ public class Settings {
     cluster.setRequired(false);
     options.addOption(cluster);
 
-    Option cluster_size = new Option("css", "cluster-sketch-size", true, "Size of sketch used for cluster generation (default = 1000)");
+    Option cluster_size = new Option("css", "cluster-sketch-size", true, "Size of MinHash sketch used for clustering the genomes (default = 1000)");
     cluster_size.setRequired(false);
     options.addOption(cluster_size);
 
