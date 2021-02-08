@@ -43,7 +43,7 @@ public class ClusterScreen{
     {
       HashSet<Integer> curr = screen.sketch_hash.get(x);
 
-      // TODO - makee this a parameter
+      // TODO - make this a parameter/function of where in the tree we are
       HashSet<Integer> curr_shrunk = shrinkSet(curr, 1000);
 
       cluster_screen.get(assignments[x]).addAll(curr);

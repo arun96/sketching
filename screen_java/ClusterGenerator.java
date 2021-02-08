@@ -20,7 +20,6 @@ import com.google.common.hash.Hashing;
 import com.google.common.hash.HashFunction;
 
 // CLUSTERING
-
 // Clust4j
 import com.clust4j.algo.*;
 import org.apache.commons.math3.linear.Array2DRowRealMatrix;
@@ -31,7 +30,6 @@ import com.apporiented.algorithm.clustering.visualization.*;
 
 
 public class ClusterGenerator{
-
 
   ArrayList<ArrayList<Integer>> clusters;
   double[][] similarity_matrix;
@@ -75,13 +73,13 @@ public class ClusterGenerator{
     ClusteringAlgorithm alg = new DefaultClusteringAlgorithm();
     Cluster cluster = alg.performClustering(similarity_matrix, Settings.GENOMES, new SingleLinkageStrategy());
     cluster.toConsole(2);
+    // TODO - parse this into an arraylist/usable data structure
     String s = cluster.toNewickString(2);
     System.out.println(s);
 
   }
 
   // ----- DISPLAY FUNCTION ------
-
   void printMatrix(double[][] m) throws Exception {
     for (double[] x : m) {
       for (double y : x) {
@@ -90,8 +88,8 @@ public class ClusterGenerator{
       System.out.println();
     }
   }
-  // ----- UTILITY FUNCTIONS ------
 
+  // ----- UTILITY FUNCTIONS ------
   // Get the lexicographically smaller of a k-mer and its reverse complement
   String getCanonical(String seq){
     String reversed_mer = reverseComplement(seq);
@@ -154,9 +152,7 @@ public class ClusterGenerator{
     return minhashvals;
   }
 
-
   // ----- I/O FUNCTIONS ------
-
   // Load genome from a given file
   String getGenome(String fn) throws Exception {
     Scanner input = new Scanner(new FileInputStream(new File(fn)));
