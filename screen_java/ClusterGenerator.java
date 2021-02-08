@@ -20,9 +20,15 @@ import com.google.common.hash.Hashing;
 import com.google.common.hash.HashFunction;
 
 // CLUSTERING
-import com.clust4j.algo.*;
 
+// Clust4j
+import com.clust4j.algo.*;
 import org.apache.commons.math3.linear.Array2DRowRealMatrix;
+
+// Heirachical Clustering Java
+import com.apporiented.algorithm.clustering.*;
+import com.apporiented.algorithm.clustering.visualization.*;
+
 
 public class ClusterGenerator{
 
@@ -57,13 +63,20 @@ public class ClusterGenerator{
     // printMatrix(similarity_matrix);
 
     // Clustering - clust4j
-    final Array2DRowRealMatrix mat = new Array2DRowRealMatrix(similarity_matrix);
-    HierarchicalAgglomerativeParameters cluster_params = new HierarchicalAgglomerativeParameters();
-    cluster_params.setNumClusters(Settings.NUM_CLUSTERS);
-    HierarchicalAgglomerative a = cluster_params.fitNewModel(mat);
-    cluster_assignments = a.getLabels();
+    // final Array2DRowRealMatrix mat = new Array2DRowRealMatrix(similarity_matrix);
+    // HierarchicalAgglomerativeParameters cluster_params = new HierarchicalAgglomerativeParameters();
+    // cluster_params.setNumClusters(Settings.NUM_CLUSTERS);
+    // HierarchicalAgglomerative a = cluster_params.fitNewModel(mat);
+    // cluster_assignments = a.getLabels();
     // System.out.println(Arrays.toString(cluster_assignments));
 
+
+    // Clustering - HCJ
+    ClusteringAlgorithm alg = new DefaultClusteringAlgorithm();
+    Cluster cluster = alg.performClustering(similarity_matrix, Settings.GENOMES, new SingleLinkageStrategy());
+    cluster.toConsole(2);
+    String s = cluster.toNewickString(2);
+    System.out.println(s);
 
   }
 

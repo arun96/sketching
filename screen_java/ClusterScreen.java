@@ -13,6 +13,7 @@ import java.util.Collection;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.Random;
 
 // GUAVA
 import com.google.common.hash.*;
@@ -42,11 +43,29 @@ public class ClusterScreen{
     {
       HashSet<Integer> curr = screen.sketch_hash.get(x);
 
-      // TODO: Downsample before we add
-      
+      // TODO - makee this a parameter
+      HashSet<Integer> curr_shrunk = shrinkSet(curr, 1000);
+
       cluster_screen.get(assignments[x]).addAll(curr);
 
     }
+  }
+
+  HashSet<Integer> shrinkSet(HashSet<Integer> s, int shrinkSize) {
+
+    ArrayList<Integer> set_list = new ArrayList<Integer>(s);
+
+    HashSet<Integer> shrunk = new HashSet<Integer>();
+
+    int size = s.size();
+
+    for (int i = 0; i < shrinkSize; i++){
+      int item = new Random().nextInt(size);
+      int selected = set_list.get(item);
+      shrunk.add(selected);
+    }
+
+    return shrunk;
   }
 
 }

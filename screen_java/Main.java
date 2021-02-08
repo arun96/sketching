@@ -223,7 +223,7 @@ public class Main {
           MinHashScreen screen = new MinHashScreen("fixed");
 
           // TODO - group screens based on cluster_assignments
-          ClusterScreen cs = new ClusterScreen(screen, cluster_assignments);
+          // ClusterScreen cs = new ClusterScreen(screen, cluster_assignments);
 
           if (Settings.MATCHED_READS_GENOMES) {
             ReadScreener rs = new ReadScreener(screen);
@@ -235,7 +235,7 @@ public class Main {
           MinHashScreen screen = new MinHashScreen();
 
           // TODO - group screens based on cluster_assignments
-          ClusterScreen cs = new ClusterScreen(screen, cluster_assignments);
+          // ClusterScreen cs = new ClusterScreen(screen, cluster_assignments);
 
           if (Settings.MATCHED_READS_GENOMES) {
             ReadScreener rs = new ReadScreener(screen);
@@ -249,7 +249,7 @@ public class Main {
           MinimizerScreen screen = new MinimizerScreen("fixed");
 
           // TODO - group screens based on cluster_assignments
-          ClusterScreen cs = new ClusterScreen(screen, cluster_assignments);
+          // ClusterScreen cs = new ClusterScreen(screen, cluster_assignments);
 
           if (Settings.MATCHED_READS_GENOMES) {
             ReadScreener rs = new ReadScreener(screen);
@@ -261,7 +261,7 @@ public class Main {
           MinimizerScreen screen = new MinimizerScreen();
 
           // TODO - group screens based on cluster_assignments
-          ClusterScreen cs = new ClusterScreen(screen, cluster_assignments);
+          // ClusterScreen cs = new ClusterScreen(screen, cluster_assignments);
 
           if (Settings.MATCHED_READS_GENOMES) {
             ReadScreener rs = new ReadScreener(screen);
@@ -276,7 +276,7 @@ public class Main {
           UniformScreen screen = new UniformScreen("fixed");
 
           // TODO - group screens based on cluster_assignments
-          ClusterScreen cs = new ClusterScreen(screen, cluster_assignments);
+          // ClusterScreen cs = new ClusterScreen(screen, cluster_assignments);
 
           if (Settings.MATCHED_READS_GENOMES) {
             ReadScreener rs = new ReadScreener(screen);
@@ -287,7 +287,7 @@ public class Main {
           UniformScreen screen = new UniformScreen();
 
           // TODO - group screens based on cluster_assignments
-          ClusterScreen cs = new ClusterScreen(screen, cluster_assignments);
+          // ClusterScreen cs = new ClusterScreen(screen, cluster_assignments);
 
           if (Settings.MATCHED_READS_GENOMES) {
             ReadScreener rs = new ReadScreener(screen);

@@ -84,6 +84,7 @@ public class Settings {
   static boolean CLUSTER_BASED;
   static int CLUSTER_SKETCH_SIZE;
   static int NUM_CLUSTERS;
+  static int NODE_SIZE;
 
   static void parseArgs(String[] args) throws Exception {
 
