@@ -13,6 +13,7 @@ import java.util.Collection;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.HashMap;
 
 // GUAVA
 import com.google.common.hash.*;
@@ -31,24 +32,31 @@ import com.apporiented.algorithm.clustering.visualization.*;
 
 public class ClusterGenerator{
 
-  ArrayList<ArrayList<Integer>> clusters;
-  double[][] similarity_matrix;
-  int [] cluster_assignments;
+  // int [] cluster_assignments;
+  // ArrayList<ArrayList<Integer>> clusters;
+
+  Cluster cluster;
+  HashMap<String, ArrayList<String>> cluster_sketch_map;
+  HashMap<String, Integer> genome_sketch_map;
 
   ClusterGenerator() throws Exception{
 
     int numGenomes = Settings.GENOMES.length;
     ArrayList<HashSet<Integer>> sketch = new ArrayList<HashSet<Integer>>();
 
-    // Read in the genomes
+    // Mapping between the genome names and the sketch number
+    genome_sketch_map = new HashMap<String, Integer>();
+
+    // Read in the genomes and sketch them
     for (int i = 0; i < numGenomes; i++)
     {
       String gnm = getGenome(Settings.GENOME_FOLDER + Settings.GENOMES[i]);
+      genome_sketch_map.put(Settings.GENOMES[i], i);
       sketch.add(getMinHashes(gnm, Settings.CLUSTER_SKETCH_SIZE, Settings.K));
     }
 
     // Similarity matrix
-    similarity_matrix = new double[numGenomes][numGenomes];
+    double[][] similarity_matrix = new double[numGenomes][numGenomes];
     for (int x = 0; x < numGenomes; x++) {
       for (int y = 0; y < numGenomes; y++) {
         HashSet<Integer> intersection = new HashSet<Integer>(sketch.get(x));
@@ -56,11 +64,10 @@ public class ClusterGenerator{
         similarity_matrix[x][y] = (double) intersection.size() / (double) Settings.CLUSTER_SKETCH_SIZE;
       }
     }
-
     // See the matrix
     // printMatrix(similarity_matrix);
 
-    // Clustering - clust4j
+    // Clustering - clust4j <----- NOT IN USE
     // final Array2DRowRealMatrix mat = new Array2DRowRealMatrix(similarity_matrix);
     // HierarchicalAgglomerativeParameters cluster_params = new HierarchicalAgglomerativeParameters();
     // cluster_params.setNumClusters(Settings.NUM_CLUSTERS);
@@ -68,15 +75,21 @@ public class ClusterGenerator{
     // cluster_assignments = a.getLabels();
     // System.out.println(Arrays.toString(cluster_assignments));
 
-
     // Clustering - HCJ
     ClusteringAlgorithm alg = new DefaultClusteringAlgorithm();
-    Cluster cluster = alg.performClustering(similarity_matrix, Settings.GENOMES, new SingleLinkageStrategy());
-    cluster.toConsole(2);
-    // TODO - parse this into an arraylist/usable data structure
-    String s = cluster.toNewickString(2);
-    System.out.println(s);
+    cluster = alg.performClustering(similarity_matrix, Settings.GENOMES, new SingleLinkageStrategy());
+    // Prints the hierarchy
+    // cluster.toConsole(2);
 
+    cluster_sketch_map = new HashMap<String, ArrayList<String>>();
+
+    // TODO - map between clusters and how much the sketches in them need to shrunk
+    HashMap<String, Integer> cluster_multiplier_map = new HashMap<String, Integer>();
+
+    // Gets the sketches in each cluster
+    ArrayList<String> top_cluster_sketches = getClusterSketches(cluster, cluster_sketch_map);
+    //System.out.println(top_cluster_sketches.toString());
+    //System.out.println(cluster_sketch_map.toString());
   }
 
   // ----- DISPLAY FUNCTION ------
@@ -150,6 +163,23 @@ public class ClusterGenerator{
       minhashvals.add(hashmers.get(q));
     }
     return minhashvals;
+  }
+
+  ArrayList<String> getClusterSketches(Cluster cluster, HashMap<String, ArrayList<String>> map) {
+    ArrayList<String> sketches = new ArrayList<String>();
+    if (cluster.isLeaf()) {
+      sketches.add(cluster.getName());
+      // map.put(cluster.getName(), sketches);
+    }
+    else {
+      List<Cluster> children = cluster.getChildren();
+      for (int i = 0; i < children.size(); i++) {
+        ArrayList<String> child_sketches = getClusterSketches(children.get(i), map);
+        sketches.addAll(child_sketches);
+      }
+      map.put(cluster.getName(), sketches);
+    }
+    return sketches;
   }
 
   // ----- I/O FUNCTIONS ------

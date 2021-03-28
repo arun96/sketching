@@ -19,8 +19,12 @@ import com.google.common.hash.*;
 import com.google.common.hash.Hashing;
 import com.google.common.hash.HashFunction;
 
+// Heirachical Clustering Java
+import com.apporiented.algorithm.clustering.*;
+import com.apporiented.algorithm.clustering.visualization.*;
 
-public class ReadClassifier {
+
+public class ReadClassifierCluster {
 
   // List of sketches
   ArrayList<HashSet<Integer>> sketch_hash;
@@ -48,6 +52,13 @@ public class ReadClassifier {
   // Read's number
   int read_number;
 
+  // TODO - we need a way to store the clusters
+  // int[] cluster_assignments;
+  // ArrayList<ArrayList<Integer>> clusters;
+  Cluster cluster;
+  HashMap<String, ArrayList<String>> cluster_sketch_map;
+  HashMap<String, Integer> genome_sketch_map;
+
   // Keep track of the status of the read
   int predicted;
   int score;
@@ -56,7 +67,7 @@ public class ReadClassifier {
   int insufficient;
   int tied;
 
-  ReadClassifier(ArrayList<HashSet<Integer>> sketch_hash, String read, int window, int source, int read_number){
+  ReadClassifierCluster(ArrayList<HashSet<Integer>> sketch_hash, String read, int window, int source, int read_number, Cluster cluster, HashMap<String, ArrayList<String>> cluster_sketch_map, HashMap<String, Integer> genome_sketch_map){
 
     scores = new int[sketch_hash.size()];
 
@@ -73,6 +84,11 @@ public class ReadClassifier {
     this.threshold = Settings.THRESHOLD;
 
     this.read_number = read_number;
+
+    // Cluster Information
+    this.cluster = cluster;
+    this.cluster_sketch_map = cluster_sketch_map;
+    this.genome_sketch_map = genome_sketch_map;
 
     // read status
     predicted = 0;
@@ -95,23 +111,29 @@ public class ReadClassifier {
       read_hashes = getReadKmersHash(read, k);
     }
 
-    int[] read_scores = screenReadHash(sketch_hash, read_hashes);
+    boolean tie = false;
+    ArrayList<Integer> scores = new ArrayList<Integer>();
 
-    predicted = getMaxIndex(read_scores);
+    // TODO - this has to be updated to compare to the clustered hashes
+    // int[] read_scores = screenReadHash(sketch_hash, read_hashes);
+    String [] path = screenReadCluster(sketch_hash, cluster, cluster_sketch_map, genome_sketch_map, read_hashes, scores, tie);
 
-    score = read_scores[predicted];
-    // System.out.println(score);
+    predicted = genome_sketch_map.get(path[path.length - 1]);
+
+    // TODO - figure out some way of storing the score
+    score = (int) scores.get(scores.size() - 1);
+    System.out.println(source + " " + predicted + " " + score);
 
     // Update counts
-    if (predicted == source && read_scores[predicted] > threshold) {
+    if (predicted == source && score > threshold) {
       // Correctly classified
       correct++;
-      if (sameCounts(read_scores, predicted) > 0) {
+      if (tie) {
         // Tie was broken correctly
         tied++;
       }
     } else {
-      if (read_scores[predicted] == 0){
+      if (score == 0){
         // Not enough to classify - should not happen
         insufficient++;
       } else{
@@ -120,7 +142,7 @@ public class ReadClassifier {
         if (Settings.TRACK_MISCLASSIFIED){
           System.out.println(source + " " + read_number);
         }
-        if (read_scores[predicted] == read_scores[source]){
+        if (tie){
           // Tie, but this time broken incorrectly
           tied++;
         }
@@ -128,7 +150,8 @@ public class ReadClassifier {
     }
 
     if (Settings.READ_LOGGING) {
-      saveReadResults(Settings.READ_LOCATION, source, read_number, read_scores, source);
+      saveReadResultsCluster(Settings.READ_LOCATION, source, read_number, path, score, predicted, source);
+      // saveReadResults(Settings.READ_LOCATION, source, read_number, path, source);
     }
   }
 
@@ -169,6 +192,89 @@ public class ReadClassifier {
       scores[i] = score;
     }
     return scores;
+  }
+
+  // Screen read kmers against clustered approach
+  String[] screenReadCluster(ArrayList<HashSet<Integer>> sketch, Cluster cluster, HashMap<String, ArrayList<String>> cluster_sketch_map, HashMap<String, Integer> genome_sketch_map, ArrayList<Integer> readMers, ArrayList<Integer> scores, boolean tie){
+
+    int pred = 0;
+    int selected = 0;
+    int latest_score = 0;
+    boolean leaf = false;
+    ArrayList<String> path_list = new ArrayList<String>();
+
+    while(true) {
+
+      // if (children.size() == 0) {
+      //if (!cluster_sketch_map.containsKey(cluster.getName())) {
+      if (cluster.isLeaf()) {
+        // path_list.add(cluster.getName());
+        break;
+      }
+
+      List<Cluster> children = cluster.getChildren();
+
+
+      int[] matches = new int[children.size()];
+
+      // For each child
+      for (int i = 0; i < children.size(); i++) {
+
+        String n = children.get(i).getName();
+        System.out.println("Current Cluster:");
+        System.out.println(n);
+
+        if (children.get(i).isLeaf()) {
+
+          int si = genome_sketch_map.get(n);
+          int s = getOverlapHash(sketch.get(si), readMers);
+
+          matches[i] = s;
+
+        } else {
+
+          // Gets the sketches under this cluster
+          ArrayList<String> child_sketches = cluster_sketch_map.get(n);
+          System.out.println(child_sketches.toString());
+
+          // Get the sketch indices
+          ArrayList<Integer> child_sketches_indices = new ArrayList<Integer>();
+          for (int j = 0; j < child_sketches.size(); j++) {
+            String sn = child_sketches.get(j);
+            child_sketches_indices.add(genome_sketch_map.get(sn));
+          }
+
+          // Create combined sketch
+          HashSet<Integer> cluster_sketches = new HashSet<Integer>();
+          for (int k = 0; k < child_sketches_indices.size(); k++) {
+            cluster_sketches.addAll(sketch.get(child_sketches_indices.get(k)));
+          }
+
+          // Compute overlap
+          int s = getOverlapHash(cluster_sketches, readMers);
+          // Store the overlap
+          matches[i] = s;
+        }
+      }
+
+      // Get the cluster to descend into
+      selected = getMaxIndex(matches);
+
+      // Checking for tie
+      if (sameCounts(matches, selected) > 0) {
+        tie = true;
+      }
+
+      // Descend into cluster and update
+      cluster = children.get(selected);
+      path_list.add(cluster.getName());
+      scores.add(matches[selected]);
+    }
+
+    // Return the path that was taken
+    //int[] path_list = path.stream().mapToInt(i -> i).toArray();
+    String[] path = path_list.toArray(new String[0]);
+    return path;
   }
 
   // Finds number of shared elements between a sketch and a list of query kmers - HASH VERSION
@@ -295,6 +401,7 @@ public class ReadClassifier {
   }
 
   // ----- READ LOGGING -----
+
   void saveReadResults(String location, int readset, int readnumber, int[] readscores, int s) {
     String filename = location + readset + "_" + readnumber + ".log";
     try {
@@ -303,10 +410,25 @@ public class ReadClassifier {
       out.println(s);
       out.close();
     } catch (Exception e) {
-
       // Debugging
       // System.out.println(readnumber);
+      e.printStackTrace();
+    }
+  }
 
+  // TODO - update this when we have decided on clusters
+  void saveReadResultsCluster(String location, int readset, int readnumber, String[] path, int score, int prediction, int source) {
+    String filename = location + readset + "_" + readnumber + ".log";
+    try {
+      PrintWriter out = new PrintWriter(new File(filename));
+      out.println(Arrays.toString(path));
+      out.println(score);
+      out.println(prediction);
+      out.println(source);
+      out.close();
+    } catch (Exception e) {
+      // Debugging
+      // System.out.println(readnumber);
       e.printStackTrace();
     }
   }

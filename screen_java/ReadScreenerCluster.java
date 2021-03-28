@@ -17,7 +17,11 @@ import com.google.common.hash.*;
 import com.google.common.hash.Hashing;
 import com.google.common.hash.HashFunction;
 
-public class ReadScreener {
+// Heirachical Clustering Java
+import com.apporiented.algorithm.clustering.*;
+import com.apporiented.algorithm.clustering.visualization.*;
+
+public class ReadScreenerCluster {
   // Key Variables
   int readLen;
   int k;
@@ -32,8 +36,12 @@ public class ReadScreener {
   ArrayList<HashSet<Integer>> sketch_hash;
   int window;
 
+  // int[] cluster_assignments;
+  // ArrayList<ArrayList<Integer>> clusters;
+
   // Main function for screening reads
-  ReadScreener(ScreenGenerator sg) throws Exception
+  // This will take in both a cluster and a screen (the original screen)
+  ReadScreenerCluster(ScreenGenerator sg, ClusterGenerator cg) throws Exception
   {
 
     // Get the sketch and experiment parameters saved
@@ -52,7 +60,6 @@ public class ReadScreener {
 
     // 0 if MinHash or uniform, >0 if Minimizer-based
     this.window = sg.window;
-
 
     // Print Sketch Sizes
     for (int a = 0; a < numGenomes; a++)
@@ -87,8 +94,9 @@ public class ReadScreener {
 
          int numReads = reads.size();
 
+         // TODO - these have to be rewritten for cluster based screening
          //Screen these reads
-         ParallelScreener ps = new ParallelScreener(sketch_hash, reads, window, source, read_start);
+         ParallelScreenerCluster ps = new ParallelScreenerCluster(sketch_hash, reads, window, source, read_start, cg);
          ps.run();
          // Counts for this readset
          totalReads[source] += ps.totalReads;
@@ -136,7 +144,8 @@ public class ReadScreener {
        // For each read in the readset
        int numReads = reads.size();
 
-       ParallelScreener ps = new ParallelScreener(sketch_hash, reads, window, source, read_start);
+       // TODO - these have to be rewritten for cluster based screening
+       ParallelScreenerCluster ps = new ParallelScreenerCluster(sketch_hash, reads, window, source, read_start, cg);
        ps.run();
        // Counts for this readset
        totalReads[source] = ps.totalReads;
@@ -168,6 +177,7 @@ public class ReadScreener {
 
     //Save results
     saveResults(Settings.OUTPUT_FILE, readSets, genomeNames, sketch_hash, totalReads, correctCounts, misCounts, insufCounts, tieCounts);
+
   }
 
   // ----- I/O HELPER FUNCTIONS ------
@@ -261,4 +271,5 @@ public class ReadScreener {
         System.out.println();
     }
   }
+
 }

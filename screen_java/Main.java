@@ -17,6 +17,10 @@ import com.google.common.hash.*;
 import com.google.common.hash.Hashing;
 import com.google.common.hash.HashFunction;
 
+// Heirachical Clustering Java
+import com.apporiented.algorithm.clustering.*;
+import com.apporiented.algorithm.clustering.visualization.*;
+
 // Main function
 public class Main {
 
@@ -205,15 +209,17 @@ public class Main {
 
   static void run_cluster() throws Exception {
     System.out.println("Clustering genomes...");
-    ClusterGenerator c = new ClusterGenerator();
+    ClusterGenerator cg = new ClusterGenerator();
     System.out.println("Clusters generated:");
-    System.out.println(Arrays.toString(c.cluster_assignments));
-    int [] cluster_assignments = c.cluster_assignments;
+
+    // DEBUGGING
+    cg.cluster.toConsole(2);
+    //System.out.println(cg.cluster_sketch_map.toString());
+    // System.out.println(cg.genome_sketch_map.toString());
+
     System.out.println("Starting Screen Generation and Classification...");
 
     // Runs the read screening
-
-    // TODO - finish clustering the sketches into ClusterScreen
 
     if (Settings.BAD_INPUT) {
       System.out.println("Invalid input parameters - please read the README!");
@@ -222,11 +228,9 @@ public class Main {
         if (Settings.FIXED) {
           MinHashScreen screen = new MinHashScreen("fixed");
 
-          // TODO - group screens based on cluster_assignments
-          // ClusterScreen cs = new ClusterScreen(screen, cluster_assignments);
 
           if (Settings.MATCHED_READS_GENOMES) {
-            ReadScreener rs = new ReadScreener(screen);
+            ReadScreenerCluster rs = new ReadScreenerCluster(screen, cg);
           } else {
             ReadScreenerNovel rs = new ReadScreenerNovel(screen);
           }
@@ -234,11 +238,9 @@ public class Main {
         } else {
           MinHashScreen screen = new MinHashScreen();
 
-          // TODO - group screens based on cluster_assignments
-          // ClusterScreen cs = new ClusterScreen(screen, cluster_assignments);
 
           if (Settings.MATCHED_READS_GENOMES) {
-            ReadScreener rs = new ReadScreener(screen);
+            ReadScreenerCluster rs = new ReadScreenerCluster(screen, cg);
           } else {
             ReadScreenerNovel rs = new ReadScreenerNovel(screen);
           }
@@ -248,11 +250,9 @@ public class Main {
         if (Settings.FIXED){
           MinimizerScreen screen = new MinimizerScreen("fixed");
 
-          // TODO - group screens based on cluster_assignments
-          // ClusterScreen cs = new ClusterScreen(screen, cluster_assignments);
 
           if (Settings.MATCHED_READS_GENOMES) {
-            ReadScreener rs = new ReadScreener(screen);
+            ReadScreenerCluster rs = new ReadScreenerCluster(screen, cg);
           } else {
             ReadScreenerNovel rs = new ReadScreenerNovel(screen);
           }
@@ -260,11 +260,9 @@ public class Main {
         } else {
           MinimizerScreen screen = new MinimizerScreen();
 
-          // TODO - group screens based on cluster_assignments
-          // ClusterScreen cs = new ClusterScreen(screen, cluster_assignments);
 
           if (Settings.MATCHED_READS_GENOMES) {
-            ReadScreener rs = new ReadScreener(screen);
+            ReadScreenerCluster rs = new ReadScreenerCluster(screen, cg);
           } else {
             ReadScreenerNovel rs = new ReadScreenerNovel(screen);
           }
@@ -275,26 +273,23 @@ public class Main {
         if (Settings.FIXED){
           UniformScreen screen = new UniformScreen("fixed");
 
-          // TODO - group screens based on cluster_assignments
-          // ClusterScreen cs = new ClusterScreen(screen, cluster_assignments);
 
           if (Settings.MATCHED_READS_GENOMES) {
-            ReadScreener rs = new ReadScreener(screen);
+            ReadScreenerCluster rs = new ReadScreenerCluster(screen, cg);
           } else {
             ReadScreenerNovel rs = new ReadScreenerNovel(screen);
           }
         } else {
           UniformScreen screen = new UniformScreen();
 
-          // TODO - group screens based on cluster_assignments
-          // ClusterScreen cs = new ClusterScreen(screen, cluster_assignments);
 
           if (Settings.MATCHED_READS_GENOMES) {
-            ReadScreener rs = new ReadScreener(screen);
+            ReadScreenerCluster rs = new ReadScreenerCluster(screen, cg);
           } else {
             ReadScreenerNovel rs = new ReadScreenerNovel(screen);
           }
         }
+        // STOP
 
       } else {
         System.out.println("Invalid input parameters - please read the README!");
