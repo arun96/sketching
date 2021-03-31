@@ -24,7 +24,7 @@ import com.apporiented.algorithm.clustering.*;
 import com.apporiented.algorithm.clustering.visualization.*;
 
 
-public class ReadClassifierCluster {
+public class ReadClassifierClusterNovel {
 
   // List of sketches
   ArrayList<HashSet<Integer>> sketch_hash;
@@ -43,14 +43,15 @@ public class ReadClassifierCluster {
 
   int k;
 
-  // True Source of the read
-  int source;
+  // readset number
+  int readSet;
 
   // Min number of matches for read to be classified
   int threshold;
 
   // Read's number
   int read_number;
+
 
   Cluster cluster;
   HashMap<String, ArrayList<String>> cluster_sketch_map;
@@ -60,12 +61,10 @@ public class ReadClassifierCluster {
   // Keep track of the status of the read
   int predicted;
   int score;
-  int correct;
-  int incorrect;
   int insufficient;
   int tied;
 
-  ReadClassifierCluster(ArrayList<HashSet<Integer>> sketch_hash, String read, int window, int source, int read_number, Cluster cluster, HashMap<String, ArrayList<String>> cluster_sketch_map, HashMap<String, Integer> genome_sketch_map, HashMap<String, Integer> cluster_height_map){
+  ReadClassifierClusterNovel(ArrayList<HashSet<Integer>> sketch_hash, String read, int window, int readSet, int read_number, Cluster cluster, HashMap<String, ArrayList<String>> cluster_sketch_map, HashMap<String, Integer> genome_sketch_map, HashMap<String, Integer> cluster_height_map){
 
     scores = new int[sketch_hash.size()];
 
@@ -77,7 +76,7 @@ public class ReadClassifierCluster {
 
     this.k = Settings.K;
 
-    this.source = source;
+    this.readSet = readSet;
 
     this.threshold = Settings.THRESHOLD;
 
@@ -92,8 +91,6 @@ public class ReadClassifierCluster {
     // read status
     predicted = 0;
     score = 0;
-    correct = 0;
-    incorrect = 0;
     insufficient = 0;
     tied = 0;
   }
@@ -117,36 +114,20 @@ public class ReadClassifierCluster {
 
     score = (int) scores.get(scores.size() - 1);
 
-    //TODO - comment this out going forward.
-    // System.out.println(source + " " + predicted + " " + score);
+    // TODO - comment this out
+    System.out.println(predicted + " " + score + " " + readSet + " " read_number);
 
-    // Update counts
-    if (predicted == source && score > threshold) {
-      // Correctly classified
-      correct++;
-      if (tie) {
-        // Tie was broken correctly
-        tied++;
-      }
-    } else {
-      if (score == 0){
-        // Not enough to classify - should not happen
-        insufficient++;
-      } else{
-        // Misclassified - update counts
-        incorrect++;
-        if (Settings.TRACK_MISCLASSIFIED){
-          System.out.println(source + " " + read_number);
-        }
-        if (tie){
-          // Tie, but this time broken incorrectly
-          tied++;
-        }
-      }
+    // Check if insufficient or tied
+    if (score == 0) {
+      // Not enough to classify - should not happen
+      insufficient++;
+    }
+    if (tie) {
+      tied++;
     }
 
     if (Settings.READ_LOGGING) {
-      saveReadResultsCluster(Settings.READ_LOCATION, source, read_number, path, score, predicted);
+      saveReadResultsCluster(Settings.READ_LOCATION, readSet, read_number, path, score, predicted);
     }
   }
 
@@ -425,14 +406,14 @@ public class ReadClassifierCluster {
   }
 
   // TODO - finalize
-  void saveReadResultsCluster(String location, int source, int readnumber, String[] path, int score, int prediction) {
-    String filename = location + source + "_" + readnumber + ".log";
+  void saveReadResultsCluster(String location, int readSet, int readnumber, String[] path, int score, int prediction) {
+    String filename = location + readSet + "_" + readnumber + ".log";
     try {
       PrintWriter out = new PrintWriter(new File(filename));
       out.println(Arrays.toString(path));
       out.println(prediction);
       out.println(score);
-      out.println(source);
+      out.println(readSet);
       out.close();
     } catch (Exception e) {
       // Debugging

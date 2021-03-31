@@ -38,6 +38,7 @@ public class ClusterGenerator{
   Cluster cluster;
   HashMap<String, ArrayList<String>> cluster_sketch_map;
   HashMap<String, Integer> genome_sketch_map;
+  HashMap<String, Integer> cluster_height_map;
 
   ClusterGenerator() throws Exception{
 
@@ -84,10 +85,10 @@ public class ClusterGenerator{
     cluster_sketch_map = new HashMap<String, ArrayList<String>>();
 
     // TODO - map between clusters and how much the sketches in them need to shrunk
-    HashMap<String, Integer> cluster_multiplier_map = new HashMap<String, Integer>();
+    cluster_height_map = new HashMap<String, Integer>();
 
     // Gets the sketches in each cluster
-    ArrayList<String> top_cluster_sketches = getClusterSketches(cluster, cluster_sketch_map);
+    ArrayList<String> top_cluster_sketches = getClusterSketches(cluster, cluster_sketch_map, cluster_height_map);
     //System.out.println(top_cluster_sketches.toString());
     //System.out.println(cluster_sketch_map.toString());
   }
@@ -165,19 +166,30 @@ public class ClusterGenerator{
     return minhashvals;
   }
 
-  ArrayList<String> getClusterSketches(Cluster cluster, HashMap<String, ArrayList<String>> map) {
+  ArrayList<String> getClusterSketches(Cluster cluster, HashMap<String, ArrayList<String>> map, HashMap<String, Integer> height_map) {
     ArrayList<String> sketches = new ArrayList<String>();
     if (cluster.isLeaf()) {
       sketches.add(cluster.getName());
       // map.put(cluster.getName(), sketches);
+
+      //TODO
+      // Leaves have height 1
+      height_map.put(cluster.getName(), 1);
+
     }
     else {
       List<Cluster> children = cluster.getChildren();
+      int[] child_heights = new int[children.size()];
       for (int i = 0; i < children.size(); i++) {
-        ArrayList<String> child_sketches = getClusterSketches(children.get(i), map);
+        ArrayList<String> child_sketches = getClusterSketches(children.get(i), map, height_map);
         sketches.addAll(child_sketches);
+        child_heights[i] = height_map.get(children.get(i).getName());
       }
       map.put(cluster.getName(), sketches);
+
+      // Get the height of the cluster
+      int height = Arrays.stream(child_heights).max().getAsInt();
+      height_map.put(cluster.getName(), height);
     }
     return sketches;
   }

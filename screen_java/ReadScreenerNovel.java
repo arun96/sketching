@@ -88,7 +88,7 @@ public class ReadScreenerNovel {
          int numReads = reads.size();
 
          //Screen these reads
-         ParallelScreenerNovel ps = new ParallelScreenerNovel(sketch_hash, r, reads, window, read_start);
+         ParallelScreenerNovel ps = new ParallelScreenerNovel(sketch_hash, reads, window, r, read_start);
          ps.run();
 
          // Counts for this readset
@@ -136,7 +136,7 @@ public class ReadScreenerNovel {
        // For each read in the readset
        int numReads = reads.size();
 
-       ParallelScreenerNovel ps = new ParallelScreenerNovel(sketch_hash, r, reads, window, read_start);
+       ParallelScreenerNovel ps = new ParallelScreenerNovel(sketch_hash, reads, window, r, read_start);
        ps.run();
        // Counts for this readset
        totalReads[r] = ps.totalReads;

@@ -14,13 +14,23 @@ import java.nio.charset.StandardCharsets;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class ParallelScreenerNovel{
+// Heirachical Clustering Java
+import com.apporiented.algorithm.clustering.*;
+import com.apporiented.algorithm.clustering.visualization.*;
+
+public class ParallelScreenerClusterNovel{
 
   // Concurrent List of reads to be processed
   ConcurrentLinkedQueue<String> reads_to_process;
 
   // Genome sketches
   ArrayList<HashSet<Integer>> sketch_hash;
+
+  // Storing Cluster Information
+  Cluster cluster;
+  HashMap<String, ArrayList<String>> cluster_sketch_map;
+  HashMap<String, Integer> genome_sketch_map;
+  HashMap<String, Integer> cluster_height_map;
 
   // Input set of reads to be processed
   ArrayList<String> reads;
@@ -32,11 +42,11 @@ public class ParallelScreenerNovel{
   // Min Number of matches for read to be classified
   int threshold;
 
+  // Source of these reads
+  int readSet;
+
   // Total number of reads
   int totalReads;
-
-  // The readset being classified
-  int readSet;
 
   // Counts
   AtomicInteger insuf = new AtomicInteger(0);
@@ -46,7 +56,7 @@ public class ParallelScreenerNovel{
   AtomicInteger read_number;
 
 
-  ParallelScreenerNovel(ArrayList<HashSet<Integer>> sketch_hash, ArrayList<String> reads, int window, int readSet, int read_start){
+  ParallelScreenerClusterNovel(ArrayList<HashSet<Integer>> sketch_hash, ArrayList<String> reads, int window, int readSet, int read_start, ClusterGenerator cg){
 
     // Store parameters
     this.sketch_hash = sketch_hash;
@@ -55,11 +65,18 @@ public class ParallelScreenerNovel{
     this.num_threads = Settings.NUM_THREADS;
     this.window = window;
 
+    this.readSet = readSet;
     this.threshold = Settings.THRESHOLD;
 
     this.totalReads = 0;
     this.read_number = new AtomicInteger(read_start);
-    this.readSet = readSet;
+
+
+    // Cluster Information
+    this.cluster = cg.cluster;
+    this.cluster_sketch_map = cg.cluster_sketch_map;
+    this.genome_sketch_map = cg.genome_sketch_map;
+    this.cluster_height_map = cg.cluster_height_map;
 
     reads_to_process = new ConcurrentLinkedQueue<String>();
     // Populate queue
@@ -102,10 +119,10 @@ public class ParallelScreenerNovel{
         // Update read number
         read_number.incrementAndGet();
 
-        ReadClassifierNovel rc = new ReadClassifierNovel(sketch_hash, readSet, read, window, curr_read);
+        ReadClassifierClusterNovel rc = new ReadClassifierClusterNovel(sketch_hash, read, window, readSet, curr_read, cluster, cluster_sketch_map, genome_sketch_map, cluster_height_map);
         rc.classifyRead();
 
-        // Update counts
+        // Update counts - TODO: this remains same for cluster
         insuf.addAndGet(rc.insufficient);
         ties.addAndGet(rc.tied);
       }

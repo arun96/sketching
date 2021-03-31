@@ -232,7 +232,7 @@ public class Main {
           if (Settings.MATCHED_READS_GENOMES) {
             ReadScreenerCluster rs = new ReadScreenerCluster(screen, cg);
           } else {
-            ReadScreenerNovel rs = new ReadScreenerNovel(screen);
+            ReadScreenerClusterNovel rs = new ReadScreenerClusterNovel(screen, cg);
           }
 
         } else {
@@ -242,7 +242,7 @@ public class Main {
           if (Settings.MATCHED_READS_GENOMES) {
             ReadScreenerCluster rs = new ReadScreenerCluster(screen, cg);
           } else {
-            ReadScreenerNovel rs = new ReadScreenerNovel(screen);
+            ReadScreenerClusterNovel rs = new ReadScreenerClusterNovel(screen, cg);
           }
 
         }
@@ -254,7 +254,7 @@ public class Main {
           if (Settings.MATCHED_READS_GENOMES) {
             ReadScreenerCluster rs = new ReadScreenerCluster(screen, cg);
           } else {
-            ReadScreenerNovel rs = new ReadScreenerNovel(screen);
+            ReadScreenerClusterNovel rs = new ReadScreenerClusterNovel(screen, cg);
           }
 
         } else {
@@ -264,7 +264,7 @@ public class Main {
           if (Settings.MATCHED_READS_GENOMES) {
             ReadScreenerCluster rs = new ReadScreenerCluster(screen, cg);
           } else {
-            ReadScreenerNovel rs = new ReadScreenerNovel(screen);
+            ReadScreenerClusterNovel rs = new ReadScreenerClusterNovel(screen, cg);
           }
 
         }
@@ -277,7 +277,7 @@ public class Main {
           if (Settings.MATCHED_READS_GENOMES) {
             ReadScreenerCluster rs = new ReadScreenerCluster(screen, cg);
           } else {
-            ReadScreenerNovel rs = new ReadScreenerNovel(screen);
+            ReadScreenerClusterNovel rs = new ReadScreenerClusterNovel(screen, cg);
           }
         } else {
           UniformScreen screen = new UniformScreen();
@@ -286,7 +286,7 @@ public class Main {
           if (Settings.MATCHED_READS_GENOMES) {
             ReadScreenerCluster rs = new ReadScreenerCluster(screen, cg);
           } else {
-            ReadScreenerNovel rs = new ReadScreenerNovel(screen);
+            ReadScreenerClusterNovel rs = new ReadScreenerClusterNovel(screen, cg);
           }
         }
         // STOP
