@@ -115,7 +115,7 @@ public class ReadClassifierClusterNovel {
     score = (int) scores.get(scores.size() - 1);
 
     // TODO - comment this out
-    System.out.println(predicted + " " + score + " " + readSet + " " read_number);
+    System.out.println(predicted + " " + score + " " + readSet + " " + read_number);
 
     // Check if insufficient or tied
     if (score == 0) {
