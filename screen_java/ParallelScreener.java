@@ -104,8 +104,8 @@ public class ParallelScreener{
         // Update read number
         read_number.incrementAndGet();
 
-        ReadClassifier rc = new ReadClassifier(sketch_hash, read, window, source, curr_read);
-        rc.classifyRead();
+        ReadClassifier rc = new ReadClassifier(read, window, source, curr_read, sketch_hash.size());
+        rc.classifyRead(sketch_hash);
 
         // Update counts
         correct.addAndGet(rc.correct);

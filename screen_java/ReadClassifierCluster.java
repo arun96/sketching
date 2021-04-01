@@ -27,7 +27,7 @@ import com.apporiented.algorithm.clustering.visualization.*;
 public class ReadClassifierCluster {
 
   // List of sketches
-  ArrayList<HashSet<Integer>> sketch_hash;
+  // ArrayList<HashSet<Integer>> sketch_hash;
 
   // Read to be processed
   String read;
@@ -65,11 +65,11 @@ public class ReadClassifierCluster {
   int insufficient;
   int tied;
 
-  ReadClassifierCluster(ArrayList<HashSet<Integer>> sketch_hash, String read, int window, int source, int read_number, Cluster cluster, HashMap<String, ArrayList<String>> cluster_sketch_map, HashMap<String, Integer> genome_sketch_map, HashMap<String, Integer> cluster_height_map){
+  ReadClassifierCluster(String read, int window, int source, int read_number, Cluster cluster, HashMap<String, ArrayList<String>> cluster_sketch_map, HashMap<String, Integer> genome_sketch_map, HashMap<String, Integer> cluster_height_map, int sketch_size){
 
-    scores = new int[sketch_hash.size()];
+    scores = new int[sketch_size];
 
-    this.sketch_hash = sketch_hash;
+    // this.sketch_hash = sketch_hash;
 
     this.window = window;
 
@@ -99,7 +99,7 @@ public class ReadClassifierCluster {
   }
 
   // Misclassification matrix can be pieced together from saved read logs
-  void classifyRead() {
+  void classifyRead(ArrayList<HashSet<Integer>> sketch_hash, HashMap<String, HashSet<Integer>> cluster_map) {
 
     // Get read k-mers
     if (window > 0) {
@@ -111,13 +111,12 @@ public class ReadClassifierCluster {
     boolean tie = false;
     ArrayList<Integer> scores = new ArrayList<Integer>();
 
-    String [] path = screenReadCluster(sketch_hash, cluster, cluster_sketch_map, genome_sketch_map, read_hashes, scores, tie);
+    String [] path = screenReadCluster(sketch_hash, cluster_map, cluster, cluster_sketch_map, genome_sketch_map, read_hashes, scores, tie);
 
     predicted = genome_sketch_map.get(path[path.length - 1]);
 
     score = (int) scores.get(scores.size() - 1);
 
-    //TODO - comment this out going forward.
     // System.out.println(source + " " + predicted + " " + score);
 
     // Update counts
@@ -190,7 +189,7 @@ public class ReadClassifierCluster {
   }
 
   // Screen read kmers against clustered approach
-  String[] screenReadCluster(ArrayList<HashSet<Integer>> sketch, Cluster cluster, HashMap<String, ArrayList<String>> cluster_sketch_map, HashMap<String, Integer> genome_sketch_map, ArrayList<Integer> readMers, ArrayList<Integer> scores, boolean tie){
+  String[] screenReadCluster(ArrayList<HashSet<Integer>> sketch, HashMap<String, HashSet<Integer>> cluster_map, Cluster cluster, HashMap<String, ArrayList<String>> cluster_sketch_map, HashMap<String, Integer> genome_sketch_map, ArrayList<Integer> readMers, ArrayList<Integer> scores, boolean tie){
 
     int pred = 0;
     int selected = 0;
@@ -200,16 +199,15 @@ public class ReadClassifierCluster {
 
     while(true) {
 
-      // if (children.size() == 0) {
-      //if (!cluster_sketch_map.containsKey(cluster.getName())) {
       if (cluster.isLeaf()) {
         // path_list.add(cluster.getName());
         break;
       }
 
+      // Get all children of the cluster
       List<Cluster> children = cluster.getChildren();
 
-
+      // Initialize an array to store the score for each child
       int[] matches = new int[children.size()];
 
       // For each child
@@ -228,40 +226,8 @@ public class ReadClassifierCluster {
 
         } else {
 
-          // Gets the sketches under this cluster
-          ArrayList<String> child_sketches = cluster_sketch_map.get(n);
-          // System.out.println(child_sketches.toString());
-
-          // Get the sketch indices
-          ArrayList<Integer> child_sketches_indices = new ArrayList<Integer>();
-          for (int j = 0; j < child_sketches.size(); j++) {
-            String sn = child_sketches.get(j);
-            child_sketches_indices.add(genome_sketch_map.get(sn));
-          }
-
-          // Get the cluster's height
-          int height = cluster_height_map.get(n);
-
-          // Create combined sketch
-          HashSet<Integer> cluster_sketches = new HashSet<Integer>();
-          for (int k = 0; k < child_sketches_indices.size(); k++) {
-
-
-            // Downsample the sketch
-            List<Integer> sketch_vals = new LinkedList<Integer>(sketch.get(child_sketches_indices.get(k)));
-            int downsample_factor = (int) (Math.pow(2,height));
-            int downsample_size = (int) (sketch_vals.size() / downsample_factor);
-            Collections.shuffle(sketch_vals);
-            Set<Integer> downsampled_sketch = new HashSet<Integer>(sketch_vals.subList(0, downsample_size));
-            cluster_sketches.addAll(downsampled_sketch);
-
-            //cluster_sketches.addAll(sketch.get(child_sketches_indices.get(k)));
-          }
-
-          // Compute overlap
-          int s = getOverlapHash(cluster_sketches, readMers);
-          // Store the overlap
-          matches[i] = s;
+          int ss = getOverlapHash(cluster_map.get(n), readMers);
+          matches[i] = ss;
         }
       }
 

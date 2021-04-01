@@ -31,6 +31,7 @@ public class ParallelScreenerClusterNovel{
   HashMap<String, ArrayList<String>> cluster_sketch_map;
   HashMap<String, Integer> genome_sketch_map;
   HashMap<String, Integer> cluster_height_map;
+  HashMap<String, HashSet<Integer>> cluster_map;
 
   // Input set of reads to be processed
   ArrayList<String> reads;
@@ -56,7 +57,7 @@ public class ParallelScreenerClusterNovel{
   AtomicInteger read_number;
 
 
-  ParallelScreenerClusterNovel(ArrayList<HashSet<Integer>> sketch_hash, ArrayList<String> reads, int window, int readSet, int read_start, ClusterGenerator cg){
+  ParallelScreenerClusterNovel(ArrayList<HashSet<Integer>> sketch_hash, ArrayList<String> reads, int window, int readSet, int read_start, ClusterGenerator cg, HashMap<String, HashSet<Integer>> cluster_map){
 
     // Store parameters
     this.sketch_hash = sketch_hash;
@@ -77,6 +78,7 @@ public class ParallelScreenerClusterNovel{
     this.cluster_sketch_map = cg.cluster_sketch_map;
     this.genome_sketch_map = cg.genome_sketch_map;
     this.cluster_height_map = cg.cluster_height_map;
+    this.cluster_map = cluster_map;
 
     reads_to_process = new ConcurrentLinkedQueue<String>();
     // Populate queue
@@ -119,8 +121,8 @@ public class ParallelScreenerClusterNovel{
         // Update read number
         read_number.incrementAndGet();
 
-        ReadClassifierClusterNovel rc = new ReadClassifierClusterNovel(sketch_hash, read, window, readSet, curr_read, cluster, cluster_sketch_map, genome_sketch_map, cluster_height_map);
-        rc.classifyRead();
+        ReadClassifierClusterNovel rc = new ReadClassifierClusterNovel(read, window, readSet, curr_read, cluster, cluster_sketch_map, genome_sketch_map, cluster_height_map, sketch_hash.size());
+        rc.classifyRead(sketch_hash, cluster_map);
 
         // Update counts - TODO: this remains same for cluster
         insuf.addAndGet(rc.insufficient);

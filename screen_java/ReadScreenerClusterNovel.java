@@ -62,6 +62,10 @@ public class ReadScreenerClusterNovel {
       System.out.println(genomeNames[a] + " " + sketch_hash.get(a).size());
     }
 
+    // Generate full cluster data structure
+    System.out.println("Generating Cluster Structure...");
+    HashMap<String, HashSet<Integer>> cluster_map = getClusterStructure(cg, sketch_hash);
+
     // TODO - add option to screen reads independently of the genomes
     // Add ability to track classifications
 
@@ -93,7 +97,7 @@ public class ReadScreenerClusterNovel {
          int numReads = reads.size();
 
          //Screen these reads
-         ParallelScreenerClusterNovel ps = new ParallelScreenerClusterNovel(sketch_hash, reads, window, r, read_start, cg);
+         ParallelScreenerClusterNovel ps = new ParallelScreenerClusterNovel(sketch_hash, reads, window, r, read_start, cg, cluster_map);
          ps.run();
 
          // Counts for this readset
@@ -141,7 +145,7 @@ public class ReadScreenerClusterNovel {
        // For each read in the readset
        int numReads = reads.size();
 
-       ParallelScreenerClusterNovel ps = new ParallelScreenerClusterNovel(sketch_hash, reads, window, r, read_start, cg);
+       ParallelScreenerClusterNovel ps = new ParallelScreenerClusterNovel(sketch_hash, reads, window, r, read_start, cg, cluster_map);
        ps.run();
        // Counts for this readset
        totalReads[r] = ps.totalReads;
@@ -260,5 +264,51 @@ public class ReadScreenerClusterNovel {
         }
         System.out.println();
     }
+  }
+
+  // ------ CLUSTERING -------
+
+  HashMap<String, HashSet<Integer>> getClusterStructure(ClusterGenerator cg, ArrayList<HashSet<Integer>> sketch) {
+
+    HashMap<String, HashSet<Integer>> map = new HashMap<String, HashSet<Integer>>();
+
+    // Iterate through all clusters
+    for ( String key : cg.cluster_sketch_map.keySet() ) {
+
+      // Get list of all sketches under this cluster
+      ArrayList<String> sketch_list = cg.cluster_sketch_map.get(key);
+
+      // Get the indices of all sketches
+      ArrayList<Integer> sketch_indices_list = new ArrayList<Integer>();
+      for (int j = 0; j < sketch_list.size(); j++) {
+        String sn = sketch_list.get(j);
+        sketch_indices_list.add(cg.genome_sketch_map.get(sn));
+      }
+
+      // Get the heights
+      int height = cg.cluster_height_map.get(key);
+
+      // Get the downsampled sketches, combined for this cluster
+      HashSet<Integer> cluster_sketches = new HashSet<Integer>();
+      for (int k = 0; k < sketch_indices_list.size(); k++) {
+        // For each sketch, get the whole sketch
+        List<Integer> sketch_vals = new LinkedList<Integer>(sketch.get(sketch_indices_list.get(k)));
+
+        // Downsample by this much
+        int downsample_factor = (int) (Math.pow(2,height));
+        int downsample_size = (int) (sketch_vals.size() / downsample_factor);
+
+        // Downsample the sketch
+        Collections.shuffle(sketch_vals);
+        Set<Integer> downsampled_sketch = new HashSet<Integer>(sketch_vals.subList(0, downsample_size));
+
+        // Add it
+        cluster_sketches.addAll(downsampled_sketch);
+      }
+
+      // Add to the map
+      map.put(key, cluster_sketches);
+    }
+    return map;
   }
 }

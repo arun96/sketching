@@ -102,8 +102,8 @@ public class ParallelScreenerNovel{
         // Update read number
         read_number.incrementAndGet();
 
-        ReadClassifierNovel rc = new ReadClassifierNovel(sketch_hash, readSet, read, window, curr_read);
-        rc.classifyRead();
+        ReadClassifierNovel rc = new ReadClassifierNovel(readSet, read, window, curr_read, sketch_hash.size());
+        rc.classifyRead(sketch_hash);
 
         // Update counts
         insuf.addAndGet(rc.insufficient);

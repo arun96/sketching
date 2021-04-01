@@ -23,7 +23,7 @@ import com.google.common.hash.HashFunction;
 public class ReadClassifierNovel {
 
   // List of sketches
-  ArrayList<HashSet<Integer>> sketch_hash;
+  // ArrayList<HashSet<Integer>> sketch_hash;
 
   // Read to be processed
   String read;
@@ -52,11 +52,11 @@ public class ReadClassifierNovel {
   int insufficient;
   int tied;
 
-  ReadClassifierNovel(ArrayList<HashSet<Integer>> sketch_hash, int readSet, String read, int window, int read_number){
+  ReadClassifierNovel(int readSet, String read, int window, int read_number, int sketch_size) {
 
-    scores = new int[sketch_hash.size()];
+    scores = new int[sketch_size];
 
-    this.sketch_hash = sketch_hash;
+    // this.sketch_hash = sketch_hash;
 
     this.window = window;
 
@@ -78,7 +78,7 @@ public class ReadClassifierNovel {
   }
 
   // Misclassification matrix can be pieced together from saved read logs
-  void classifyRead() {
+  void classifyRead(ArrayList<HashSet<Integer>> sketch_hash) {
 
     // System.out.println(source + " " + read_number);
 
