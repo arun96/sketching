@@ -94,6 +94,10 @@ Experiment Parameters
 - `-nt/--num-threads <Integer>`: The number of threads to use during read classification. By default, it is 4.
 - `-rlns/--read-lines`: The number of lines in the read fasta/fastq file that are dedicated to a single read. By default, it is 2 (read name + the read itself), but this could be 4 in some cases.
 
+Clustering-based Approach:
+- `-ct/--cluster`: Use this flag to enable the clustering approach, where the generated screens will be clustered and arranged into a tree. By default, this is false, and regular classification will occur.
+- `-css/--cluster-sketch-size`: Used to specify the size of the sketches used to cluster the genomes. By default is set to 100, but can be set to any value as long as clustering is enabled.
+
 ### Syntax Examples
 
 #### Example 1: MinHash-based Screen with corresponding read sets (of reads with average length 10k, error rate 1%)
@@ -126,6 +130,12 @@ java -cp screen_java:jars/\* Main -g <Genomes Directory> -r <Reads Directory> -o
 java -cp screen_java:jars/\* Main -g <Genomes Directory> -r <Reads Directory> -o <Log File location> -s m -rl <Expected Read Length> -re <Expected Read Error> -tm <Number of target matches per read> -hf mmh3_128 -so -sl <Location to save the generated screens>
 ```
 
+#### Example 6: Use a clustered uniform-sampling approach with corresponding read sets, with clustering done using a sketch size of 250, with a specified number of reads  loaded at a time, the default hash function, and read logging active
+```
+java -cp screen_java:jars/\* Main -g <Genomes Directory> -r <Reads Directory> -o <Log File location> -s u -f <Screen Size> -c -cs <Number of reads to be loaded at a time> -rlg -rlc <Location to save the read logs> -ct -css 250
+```
+
+
 ### Further implementation details
 
 #### Hash Function Options
@@ -142,7 +152,7 @@ I will be adding more hash functions soon!
 
 #### Threads
 
-The number of threads determines the number of reads processed at once. Going forward, I hope to parallelize the process of screen generation too.
+The number of threads parameter determines the number of reads processed at once. Going forward, I hope to parallelize the process of screen generation too.
 
 #### Read Loading
 
