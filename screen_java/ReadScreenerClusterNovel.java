@@ -125,7 +125,6 @@ public class ReadScreenerClusterNovel {
        }
 
        // Print summary
-       // TODO - fix this for read sets distinct from genomes
        System.out.println(readSets[r]);
        System.out.println(totalReads[r] + " " + insufCounts[r] + " " + tieCounts[r]);
 

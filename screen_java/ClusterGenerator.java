@@ -188,7 +188,7 @@ public class ClusterGenerator{
       map.put(cluster.getName(), sketches);
 
       // Get the height of the cluster
-      int height = Arrays.stream(child_heights).max().getAsInt();
+      int height = Arrays.stream(child_heights).max().getAsInt() + 1;
       height_map.put(cluster.getName(), height);
     }
     return sketches;

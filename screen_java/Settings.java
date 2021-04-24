@@ -143,7 +143,7 @@ public class Settings {
     read_location.setRequired(false);
     options.addOption(read_location);
 
-    // Cluster Parameters
+    // Cluster Parameters - TODO put this in the README
     Option cluster = new Option("ct", "cluster", false, "Use cluster-based approach (default = false).");
     cluster.setRequired(false);
     options.addOption(cluster);

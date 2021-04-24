@@ -126,7 +126,7 @@ public class ReadClassifierClusterNovel {
     }
 
     if (Settings.READ_LOGGING) {
-      saveReadResultsCluster(Settings.READ_LOCATION, readSet, read_number, path, score, predicted);
+      saveReadResultsCluster(Settings.READ_LOCATION, readSet, read_number, path, score, predicted, sketch_hash.size());
     }
   }
 
@@ -356,29 +356,15 @@ public class ReadClassifierClusterNovel {
 
   // ----- READ LOGGING -----
 
-  void saveReadResults(String location, int readset, int readnumber, int[] readscores, int s) {
-    String filename = location + readset + "_" + readnumber + ".log";
-    try {
-      PrintWriter out = new PrintWriter(new File(filename));
-      out.println(Arrays.toString(readscores));
-      out.println(s);
-      out.close();
-    } catch (Exception e) {
-      // Debugging
-      // System.out.println(readnumber);
-      e.printStackTrace();
-    }
-  }
-
   // TODO - finalize
-  void saveReadResultsCluster(String location, int readSet, int readnumber, String[] path, int score, int prediction) {
+  void saveReadResultsCluster(String location, int readSet, int readnumber, String[] path, int score, int prediction, int screen_size) {
     String filename = location + readSet + "_" + readnumber + ".log";
     try {
       PrintWriter out = new PrintWriter(new File(filename));
+      out.println(screen_size);
       out.println(Arrays.toString(path));
       out.println(prediction);
       out.println(score);
-      out.println(readSet);
       out.close();
     } catch (Exception e) {
       // Debugging

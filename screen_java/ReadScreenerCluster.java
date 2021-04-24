@@ -299,8 +299,19 @@ public class ReadScreenerCluster {
         // For each sketch, get the whole sketch
         List<Integer> sketch_vals = new LinkedList<Integer>(sketch.get(sketch_indices_list.get(k)));
 
+        // TODO - make this a parameter
+        
         // Downsample by this much
-        int downsample_factor = (int) (Math.pow(2,height));
+        // int downsample_factor = (int) (Math.pow(2,height));
+
+        // constant downsampling factor
+        int downsample_factor = 2;
+
+        // int downsample_factor = 4;
+
+        // No downsampling
+        // int downsample_factor = 1;
+
         int downsample_size = (int) (sketch_vals.size() / downsample_factor);
 
         // Downsample the sketch
@@ -313,6 +324,9 @@ public class ReadScreenerCluster {
 
       // Add to the map
       map.put(key, cluster_sketches);
+
+      // Cluster sizes
+      // System.out.println(key + " " + cluster_sketches.size());
     }
     return map;
   }

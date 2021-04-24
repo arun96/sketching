@@ -145,7 +145,7 @@ public class ReadClassifierCluster {
     }
 
     if (Settings.READ_LOGGING) {
-      saveReadResultsCluster(Settings.READ_LOCATION, source, read_number, path, score, predicted);
+      saveReadResultsCluster(Settings.READ_LOCATION, source, read_number, path, score, predicted, sketch_hash.size());
     }
   }
 
@@ -197,6 +197,9 @@ public class ReadClassifierCluster {
     boolean leaf = false;
     ArrayList<String> path_list = new ArrayList<String>();
 
+    // INVESTIGATING NUMBER OF COMPARISONS
+    // int comps = 0;
+
     while(true) {
 
       if (cluster.isLeaf()) {
@@ -224,10 +227,16 @@ public class ReadClassifierCluster {
 
           matches[i] = s;
 
+          // INVESTIGATING NUMBER OF COMPARISONS
+          // comps = comps + sketch.get(si).size();
+
         } else {
 
           int ss = getOverlapHash(cluster_map.get(n), readMers);
           matches[i] = ss;
+
+          // INVESTIGATING NUMBER OF COMPARISONS
+          // comps = comps + cluster_map.get(n).size();
         }
       }
 
@@ -244,6 +253,9 @@ public class ReadClassifierCluster {
       path_list.add(cluster.getName());
       scores.add(matches[selected]);
     }
+
+    // INVESTIGATING NUMBER OF COMPARISONS
+    // System.out.println(comps);
 
     // Return the path that was taken
     //int[] path_list = path.stream().mapToInt(i -> i).toArray();
@@ -376,25 +388,12 @@ public class ReadClassifierCluster {
 
   // ----- READ LOGGING -----
 
-  void saveReadResults(String location, int readset, int readnumber, int[] readscores, int s) {
-    String filename = location + readset + "_" + readnumber + ".log";
-    try {
-      PrintWriter out = new PrintWriter(new File(filename));
-      out.println(Arrays.toString(readscores));
-      out.println(s);
-      out.close();
-    } catch (Exception e) {
-      // Debugging
-      // System.out.println(readnumber);
-      e.printStackTrace();
-    }
-  }
-
-  // TODO - finalize
-  void saveReadResultsCluster(String location, int source, int readnumber, String[] path, int score, int prediction) {
+  // TODO - maybe add more information (number of screens, matches down the path, etc.)
+  void saveReadResultsCluster(String location, int source, int readnumber, String[] path, int score, int prediction, int screen_size) {
     String filename = location + source + "_" + readnumber + ".log";
     try {
       PrintWriter out = new PrintWriter(new File(filename));
+      out.println(screen_size);
       out.println(Arrays.toString(path));
       out.println(prediction);
       out.println(score);
