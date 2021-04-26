@@ -42,6 +42,24 @@ public class ReadSimulator {
 			opt = args[7];
 		}
 
+		// Output selected read generation pattern
+		if (opt.equals("E")){
+			// Original Exponential
+			System.out.println("Using Exponential Read Lengths");
+		} else if (opt.equals("EM")){
+			// Exponential with Min Length
+			System.out.println("Using Exponential with Minimum Read Lengths");
+		} else if (opt.equals("EL")){
+			// Looping Exponential
+			System.out.println("Using Exponential with Minimum and Looping Read Lengths");
+		} else if (opt.equals("XL")){
+			// Exact Read Lengths
+			System.out.println("Using Exact Read Lengths");
+		} else {
+			//  DEFAULT - Normal Distribution
+			System.out.println("Using Normally Distributed Read Lengths");
+		}
+
 		GenomeSimulator gs = new GenomeSimulator(fn);
 		ReadSimulator rs = new ReadSimulator(gs, SNP, insertion, deletion, meanLength, coverage, false, opt);
 		rs.printToFile(ofn);
