@@ -190,6 +190,8 @@ Python helper scripts for aggregating these log files and summarizing results ar
 
 As I am not using Maven, I have manually included the JARs this project will use. The foremost of these is Google's `Guava`, which gives me access to hash function implementations, optimized data structures, and other nifty features. Other include JARs are:
 - `commons.cli`: This is the library used for command line argument parsing.
+- `hierarchical-clustering`: This is the package used for clustering genome sketches to construct the sketch tree.
+- `clust4j`: An alternate option for clustering - currently not in use.
 
 As I add more to this folder, I will update the README to include descriptions of each of them!
 
