@@ -168,7 +168,9 @@ You can generate and save a screen for a later experiment, or load an existing s
 When running in matched mode (and the `-rlg` option is used), read logs will be saved to the location specified by `-rlc`. The format of the log files varies depending on whether or not clustering is used. If clustering is not used, the logs will be a two lines:
 - An array of integers, with each number corresponding the number of matches between the current read and each element of the screen,
 -  The true source of the read, noted as an integer value (e.g. if it is `5`, then the 6th input genome is the source).
+
 If clustering is used, then the log file will contain five lines:
+
 - The number of genomes in the screen,
 - The path down the tree taken to classify the read,
 - The predicted source genome (the index of it),
