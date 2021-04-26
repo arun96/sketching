@@ -1,9 +1,13 @@
-import os
-import sys
+# Plotting
 import numpy as np
 import matplotlib.pyplot as plt
+import seaborn as sns
+
+# I/O
 import glob
 import ast
+import os
+import sys
 
 def tied_preds(predictions, maxpos):
     max = predictions[maxpos]
@@ -27,7 +31,6 @@ tied_counts = []
 insufficient_counts = []
 total_counts = []
 
-## TODO - add option to detect cluster vs regular
 # Regular files have two lines - score list + Source
 # Cluster files have five lines - screen members, clusters, prediction, number of matches, source
 
@@ -140,3 +143,23 @@ print("Classification Matrix:")
 print(classification_matrix)
 
 # TODO - PLOTTING
+
+# 1. Accuracy plots across the organisms (combined plot)
+
+
+# 2. Number of incorrect attached reads (look at classification matrix) - could be done as a heatmap
+
+# Seaborn Heatmap
+# TODO - adjust this to show percentage, not true values
+ax = sns.heatmap(classification_matrix, square = True, cmap="Blues", annot=True)
+plt.title("Classification Matrix")
+plt.xlabel('Predicted Genome')
+plt.ylabel('Readset')
+plt.show()
+
+# 3. Matches per read (histograms)
+
+# a. Readset by Readset
+
+
+# b. All reads
