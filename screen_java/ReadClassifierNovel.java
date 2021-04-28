@@ -97,7 +97,7 @@ public class ReadClassifierNovel {
     // System.out.println(score);
 
     // Check if tied or insufficient
-    if (read_scores[predicted] == 0){
+    if (read_scores[predicted] == 0 || read_scores[predicted] < threshold){
       insufficient++;
     } else {
       if (sameCounts(read_scores, predicted) > 0) {

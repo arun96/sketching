@@ -117,8 +117,8 @@ public class ReadClassifierClusterNovel {
     // System.out.println(predicted + " " + score + " " + readSet + " " + read_number);
 
     // Check if insufficient or tied
-    if (score == 0) {
-      // Not enough to classify - should not happen
+    if (score == 0 || score < threshold) {
+      // Not enough to classify - should not happen often
       insufficient++;
     }
     if (tie) {

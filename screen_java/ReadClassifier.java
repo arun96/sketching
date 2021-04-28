@@ -111,8 +111,8 @@ public class ReadClassifier {
         tied++;
       }
     } else {
-      if (read_scores[predicted] == 0){
-        // Not enough to classify - should not happen
+      if (read_scores[predicted] < threshold){
+        // Not enough to classify - should not happen often
         insufficient++;
       } else{
         // Misclassified - update counts

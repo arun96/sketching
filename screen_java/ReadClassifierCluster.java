@@ -128,8 +128,8 @@ public class ReadClassifierCluster {
         tied++;
       }
     } else {
-      if (score == 0){
-        // Not enough to classify - should not happen
+      if (score == 0 || score < threshold){
+        // Not enough to classify - should not happen often
         insufficient++;
       } else{
         // Misclassified - update counts

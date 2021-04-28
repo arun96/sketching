@@ -103,6 +103,10 @@ public class Settings {
     num_threads.setRequired(false);
     options.addOption(num_threads);
 
+    Option threshold = new Option("th", "threshold", true, "Minimum number of matches a read must have with a genome to be considered classified (default = 5)");
+    threshold.setRequired(false);
+    options.addOption(threshold);
+
     Option read_lines = new Option("rlns", "read-lines", true, "Number of lines per read (default = 2)");
     read_lines.setRequired(false);
     options.addOption(read_lines);
@@ -227,6 +231,12 @@ public class Settings {
       NUM_THREADS = Integer.parseInt(cmd.getOptionValue("nt"));
     } else {
       NUM_THREADS = 4;
+    }
+
+    if (cmd.hasOption("th")) {
+      THRESHOLD = Integer.parseInt(cmd.getOptionValue("th"));
+    } else {
+      THRESHOLD = 5;
     }
 
     if (cmd.hasOption("rlns")) {

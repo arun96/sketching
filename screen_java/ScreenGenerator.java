@@ -36,18 +36,26 @@ public class ScreenGenerator {
   // ----- UTILITY FUNCTIONS ------
   // Compute the sketch size, given a genome, read lengths, error rates and # of target matches
   int getSketchSize(int genomeLength, int readLength, double readError, int targetMatches, int k){
-    double unaffectedChance = 1.0 - readError;
-    double multiplier = Math.pow(unaffectedChance, k);
+    // double unaffectedChance = 1.0 - readError;
+    // double multiplier = Math.pow(unaffectedChance, k);
+    //
+    // double genomeLengthD = (double) genomeLength;
+    // double readLengthD = (double) readLength;
+    // double targetMatchesD = (double) targetMatches;
+    //
+    // double numerator = (targetMatchesD * genomeLengthD);
+    // double denominator = (readLengthD * multiplier);
+    //
+    // double num_sketches = numerator/denominator;
+    // return (int) num_sketches;
 
-    double genomeLengthD = (double) genomeLength;
-    double readLengthD = (double) readLength;
-    double targetMatchesD = (double) targetMatches;
-
-    double numerator = (targetMatchesD * genomeLengthD);
-    double denominator = (readLengthD * multiplier);
-
-    double num_sketches = numerator/denominator;
-    return (int) num_sketches;
+    // NEW
+    // Compute number of necessary matches per read length given error rate, extend to whole genome
+    double kmer_error_rate = Math.pow((1-readError), k);
+    double necessary_matches = ((double) targetMatches)/kmer_error_rate;
+    double genome_segements = ((double) genomeLength) / ((double) readLength);
+    double total_num_sketches = necessary_matches * genome_segements;
+    return (int) total_num_sketches;
   }
 
   // Generates the reverse complement of a DNA sequence

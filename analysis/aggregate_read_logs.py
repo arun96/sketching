@@ -9,6 +9,9 @@ import ast
 import os
 import sys
 
+# MISC
+import copy
+
 def tied_preds(predictions, maxpos):
     max = predictions[maxpos]
     if predictions.count(max) > 1:
@@ -17,6 +20,16 @@ def tied_preds(predictions, maxpos):
         return False
 
 file_path = sys.argv[1]
+
+target = sys.argv[2]
+error_rate = sys.argv[3]
+
+# TODO - clean this up
+# if len(sys.argv) == 3:
+#     target = int(sys.argv[2])
+# else:
+#     target = 30
+
 
 # Iterating through read sets
 prefix_count = 0
@@ -151,15 +164,54 @@ print(classification_matrix)
 
 # Seaborn Heatmap
 # TODO - adjust this to show percentage, not true values
-ax = sns.heatmap(classification_matrix, square = True, cmap="Blues", annot=True)
-plt.title("Classification Matrix")
+
+classification_fraction = copy.deepcopy(classification_matrix)
+
+for i in range(len(classification_fraction)):
+    nr = sum(classification_fraction[i])
+    for j in range(len(classification_fraction[i])):
+        classification_fraction[i][j] = classification_fraction[i][j]/nr
+
+# Read Counts
+# ax = sns.heatmap(classification_matrix, square = True, cmap="Blues", annot=True)
+# plt.title("Classification Matrix (number of reads)")
+# plt.xlabel('Predicted Genome')
+# plt.ylabel('Readset')
+# plt.show()
+
+# Read Fractions
+ax = sns.heatmap(classification_fraction, square = True, cmap="Blues")
+# ax = sns.heatmap(classification_fraction, square = True, cmap="Blues", annot=True)
+plt.title("Classification Matrix (Percentages)")
 plt.xlabel('Predicted Genome')
 plt.ylabel('Readset')
 plt.show()
 
 # 3. Matches per read (histograms)
 
+all_read_matches = []
+bins = np.arange(100) - 0.5
+
 # a. Readset by Readset
+for i in range(0, prefix_count):
+    all_read_matches = all_read_matches + matches[i]
+    # plt.hist(matches[i], bins)
+    # plt.xlabel('Number of Matches with Source Genome')
+    # plt.ylabel('Frequency')
+    # plt.title("Readset " + str(i))
+    # plt.show()
 
 
 # b. All reads
+all_read_matches_np = np.asarray(all_read_matches)
+plt.hist(all_read_matches_np, bins)
+plt.xlabel('Number of Matches with Source Genome')
+plt.ylabel('Frequency')
+plt.title("Read Matches (Target = " + str(target) + ", Error Rate = " + error_rate + ")")
+
+# Mean Line
+plt.axvline(all_read_matches_np.mean(), color='k', linestyle='dashed', linewidth=1)
+min_ylim, max_ylim = plt.ylim()
+plt.text(all_read_matches_np.mean()*1.1, max_ylim*0.9, 'Mean: {:.2f}'.format(all_read_matches_np.mean()))
+
+plt.show()
