@@ -58,9 +58,13 @@ public class ScreenGenerator {
     return (int) total_num_sketches;
   }
 
-  // Generates the reverse complement of a DNA sequence
-  String reverseComplement(String sequence){
+  // Get the reverse complement of a sequence
+  String reverseComplement(String sequence)
+  {
     String reversed_tmp = sequence.replace("A", "t").replace("T", "a").replace("C", "g").replace("G", "c").toUpperCase();
+    // String reversed_tmp = sequence.toUpperCase();
+    // reversed_tmp = reversed_tmp.replace("A", "t").replace("T", "t").replace("C", "g").replace("G", "c");
+    // reversed_tmp = reversed_tmp.toUpperCase();
     String reversed = new StringBuffer(reversed_tmp).reverse().toString();
     return reversed;
   }
@@ -97,12 +101,13 @@ public class ScreenGenerator {
   }
   // Get the lexicographically smaller of a k-mer and its reverse complement
   String getCanonical(String seq){
-    String reversed_mer = reverseComplement(seq);
+    String forward_mer = seq.toUpperCase();
+    String reversed_mer = reverseComplement(forward_mer);
     String selected_mer = "";
-    if (seq.compareTo(reversed_mer) > 0){
+    if (forward_mer.compareTo(reversed_mer) > 0){
       selected_mer = reversed_mer;
     } else {
-      selected_mer = seq;
+      selected_mer = forward_mer;
     }
     return selected_mer;
   }

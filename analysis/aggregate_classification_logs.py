@@ -11,6 +11,11 @@ import sys
 
 file_path = sys.argv[1]
 
+save_flag = False
+if len(sys.argv) == 3:
+    save_flag = True
+    save_dir = int(sys.argv[2])
+
 prefix_count = 0
 prefix = str(prefix_count) + "_"
 
@@ -97,6 +102,30 @@ ax = sns.heatmap(classification_matrix, square = True, cmap="Blues", annot=True)
 plt.title("Classification Matrix")
 plt.xlabel('Predicted Genome')
 plt.ylabel('Readset')
-plt.show()
+
+if save_flag:
+    plt.savefig(save_dir + 'noveL_classification_matrix.png', dpi = 1200, bbox_inches='tight')
+    plt.clf()
+else:
+    plt.show()
 
 # 3. Distribution of matches
+all_read_matches = []
+bins = np.arange(100) - 0.5
+
+for i in range(0, prefix_count):
+    all_read_matches = all_read_matches + matches[i]
+
+all_read_matches_np = np.asarray(all_read_matches)
+plt.hist(all_read_matches_np, bins)
+plt.xlabel('Number of Matches with Source Genome')
+plt.ylabel('Frequency')
+plt.title("Read Matches (Target = " + str(target) + ", Error Rate = " + error_rate + ")")
+
+# TODO - maybe get target number of matches?
+
+if save_flag:
+    plt.savefig(save_dir + 'novel_read_matches.png', dpi = 1200, bbox_inches='tight')
+    plt.clf()
+else:
+    plt.show()

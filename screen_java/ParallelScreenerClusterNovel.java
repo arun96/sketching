@@ -47,9 +47,10 @@ public class ParallelScreenerClusterNovel{
   int readSet;
 
   // Total number of reads
-  int totalReads;
+  // int totalReads;
 
   // Counts
+  AtomicInteger totalReads = new AtomicInteger(0);
   AtomicInteger insuf = new AtomicInteger(0);
   AtomicInteger ties = new AtomicInteger(0);
 
@@ -69,7 +70,7 @@ public class ParallelScreenerClusterNovel{
     this.readSet = readSet;
     this.threshold = Settings.THRESHOLD;
 
-    this.totalReads = 0;
+    // this.totalReads = 0;
     this.read_number = new AtomicInteger(read_start);
 
 
@@ -85,7 +86,7 @@ public class ParallelScreenerClusterNovel{
     int num_reads = reads.size();
     for (int r = 0; r < num_reads; r++){
       reads_to_process.add(reads.get(r));
-      totalReads++;
+      // totalReads++;
     }
   }
 
@@ -125,8 +126,13 @@ public class ParallelScreenerClusterNovel{
         rc.classifyRead(sketch_hash, cluster_map);
 
         // Update counts - TODO: this remains same for cluster
-        insuf.addAndGet(rc.insufficient);
-        ties.addAndGet(rc.tied);
+        if (rc.filtered_out) {
+          ;
+        } else {
+          totalReads.incrementAndGet();
+          insuf.addAndGet(rc.insufficient);
+          ties.addAndGet(rc.tied);
+        }
       }
 
     }

@@ -24,11 +24,10 @@ file_path = sys.argv[1]
 target = sys.argv[2]
 error_rate = sys.argv[3]
 
-# TODO - clean this up
-# if len(sys.argv) == 3:
-#     target = int(sys.argv[2])
-# else:
-#     target = 30
+save_flag = False
+if len(sys.argv) == 5:
+    save_flag = True
+    save_dir = sys.argv[4]
 
 
 # Iterating through read sets
@@ -163,7 +162,6 @@ print(classification_matrix)
 # 2. Number of incorrect attached reads (look at classification matrix) - could be done as a heatmap
 
 # Seaborn Heatmap
-# TODO - adjust this to show percentage, not true values
 
 classification_fraction = copy.deepcopy(classification_matrix)
 
@@ -185,7 +183,12 @@ ax = sns.heatmap(classification_fraction, square = True, cmap="Blues")
 plt.title("Classification Matrix (Percentages)")
 plt.xlabel('Predicted Genome')
 plt.ylabel('Readset')
-plt.show()
+
+if save_flag:
+    plt.savefig(save_dir + 'classification_matrix.png', dpi = 1200, bbox_inches='tight')
+    plt.clf()
+else:
+    plt.show()
 
 # 3. Matches per read (histograms)
 
@@ -214,4 +217,9 @@ plt.axvline(all_read_matches_np.mean(), color='k', linestyle='dashed', linewidth
 min_ylim, max_ylim = plt.ylim()
 plt.text(all_read_matches_np.mean()*1.1, max_ylim*0.9, 'Mean: {:.2f}'.format(all_read_matches_np.mean()))
 
-plt.show()
+
+if save_flag:
+    plt.savefig(save_dir + 'read_matches.png', dpi = 1200, bbox_inches='tight')
+    plt.clf()
+else:
+    plt.show()

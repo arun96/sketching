@@ -99,6 +99,9 @@ Clustering-based Approach:
 - `-ct/--cluster`: Use this flag to enable the clustering approach, where the generated screens will be clustered and arranged into a tree. By default, this is false, and regular classification will occur.
 - `-css/--cluster-sketch-size`: Used to specify the size of the sketches used to cluster the genomes. By default is set to 100, but can be set to any value as long as clustering is enabled.
 
+Read Filtering:
+- `-fr/--filter-reads`: Use this flag to filter out low quality reads. For simulated reads, this will remove reads that have a large number of N's. In the future, this will filter out low quality reads.
+
 ### Syntax Examples
 
 #### Example 1: MinHash-based Screen with corresponding read sets (of reads with average length 10k, error rate 1%)

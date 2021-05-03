@@ -91,7 +91,7 @@ public class ReadScreener {
          ParallelScreener ps = new ParallelScreener(sketch_hash, reads, window, source, read_start);
          ps.run();
          // Counts for this readset
-         totalReads[source] += ps.totalReads;
+         totalReads[source] += ps.totalReads.intValue();
          correctCounts[source] += ps.correct.intValue();
          misCounts[source] += ps.mis.intValue();
          insufCounts[source] += ps.insuf.intValue();
@@ -139,7 +139,7 @@ public class ReadScreener {
        ParallelScreener ps = new ParallelScreener(sketch_hash, reads, window, source, read_start);
        ps.run();
        // Counts for this readset
-       totalReads[source] = ps.totalReads;
+       totalReads[source] = ps.totalReads.intValue();
        correctCounts[source] = ps.correct.intValue();
        misCounts[source] = ps.mis.intValue();
        insufCounts[source] = ps.insuf.intValue();

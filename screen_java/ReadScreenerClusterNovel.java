@@ -101,7 +101,7 @@ public class ReadScreenerClusterNovel {
          ps.run();
 
          // Counts for this readset
-         totalReads[r] += ps.totalReads;
+         totalReads[r] += ps.totalReads.intValue();
          insufCounts[r] += ps.insuf.intValue();
          tieCounts[r] += ps.ties.intValue();
 
@@ -147,7 +147,7 @@ public class ReadScreenerClusterNovel {
        ParallelScreenerClusterNovel ps = new ParallelScreenerClusterNovel(sketch_hash, reads, window, r, read_start, cg, cluster_map);
        ps.run();
        // Counts for this readset
-       totalReads[r] = ps.totalReads;
+       totalReads[r] = ps.totalReads.intValue();
        insufCounts[r] = ps.insuf.intValue();
        tieCounts[r] = ps.ties.intValue();
 

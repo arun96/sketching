@@ -26,9 +26,6 @@ import com.apporiented.algorithm.clustering.visualization.*;
 
 public class ReadClassifierClusterNovel {
 
-  // List of sketches
-  // ArrayList<HashSet<Integer>> sketch_hash;
-
   // Read to be processed
   String read;
 
@@ -64,6 +61,8 @@ public class ReadClassifierClusterNovel {
   int insufficient;
   int tied;
 
+  boolean filtered_out;
+
   ReadClassifierClusterNovel(String read, int window, int readSet, int read_number, Cluster cluster, HashMap<String, ArrayList<String>> cluster_sketch_map, HashMap<String, Integer> genome_sketch_map, HashMap<String, Integer> cluster_height_map, int sketch_size){
 
     scores = new int[sketch_size];
@@ -82,6 +81,8 @@ public class ReadClassifierClusterNovel {
 
     this.read_number = read_number;
 
+    this.filtered_out = false;
+
     // Cluster Information
     this.cluster = cluster;
     this.cluster_sketch_map = cluster_sketch_map;
@@ -97,6 +98,15 @@ public class ReadClassifierClusterNovel {
 
   // Misclassification matrix can be pieced together from saved read logs
   void classifyRead(ArrayList<HashSet<Integer>> sketch_hash, HashMap<String, HashSet<Integer>> cluster_map) {
+
+    // TODO - generalize filtering
+    // Read Filtering
+    if (Settings.FILTER_READS) {
+      filtered_out = read_filtering(read, Settings.READ_LENGTH);
+      if (filtered_out) {
+        return;
+      }
+    }
 
     // Get read k-mers
     if (window > 0) {
@@ -268,6 +278,25 @@ public class ReadClassifierClusterNovel {
     return m;
   }
 
+  // Function for filtering "bad" reads out
+  // TODO: Update for read qualities and % of bad lengths
+  boolean read_filtering(String read, int read_length) {
+    boolean filter_out = false;
+    String pattern = "[acgtACGT]+";
+    if (read.matches(pattern)) {
+      filter_out = false;
+    } else {
+      filter_out = true;
+    }
+    return filter_out;
+  }
+
+  // Count occurrences of a base in a read
+  int count_bases(String read, String base) {
+    int count = read.length() - read.replace(base, "").length();
+    return count;
+  }
+
   // ----- UTILITY FUNCTIONS ------
   // Essentially argmax, but with default value 0
   // Not using argmax, so that I can add a tie-breaking mechanism in there
@@ -288,18 +317,22 @@ public class ReadClassifierClusterNovel {
   String reverseComplement(String sequence)
   {
     String reversed_tmp = sequence.replace("A", "t").replace("T", "a").replace("C", "g").replace("G", "c").toUpperCase();
+    // String reversed_tmp = sequence.toUpperCase();
+    // reversed_tmp = reversed_tmp.replace("A", "t").replace("T", "t").replace("C", "g").replace("G", "c");
+    // reversed_tmp = reversed_tmp.toUpperCase();
     String reversed = new StringBuffer(reversed_tmp).reverse().toString();
     return reversed;
   }
 
   // Get the lexicographically smaller of a k-mer and its reverse complement
   String getCanonical(String seq){
-    String reversed_mer = reverseComplement(seq);
+    String forward_mer = seq.toUpperCase();
+    String reversed_mer = reverseComplement(forward_mer);
     String selected_mer = "";
-    if (seq.compareTo(reversed_mer) > 0){
+    if (forward_mer.compareTo(reversed_mer) > 0){
       selected_mer = reversed_mer;
     } else {
-      selected_mer = seq;
+      selected_mer = forward_mer;
     }
     return selected_mer;
   }

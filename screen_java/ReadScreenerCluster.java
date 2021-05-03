@@ -99,7 +99,7 @@ public class ReadScreenerCluster {
          ParallelScreenerCluster ps = new ParallelScreenerCluster(sketch_hash, reads, window, source, read_start, cg, cluster_map);
          ps.run();
          // Counts for this readset
-         totalReads[source] += ps.totalReads;
+         totalReads[source] += ps.totalReads.intValue();
          correctCounts[source] += ps.correct.intValue();
          misCounts[source] += ps.mis.intValue();
          insufCounts[source] += ps.insuf.intValue();
@@ -147,7 +147,7 @@ public class ReadScreenerCluster {
        ParallelScreenerCluster ps = new ParallelScreenerCluster(sketch_hash, reads, window, source, read_start, cg, cluster_map);
        ps.run();
        // Counts for this readset
-       totalReads[source] = ps.totalReads;
+       totalReads[source] = ps.totalReads.intValue();
        correctCounts[source] = ps.correct.intValue();
        misCounts[source] = ps.mis.intValue();
        insufCounts[source] = ps.insuf.intValue();
@@ -300,7 +300,7 @@ public class ReadScreenerCluster {
         List<Integer> sketch_vals = new LinkedList<Integer>(sketch.get(sketch_indices_list.get(k)));
 
         // TODO - make this a parameter
-        
+
         // Downsample by this much
         // int downsample_factor = (int) (Math.pow(2,height));
 

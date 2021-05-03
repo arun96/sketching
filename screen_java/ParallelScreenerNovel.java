@@ -33,12 +33,13 @@ public class ParallelScreenerNovel{
   int threshold;
 
   // Total number of reads
-  int totalReads;
+  // int totalReads;
 
   // The readset being classified
   int readSet;
 
   // Counts
+  AtomicInteger totalReads = new AtomicInteger(0);
   AtomicInteger insuf = new AtomicInteger(0);
   AtomicInteger ties = new AtomicInteger(0);
 
@@ -57,7 +58,7 @@ public class ParallelScreenerNovel{
 
     this.threshold = Settings.THRESHOLD;
 
-    this.totalReads = 0;
+    // this.totalReads = 0;
     this.read_number = new AtomicInteger(read_start);
     this.readSet = readSet;
 
@@ -66,7 +67,7 @@ public class ParallelScreenerNovel{
     int num_reads = reads.size();
     for (int r = 0; r < num_reads; r++){
       reads_to_process.add(reads.get(r));
-      totalReads++;
+      // totalReads++;
     }
   }
 
@@ -106,8 +107,14 @@ public class ParallelScreenerNovel{
         rc.classifyRead(sketch_hash);
 
         // Update counts
-        insuf.addAndGet(rc.insufficient);
-        ties.addAndGet(rc.tied);
+        if (rc.filtered_out) {
+          ;
+        } else {
+          totalReads.incrementAndGet();
+          insuf.addAndGet(rc.insufficient);
+          ties.addAndGet(rc.tied);
+        }
+
       }
 
     }

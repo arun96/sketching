@@ -81,11 +81,14 @@ public class Settings {
   static boolean LOAD_SCREEN;
   // uses the same screen-location parameter to load
 
-  // CLUSTER PARAMETERS
+  // CLUSTER PARAMETERS - TODO: FINISH THIS
   static boolean CLUSTER_BASED;
   static int CLUSTER_SKETCH_SIZE;
   static int NUM_CLUSTERS;
   static int NODE_SIZE;
+
+  // READ FILTERING
+  static boolean FILTER_READS;
 
   static void parseArgs(String[] args) throws Exception {
 
@@ -110,7 +113,6 @@ public class Settings {
     Option read_lines = new Option("rlns", "read-lines", true, "Number of lines per read (default = 2)");
     read_lines.setRequired(false);
     options.addOption(read_lines);
-
 
     // Chunk parameters
     Option in_chunks = new Option("c", "chunks", false, "Load read in chunks (default = false)");
@@ -147,7 +149,8 @@ public class Settings {
     read_location.setRequired(false);
     options.addOption(read_location);
 
-    // Cluster Parameters - TODO put this in the README
+
+    // Cluster Parameters
     Option cluster = new Option("ct", "cluster", false, "Use cluster-based approach (default = false).");
     cluster.setRequired(false);
     options.addOption(cluster);
@@ -156,10 +159,15 @@ public class Settings {
     cluster_size.setRequired(false);
     options.addOption(cluster_size);
 
+      //TODO put this in the README
     Option num_clusters = new Option("ncs", "num-clusters", true, "The number of clusters to break the input genomes into (default = 4)");
     num_clusters.setRequired(false);
     options.addOption(num_clusters);
 
+    // Read Filtering - TODO: Finalize this for later iterations
+    Option filter_reads = new Option("fr", "filter-reads", false, "Filter out low-quality reads (default = false).");
+    filter_reads.setRequired(false);
+    options.addOption(filter_reads);
 
     // Main parameters
     Option genome_folder = new Option("g", "genome", true, "Directory containing genomes");
@@ -317,6 +325,13 @@ public class Settings {
     } else {
       // By default, set to 4  - TODO make this more consistent
       NUM_CLUSTERS = nc;
+    }
+
+    // Read Filtering
+    if (cmd.hasOption("fr")) {
+      FILTER_READS = true;
+    } else {
+      FILTER_READS = false;
     }
 
     // KEY PARAMETERS

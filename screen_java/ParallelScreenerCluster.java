@@ -47,9 +47,10 @@ public class ParallelScreenerCluster{
   int source;
 
   // Total number of reads
-  int totalReads;
+  // int totalReads;
 
   // Counts
+  AtomicInteger totalReads = new AtomicInteger(0);
   AtomicInteger correct = new AtomicInteger(0);
   AtomicInteger mis = new AtomicInteger(0);
   AtomicInteger insuf = new AtomicInteger(0);
@@ -71,7 +72,7 @@ public class ParallelScreenerCluster{
     this.source = source;
     this.threshold = Settings.THRESHOLD;
 
-    this.totalReads = 0;
+    // this.totalReads = 0;
     this.read_number = new AtomicInteger(read_start);
 
 
@@ -87,7 +88,7 @@ public class ParallelScreenerCluster{
     int num_reads = reads.size();
     for (int r = 0; r < num_reads; r++){
       reads_to_process.add(reads.get(r));
-      totalReads++;
+      // totalReads++;
     }
   }
 
@@ -126,11 +127,17 @@ public class ParallelScreenerCluster{
         ReadClassifierCluster rc = new ReadClassifierCluster(read, window, source, curr_read, cluster, cluster_sketch_map, genome_sketch_map, cluster_height_map, sketch_hash.size());
         rc.classifyRead(sketch_hash, cluster_map);
 
-        // Update counts - TODO: this remains same for cluster
-        correct.addAndGet(rc.correct);
-        mis.addAndGet(rc.incorrect);
-        insuf.addAndGet(rc.insufficient);
-        ties.addAndGet(rc.tied);
+        // Update counts
+        if (rc.filtered_out) {
+          ;
+        } else {
+          totalReads.incrementAndGet();
+          correct.addAndGet(rc.correct);
+          mis.addAndGet(rc.incorrect);
+          insuf.addAndGet(rc.insufficient);
+          ties.addAndGet(rc.tied);
+        }
+
       }
 
     }
