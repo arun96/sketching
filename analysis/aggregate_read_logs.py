@@ -42,6 +42,7 @@ misclassified_counts = []
 tied_counts = []
 insufficient_counts = []
 total_counts = []
+accuracy = []
 
 # Regular files have two lines - score list + Source
 # Cluster files have five lines - screen members, clusters, prediction, number of matches, source
@@ -141,6 +142,7 @@ while (len(glob.glob(file_path + prefix  + '*.log')) > 0):
     misclassified_counts.append(misclassified)
     tied_counts.append(tied)
     insufficient_counts.append(insufficient)
+    accuracy.append(correct/total)
 
     prefix_count += 1
     prefix = str(prefix_count) + "_"
@@ -156,8 +158,14 @@ print(classification_matrix)
 
 # TODO - PLOTTING
 
-# 1. Accuracy plots across the organisms (combined plot)
+# 1. Plots across the organisms (combined plot)
+# 1a - Number of organisms vs accuracy
 
+# plt.hist(accuracy)
+# plt.xlabel('Accuracy')
+# plt.ylabel('# of Organisms')
+# plt.title("Classification Accuracy across all genomes")
+# plt.show()
 
 # 2. Number of incorrect attached reads (look at classification matrix) - could be done as a heatmap
 
@@ -176,6 +184,10 @@ for i in range(len(classification_fraction)):
 # plt.xlabel('Predicted Genome')
 # plt.ylabel('Readset')
 # plt.show()
+
+if save_flag:
+    classification_matrix_np = np.asarray(classification_matrix)
+    np.save(save_dir + 'classification_matrix.npy', classification_matrix_np)
 
 # Read Fractions
 ax = sns.heatmap(classification_fraction, square = True, cmap="Blues")

@@ -22,30 +22,37 @@ for s in sketches:
 sketch_results = results[2+members:]
 result_lines = sketch_results[1::2]
 
-total_reads = 0
-correct_reads = 0
-insuf_reads = 0
-mis_reads = 0
-tie_reads = 0
+total_reads = []
+correct_reads = []
+insuf_reads = []
+mis_reads = []
+tie_reads = []
 
 accuracy = []
 
 for r in result_lines:
     r_list = r.split()
-    total_reads += int(r_list[0])
-    correct_reads += int(r_list[1])
-    mis_reads += int(r_list[2])
-    insuf_reads += int(r_list[3])
-    tie_reads += int(r_list[4])
+    total_reads.append(int(r_list[0]))
+    correct_reads.append(int(r_list[1]))
+    mis_reads.append(int(r_list[2]))
+    insuf_reads.append(int(r_list[3]))
+    tie_reads.append(int(r_list[4]))
     a = int(r_list[1])/int(r_list[0])
     accuracy.append(a)
 
 print("Total size of the community, Total Number of reads, Number of Correctly Classified Reads, Number of Misclassified Reads, Number of Reads with too few matches to classify, Number of reads with tied numbers of matches:")
-print(total_size, total_reads, correct_reads, mis_reads, insuf_reads, tie_reads)
+print(total_size, sum(total_reads), sum(correct_reads), sum(mis_reads), sum(insuf_reads), sum(tie_reads))
+
+# Comment out - this is specifically for 34 microbes + 22 chromosomes
+# print(sum(correct_reads[:34]), sum(total_reads[:34]), sum(correct_reads[:34])/sum(total_reads[:34]))
+# print(sum(correct_reads[:34]) - correct_reads[5], sum(total_reads[:34]) - total_reads[5], (sum(correct_reads[:34]) - correct_reads[5])/(sum(total_reads[:34]) - total_reads[5]))
+# print(sum(correct_reads[34:]), sum(total_reads[34:]), sum(correct_reads[34:])/sum(total_reads[34:]))
+
+print("Accuracy for each genome:")
+print(accuracy)
 
 plt.hist(accuracy, bins = 10)
-
 plt.xlabel('Accuracy')
 plt.ylabel('Frequency')
-plt.title("Classification Accuracy")
+plt.title("Classification Accuracy across all genomes")
 plt.show()
