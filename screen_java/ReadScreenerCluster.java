@@ -65,7 +65,7 @@ public class ReadScreenerCluster {
     }
 
     // Generate full cluster data structure
-    System.out.println("Generating Cluster Structure...");
+    System.out.println("Generating Cluster Structure (using downsampling type = " + Settings.DOWNSAMPLE_TYPE +  ", downsampling factor  = " + Settings.DOWNSAMPLE_FACTOR + ")...");
     HashMap<String, HashSet<Integer>> cluster_map = getClusterStructure(cg, sketch_hash);
 
     System.out.println("Screening Reads...");
@@ -299,19 +299,21 @@ public class ReadScreenerCluster {
         // For each sketch, get the whole sketch
         List<Integer> sketch_vals = new LinkedList<Integer>(sketch.get(sketch_indices_list.get(k)));
 
-        // TODO - make this a parameter
-
-        // Downsample by this much
-        // int downsample_factor = (int) (Math.pow(2,height));
-
-        // constant downsampling factor
-        int downsample_factor = 2;
-
-        // int downsample_factor = 4;
+        // Downsampling
+        int downsample_factor = 1;
 
         // No downsampling
-        // int downsample_factor = 1;
+        if (Settings.DOWNSAMPLE_TYPE.equals("n")) {
+          downsample_factor = 1;
+        // Constant
+        } else if (Settings.DOWNSAMPLE_TYPE.equals("c")) {
+          downsample_factor = Settings.DOWNSAMPLE_FACTOR;
+        // Height based
+        } else if (Settings.DOWNSAMPLE_TYPE.equals("h")) {
+          downsample_factor = (int) (Math.pow(Settings.DOWNSAMPLE_FACTOR,height));
+        }
 
+        // Compute size/sketch based on that
         int downsample_size = (int) (sketch_vals.size() / downsample_factor);
 
         // Downsample the sketch

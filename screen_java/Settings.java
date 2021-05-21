@@ -87,13 +87,13 @@ public class Settings {
   static int NUM_CLUSTERS;
   static int NODE_SIZE;
 
+  static String DOWNSAMPLE_TYPE;
+  static int DOWNSAMPLE_FACTOR;
+
   // READ FILTERING
   static boolean FILTER_READS;
 
   static void parseArgs(String[] args) throws Exception {
-
-    // Default number of clusters - TODO: decide on this?
-    int nc = 4;
 
     // Input options
     Options options = new Options();
@@ -155,19 +155,25 @@ public class Settings {
     cluster.setRequired(false);
     options.addOption(cluster);
 
-    Option cluster_size = new Option("css", "cluster-sketch-size", true, "Size of MinHash sketch used for clustering the genomes (default = 1000)");
-    cluster_size.setRequired(false);
-    options.addOption(cluster_size);
+    // Number of sketches used for clustering
+    Option cluster_sketch_size = new Option("css", "cluster-sketch-size", true, "Size of MinHash sketch used for clustering the genomes (default = 100)");
+    cluster_sketch_size.setRequired(false);
+    options.addOption(cluster_sketch_size);
 
-      //TODO put this in the README
+      //TODO - finalize this if possible
     Option num_clusters = new Option("ncs", "num-clusters", true, "The number of clusters to break the input genomes into (default = 4)");
     num_clusters.setRequired(false);
     options.addOption(num_clusters);
 
-    // Read Filtering - TODO: Finalize this for later iterations
-    Option filter_reads = new Option("fr", "filter-reads", false, "Filter out low-quality reads (default = false).");
-    filter_reads.setRequired(false);
-    options.addOption(filter_reads);
+    // Type of downsampling used in clustering
+    Option downsample_type = new Option("dt", "downsample_type", true, "The method of downsampling used in the clustering approach (default = [n]one, other options = [c]onstant, [h]eight-based)");
+    downsample_type.setRequired(false);
+    options.addOption(downsample_type);
+
+    // Downsample factor
+    Option downsample_factor = new Option("df", "downsample_factor", true, "The downsampling factor to use in the specified method (default = 1");
+    downsample_factor.setRequired(false);
+    options.addOption(downsample_factor);
 
     // Main parameters
     Option genome_folder = new Option("g", "genome", true, "Directory containing genomes");
@@ -209,6 +215,11 @@ public class Settings {
     Option unmatched = new Option("um", "unmatched", false, "Genomes and reads do not match (default = genomes and reads match)");
     unmatched.setRequired(false);
     options.addOption(unmatched);
+
+    // Read Filtering - TODO: Finalize this for later iterations
+    Option filter_reads = new Option("fr", "filter-reads", false, "Filter out low-quality reads (default = false).");
+    filter_reads.setRequired(false);
+    options.addOption(filter_reads);
 
     // Parse
 
@@ -323,9 +334,32 @@ public class Settings {
     if (cmd.hasOption("ncs")) {
       NUM_CLUSTERS = Integer.parseInt(cmd.getOptionValue("ncs"));
     } else {
-      // By default, set to 4  - TODO make this more consistent
-      NUM_CLUSTERS = nc;
+      // By default, set to 4
+      NUM_CLUSTERS = 4;
     }
+
+    // Downsampling approach
+    String dt_s = cmd.getOptionValue("dt");
+    if (dt_s == null){
+      DOWNSAMPLE_TYPE = "n";
+    } else if (dt_s.equals("n") || dt_s.equals("N")) {
+      DOWNSAMPLE_TYPE = "n";
+    } else if (dt_s.equals("c") || dt_s.equals("C")) {
+      DOWNSAMPLE_TYPE = "c";
+    } else if (dt_s.equals("h") || dt_s.equals("H")) {
+      DOWNSAMPLE_TYPE = "h";
+    } else {
+      System.out.println("Invalid downsampling approach specified - please check README and try again.");
+      BAD_INPUT = true;
+    }
+
+    // Downsampling factor
+    if (cmd.hasOption("df")) {
+      DOWNSAMPLE_FACTOR = Integer.parseInt(cmd.getOptionValue("df"));
+    } else {
+      DOWNSAMPLE_FACTOR = 1;
+    }
+
 
     // Read Filtering
     if (cmd.hasOption("fr")) {

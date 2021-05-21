@@ -63,7 +63,7 @@ public class ReadScreenerClusterNovel {
     }
 
     // Generate full cluster data structure
-    System.out.println("Generating Cluster Structure...");
+    System.out.println("Generating Cluster Structure (using downsampling type = " + Settings.DOWNSAMPLE_TYPE +  ", downsampling factor  = " + Settings.DOWNSAMPLE_FACTOR + ")...");
     HashMap<String, HashSet<Integer>> cluster_map = getClusterStructure(cg, sketch_hash);
 
     // TODO - add option to screen reads independently of the genomes
@@ -293,8 +293,21 @@ public class ReadScreenerClusterNovel {
         // For each sketch, get the whole sketch
         List<Integer> sketch_vals = new LinkedList<Integer>(sketch.get(sketch_indices_list.get(k)));
 
-        // Downsample by this much
-        int downsample_factor = (int) (Math.pow(2,height));
+        // Downsampling
+        int downsample_factor = 1;
+
+        // No downsampling
+        if (Settings.DOWNSAMPLE_TYPE.equals("n")) {
+          downsample_factor = 1;
+        // Constant
+        } else if (Settings.DOWNSAMPLE_TYPE.equals("c")) {
+          downsample_factor = Settings.DOWNSAMPLE_FACTOR;
+        // Height based
+        } else if (Settings.DOWNSAMPLE_TYPE.equals("h")) {
+          downsample_factor = (int) (Math.pow(Settings.DOWNSAMPLE_FACTOR,height));
+        }
+
+        // Compute size/sketch based on that
         int downsample_size = (int) (sketch_vals.size() / downsample_factor);
 
         // Downsample the sketch
