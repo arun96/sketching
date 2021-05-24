@@ -55,6 +55,7 @@ public class Settings {
   static boolean MINHASH;
   static boolean UNIFORM;
   static boolean MINIMIZER;
+  static boolean EXHAUSTIVE;
 
   // DEBUGGING
   static boolean TRACK_MINIMIZERS;
@@ -196,7 +197,7 @@ public class Settings {
     target_matches.setRequired(false);
     options.addOption(target_matches);
 
-    Option screen_type = new Option("s", "screen-type", true, "Which screen-generation approach to use (default = MinHash, options = minhash, [u]niform, [m]inimizer)");
+    Option screen_type = new Option("s", "screen-type", true, "Which screen-generation approach to use (default = MinHash, options = minhash, [u]niform, [m]inimizer, or [e]xhaustive)");
     screen_type.setRequired(false);
     options.addOption(screen_type);
 
@@ -384,6 +385,7 @@ public class Settings {
     MINHASH = false;
     UNIFORM = false;
     MINIMIZER = false;
+    EXHAUSTIVE = false;
 
     String st = cmd.getOptionValue("s");
     if (st == null){
@@ -392,6 +394,8 @@ public class Settings {
       MINIMIZER = true;
     } else if (st.equals("u") || st.equals("U")) {
       UNIFORM = true;
+    } else if (st.equals("e") || st.equals("E")) {
+      EXHAUSTIVE = true;
     } else {
       System.out.println("Invalid Screen Generation approach specified - using MinHash for screen generation");
       MINHASH = true;

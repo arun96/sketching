@@ -172,6 +172,25 @@ public class ScreenGenerator {
     return minhashvals;
   }
 
+  // ----- EXHAUSTIVE HASH HELPER FUNCTIONS -----
+
+  // Gets n minimal hashes from a given string
+  HashSet<Integer> getAllHashes(String g, int k){
+    int gl = g.length();
+    int boundary = gl - k;
+    HashSet<Integer> hashmers_set = new HashSet<Integer>();
+
+    // Build list of hashed mers
+    for (int p = 0; p < boundary; p++) {
+      int start = p;
+      int end = p + k;
+      String curr = g.substring(start, end);
+      hashmers_set.add(getHash(getCanonical(curr)));
+    }
+
+    return hashmers_set;
+  }
+
   // ----- MINIMIZER HELPER FUNCTIONS ------
   // Gets all minimizers from a given string
   HashSet<Integer> getAllMinimizers(String g, int window_size, int k){

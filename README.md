@@ -63,7 +63,7 @@ Key Parameters:
 - `-rl/--read-length <Integer>`: The expected read length of reads that will be classified against this screen. Not necessary if a fixed size screen (`-f`) is being generated.
 - `-re/--read-error <Double>`: The expected error rate of reads that will be classified against this screen. Not necessary if a fixed size screen (`-f`) is being generated.
 - `-tm/--target-matches <Integer>`: The target number of matches between a read and its correct source in the screen. Not necessary if a fixed size screen (`-f`) is being generated.
-- `-s/--screen-type`: The method of screen-generation to be used for this screen. Choose between MinHash-based (default), [m]inimizer based, or [u]niform sampling.
+- `-s/--screen-type`: The method of screen-generation to be used for this screen. Choose between MinHash-based (default), [m]inimizer based, [u]niform sampling or [e]xhaustive.
 - `-hf/--hash <Hash Type>`: The hash function to use throughout the process. Choose between Java's built in hashcode (default), [mmh3] (MurmurHash3) or [mmh3_128] (the 128-bit variant of MurmurHash3).
 - `-th/--threshold <Integer>`: This is the number of matches a read must have with a source genome to be classified. By default, it is 5 - however, this should be adjusted based on the level of confidence we want in classification calls. Reads below this threshold will be flagged as insufficient. This value should always be below the number of target matches, and usually just a fraction of the target matches (so that reads are classified as often as possible).
 
@@ -71,7 +71,7 @@ Matched Reads/Genomes vs Classification without a ground truth:
 - `-um/--unmatched`: Use this parameter if the reads and the genomes do not correspond - by default, the code will assume that there is a matching read set for each genome (generated using the simulator above), and will proceed with classification assuming there is some ground truth. If this option is selected, detailed classification logs will be saved for each read, and no accuracy metrics will be printed. NOTE: Over time, this will become the default, and a parameter will be needed to indicate the genomes and reads are matched. In this mode, read logging is enabled by default.
 
 Fixed Size Screens:
-- `-f/--fixed <Integer>`: Use if the screen size should not be calculated, but instead the specified size/window size should be used for all screens. For uniform and MinHash screens, this will be the sketch size. For Minimizer-based screens, this will be the window size.
+- `-f/--fixed <Integer>`: Use if the screen size should not be calculated, but instead the specified size/window size should be used for all screens. For uniform and MinHash screens, this will be the sketch size. For Minimizer-based screens, this will be the window size. This is not available for exhaustive screens, which just use all hashes in a given genome.
 
 Read Loading:
 - `-c/--chunks`: Use if a specified number of reads should loaded at a time (i.e. in "chunks"), instead of one file at a time.
