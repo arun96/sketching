@@ -51,6 +51,11 @@ public class UniformScreen extends ScreenGenerator {
     for (int j = 0; j < numGenomes; j++)
     {
       sketch_size[j] = getSketchSize(genomeLengths[j], readLen, readErr, targetMatches, k);
+
+      // Max sketch size
+      if (sketch_size[j] > (genomeLengths[j] - k)){
+        sketch_size[j] = genomeLengths[j] - k;
+      }
     }
 
     // Get sketch using genomes and sketch sizes

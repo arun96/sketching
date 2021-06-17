@@ -54,6 +54,11 @@ public class MinimizerScreen extends ScreenGenerator{
     {
       sketch_size[j] = getSketchSize(genomeLengths[j], readLen, readErr, targetMatches, k);
       window_sizes[j] = (int) ((genomeLengths[j]/sketch_size[j])*multiplier);
+
+      // Max sketch size
+      if (window_sizes[j] < k) {
+        window_sizes[j] = k + 1;
+      }
     }
 
     // set the window size - agnostic of genomes
