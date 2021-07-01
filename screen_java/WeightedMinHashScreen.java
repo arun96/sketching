@@ -10,7 +10,8 @@ import java.util.*;
 import java.lang.*;
 import java.util.Collection;
 
-// TODO - add weight option
+// TODO - add weight option: after sampling k-mers, assign weight to sampled k-mers
+// Can be done using weight inside a genome, or between genomes
 
 public class WeightedMinHashScreen extends ScreenGenerator {
 
