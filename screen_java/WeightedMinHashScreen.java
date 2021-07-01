@@ -10,7 +10,7 @@ import java.util.*;
 import java.lang.*;
 import java.util.Collection;
 
-// TODO - add weighted minhash option - sample kmers, assign weights
+// TODO - add weight option
 
 public class WeightedMinHashScreen extends ScreenGenerator {
 
