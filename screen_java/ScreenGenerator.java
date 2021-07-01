@@ -27,6 +27,7 @@ public class ScreenGenerator {
   public int[] sketch_size;
   public String[] genomeNames;
   public ArrayList<HashSet<Integer>> sketch_hash;
+  // TODO - add option to store weight/order for MinHash
   public int window;
 
   public static void main(String[] args) throws Exception
@@ -171,6 +172,36 @@ public class ScreenGenerator {
     }
     return minhashvals;
   }
+
+  // TODO
+  // Gets n minimal hashes, and their weights, from a given string
+  HashSet<Integer> getWeightedMinHashes(String g, int sketch_size, int k){
+    int gl = g.length();
+    int boundary = gl - k;
+    HashSet<Integer> hashmers_set = new HashSet<Integer>();
+
+    // Build list of hashed mers - TODO add a count of how many occurrences there are
+    for (int p = 0; p < boundary; p++) {
+      int start = p;
+      int end = p + k;
+      String curr = g.substring(start, end);
+      hashmers_set.add(getHash(getCanonical(curr)));
+    }
+
+    // Sort this list
+    ArrayList<Integer> hashmers = new ArrayList<Integer>(hashmers_set);
+    Collections.sort(hashmers);
+
+    HashSet<Integer> minhashvals = new HashSet<Integer>();
+
+    // Return the n minimal ones
+    for (int q = 0; q < sketch_size; q++) {
+      minhashvals.add(hashmers.get(q));
+    }
+    return minhashvals;
+  }
+
+  //TODO - an ordered minhash version too
 
   // ----- EXHAUSTIVE HASH HELPER FUNCTIONS -----
 
