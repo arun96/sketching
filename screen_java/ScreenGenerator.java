@@ -27,8 +27,11 @@ public class ScreenGenerator {
   public int[] sketch_size;
   public String[] genomeNames;
   public ArrayList<HashSet<Integer>> sketch_hash;
-  // TODO - add option to store weight/order for MinHash
   public int window;
+
+  // TODO - add option to store weight/order for MinHash
+  // Weight - need some connection between k-mer and weights
+  // Order - need to store a list of tuples 
 
   public static void main(String[] args) throws Exception
   {
@@ -199,6 +202,8 @@ public class ScreenGenerator {
       minhashvals.add(hashmers.get(q));
     }
     return minhashvals;
+
+    //TODO - need to get weights, and store it in the weights object
   }
 
   //TODO - an ordered minhash version too

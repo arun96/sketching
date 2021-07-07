@@ -220,7 +220,7 @@ public class ReadClassifier {
   }
 
   // Function for filtering "bad" reads out
-  // TODO: Update for read qualities and % of bad lengths
+  // TODO: Update for read qualities and % of bad lengths, and to fix NPE
   boolean read_filtering(String read, int read_length) {
     boolean filter_out = false;
     String pattern = "[acgtACGT]+";
