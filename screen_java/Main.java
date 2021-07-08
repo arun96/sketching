@@ -65,72 +65,34 @@ public class Main {
     // MinHash
     } else {
       if (Settings.MINHASH){
-        if (Settings.FIXED) {
-          MinHashScreen screen = new MinHashScreen("fixed");
-
-          if (Settings.MATCHED_READS_GENOMES) {
-            ReadScreener rs = new ReadScreener(screen);
-          } else {
-            ReadScreenerNovel rs = new ReadScreenerNovel(screen);
-          }
-
+        MinHashScreen screen = new MinHashScreen();
+        if (Settings.MATCHED_READS_GENOMES) {
+          ReadScreener rs = new ReadScreener(screen);
         } else {
-          MinHashScreen screen = new MinHashScreen();
-
-          if (Settings.MATCHED_READS_GENOMES) {
-            ReadScreener rs = new ReadScreener(screen);
-          } else {
-            ReadScreenerNovel rs = new ReadScreenerNovel(screen);
-          }
-
+          ReadScreenerNovel rs = new ReadScreenerNovel(screen);
         }
 
       // Minimizer
       } else if (Settings.MINIMIZER){
-        if (Settings.FIXED){
-          MinimizerScreen screen = new MinimizerScreen("fixed");
-
-          if (Settings.MATCHED_READS_GENOMES) {
-            ReadScreener rs = new ReadScreener(screen);
-          } else {
-            ReadScreenerNovel rs = new ReadScreenerNovel(screen);
-          }
-
+        MinimizerScreen screen = new MinimizerScreen();
+        if (Settings.MATCHED_READS_GENOMES) {
+          ReadScreener rs = new ReadScreener(screen);
         } else {
-          MinimizerScreen screen = new MinimizerScreen();
-
-          if (Settings.MATCHED_READS_GENOMES) {
-            ReadScreener rs = new ReadScreener(screen);
-          } else {
-            ReadScreenerNovel rs = new ReadScreenerNovel(screen);
-          }
-
+          ReadScreenerNovel rs = new ReadScreenerNovel(screen);
         }
 
       // Uniform
       } else if (Settings.UNIFORM) {
-        if (Settings.FIXED){
-          UniformScreen screen = new UniformScreen("fixed");
-
-          if (Settings.MATCHED_READS_GENOMES) {
-            ReadScreener rs = new ReadScreener(screen);
-          } else {
-            ReadScreenerNovel rs = new ReadScreenerNovel(screen);
-          }
+        UniformScreen screen = new UniformScreen();
+        if (Settings.MATCHED_READS_GENOMES) {
+          ReadScreener rs = new ReadScreener(screen);
         } else {
-          UniformScreen screen = new UniformScreen();
-
-          if (Settings.MATCHED_READS_GENOMES) {
-            ReadScreener rs = new ReadScreener(screen);
-          } else {
-            ReadScreenerNovel rs = new ReadScreenerNovel(screen);
-          }
+          ReadScreenerNovel rs = new ReadScreenerNovel(screen);
         }
 
       // Exhaustive
       } else if (Settings.EXHAUSTIVE) {
         ExhaustiveScreen screen = new ExhaustiveScreen();
-
         if (Settings.MATCHED_READS_GENOMES) {
           ReadScreener rs = new ReadScreener(screen);
         } else {
@@ -154,31 +116,16 @@ public class Main {
 
     } else {
       if (Settings.MINHASH){
-        if (Settings.FIXED) {
-          MinHashScreen screen = new MinHashScreen("fixed");
-          SaveScreen SS = new SaveScreen(screen);
-        } else {
-          MinHashScreen screen = new MinHashScreen();
-          SaveScreen SS = new SaveScreen(screen);
-        }
+        MinHashScreen screen = new MinHashScreen();
+        SaveScreen SS = new SaveScreen(screen);
 
       } else if (Settings.MINIMIZER){
-        if (Settings.FIXED){
-          MinimizerScreen screen = new MinimizerScreen("fixed");
-          SaveScreen SS = new SaveScreen(screen);
-        } else {
-          MinimizerScreen screen = new MinimizerScreen();
-          SaveScreen SS = new SaveScreen(screen);
-        }
+        MinimizerScreen screen = new MinimizerScreen();
+        SaveScreen SS = new SaveScreen(screen);
 
       } else if (Settings.UNIFORM) {
-        if (Settings.FIXED){
-          UniformScreen screen = new UniformScreen("fixed");
-          SaveScreen SS = new SaveScreen(screen);
-        } else {
-          UniformScreen screen = new UniformScreen();
-          SaveScreen SS = new SaveScreen(screen);
-        }
+        UniformScreen screen = new UniformScreen();
+        SaveScreen SS = new SaveScreen(screen);
 
       } else if (Settings.EXHAUSTIVE) {
         ExhaustiveScreen screen = new ExhaustiveScreen();
@@ -246,7 +193,6 @@ public class Main {
 
     // DEBUGGING
     cg.cluster.toConsole(2);
-    //System.out.println(cg.cluster_sketch_map.toString());
     // System.out.println(cg.genome_sketch_map.toString());
 
     System.out.println("Starting Screen Generation and Classification...");
@@ -257,71 +203,33 @@ public class Main {
       System.out.println("Invalid input parameters - please read the README!");
     } else {
       if (Settings.MINHASH){
-        if (Settings.FIXED) {
-          MinHashScreen screen = new MinHashScreen("fixed");
+        MinHashScreen screen = new MinHashScreen();
 
-
-          if (Settings.MATCHED_READS_GENOMES) {
-            ReadScreenerCluster rs = new ReadScreenerCluster(screen, cg);
-          } else {
-            ReadScreenerClusterNovel rs = new ReadScreenerClusterNovel(screen, cg);
-          }
-
+        if (Settings.MATCHED_READS_GENOMES) {
+          ReadScreenerCluster rs = new ReadScreenerCluster(screen, cg);
         } else {
-          MinHashScreen screen = new MinHashScreen();
-
-
-          if (Settings.MATCHED_READS_GENOMES) {
-            ReadScreenerCluster rs = new ReadScreenerCluster(screen, cg);
-          } else {
-            ReadScreenerClusterNovel rs = new ReadScreenerClusterNovel(screen, cg);
-          }
-
+          ReadScreenerClusterNovel rs = new ReadScreenerClusterNovel(screen, cg);
         }
+
       } else if (Settings.MINIMIZER){
-        if (Settings.FIXED){
-          MinimizerScreen screen = new MinimizerScreen("fixed");
+        MinimizerScreen screen = new MinimizerScreen();
 
-
-          if (Settings.MATCHED_READS_GENOMES) {
-            ReadScreenerCluster rs = new ReadScreenerCluster(screen, cg);
-          } else {
-            ReadScreenerClusterNovel rs = new ReadScreenerClusterNovel(screen, cg);
-          }
-
+        if (Settings.MATCHED_READS_GENOMES) {
+          ReadScreenerCluster rs = new ReadScreenerCluster(screen, cg);
         } else {
-          MinimizerScreen screen = new MinimizerScreen();
-
-
-          if (Settings.MATCHED_READS_GENOMES) {
-            ReadScreenerCluster rs = new ReadScreenerCluster(screen, cg);
-          } else {
-            ReadScreenerClusterNovel rs = new ReadScreenerClusterNovel(screen, cg);
-          }
-
+          ReadScreenerClusterNovel rs = new ReadScreenerClusterNovel(screen, cg);
         }
 
       } else if (Settings.UNIFORM) {
-        if (Settings.FIXED){
-          UniformScreen screen = new UniformScreen("fixed");
+        UniformScreen screen = new UniformScreen();
 
-
-          if (Settings.MATCHED_READS_GENOMES) {
-            ReadScreenerCluster rs = new ReadScreenerCluster(screen, cg);
-          } else {
-            ReadScreenerClusterNovel rs = new ReadScreenerClusterNovel(screen, cg);
-          }
+        if (Settings.MATCHED_READS_GENOMES) {
+          ReadScreenerCluster rs = new ReadScreenerCluster(screen, cg);
         } else {
-          UniformScreen screen = new UniformScreen();
-
-
-          if (Settings.MATCHED_READS_GENOMES) {
-            ReadScreenerCluster rs = new ReadScreenerCluster(screen, cg);
-          } else {
-            ReadScreenerClusterNovel rs = new ReadScreenerClusterNovel(screen, cg);
-          }
+          ReadScreenerClusterNovel rs = new ReadScreenerClusterNovel(screen, cg);
         }
-        // STOP
+
+        // TODO - exhaustive option?
 
       } else {
         System.out.println("Invalid input parameters - please read the README!");

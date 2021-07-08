@@ -57,6 +57,11 @@ public class Settings {
   static boolean MINIMIZER;
   static boolean EXHAUSTIVE;
 
+  // MINHASH OPTIONS
+  static boolean WEIGHTED;
+  static boolean ORDERED;
+  static int ORDERED_LEN;
+
   // DEBUGGING
   static boolean TRACK_MINIMIZERS;
   static boolean TRACK_READS;
@@ -99,59 +104,133 @@ public class Settings {
     // Input options
     Options options = new Options();
 
+    // ---- Hyperparams ----
+
+    // K-mer size
     Option k = new Option("k", "kmer", true, "K-mer Size (default = 21)");
     k.setRequired(false);
     options.addOption(k);
 
+    // Threads
     Option num_threads = new Option("nt", "num-threads", true, "Number of threads to use (default = 4)");
     num_threads.setRequired(false);
     options.addOption(num_threads);
 
+    // Threshold matches
     Option threshold = new Option("th", "threshold", true, "Minimum number of matches a read must have with a genome to be considered classified (default = 5)");
     threshold.setRequired(false);
     options.addOption(threshold);
 
+    // Number of reads per line
     Option read_lines = new Option("rlns", "read-lines", true, "Number of lines per read (default = 2)");
     read_lines.setRequired(false);
     options.addOption(read_lines);
 
-    // Chunk parameters
+    // ---- ---- Main parameters ---- ----
+    // Genome folder
+    Option genome_folder = new Option("g", "genome", true, "Directory containing genomes");
+    genome_folder.setRequired(false);
+    options.addOption(genome_folder);
+
+    // Reads Folder
+    Option read_folder = new Option("r", "reads", true, "Directory containing reads");
+    read_folder.setRequired(false);
+    options.addOption(read_folder);
+
+    // Read Length
+    Option read_length = new Option("rl", "read-length", true, "Read Lengths");
+    read_length.setRequired(false);
+    options.addOption(read_length);
+
+    // Read Error
+    Option read_error = new Option("re", "read-error", true, "Read Error");
+    read_error.setRequired(false);
+    options.addOption(read_error);
+
+    // Target Matches
+    Option target_matches = new Option("tm", "target-matches", true, "Read Error");
+    target_matches.setRequired(false);
+    options.addOption(target_matches);
+
+    // Screen type
+    Option screen_type = new Option("s", "screen-type", true, "Which screen-generation approach to use (default = MinHash, options = minhash, [u]niform, [m]inimizer, or [e]xhaustive)");
+    screen_type.setRequired(false);
+    options.addOption(screen_type);
+
+    Option output_file = new Option("o", "output", true, "Where to save experiment output (default = ./)");
+    output_file.setRequired(false);
+    options.addOption(output_file);
+
+    Option hash_type = new Option("hf", "hash", true, "Which hash function to use (default = Java's built in Hashcode, options = hashcode, [mmh3], [mmh3-128])");
+    hash_type.setRequired(false);
+    options.addOption(hash_type);
+
+    Option fixed = new Option("f", "fixed", true, "If the screen size should be fixed, then please specify the size. For minimizer-based screens, this will be used window size.");
+    fixed.setRequired(false);
+    options.addOption(fixed);
+
+    Option unmatched = new Option("um", "unmatched", false, "Genomes and reads do not match (default = genomes and reads match)");
+    unmatched.setRequired(false);
+    options.addOption(unmatched);
+
+    // ---- MinHash options ----
+    Option weighted = new Option("wm", "weighted-minhash", false, "Use the weighted minhash approach (default = false, only usable in a minhash screen).");
+    weighted.setRequired(false);
+    options.addOption(weighted);
+
+    Option ordered = new Option("om", "ordered-minhash", false, "Use the ordered minhash approach (default = false, only usable in a minhash screen).");
+    ordered.setRequired(false);
+    options.addOption(ordered);
+
+    Option ordered_len = new Option("oml", "ordered-minhash-len", true, "Number of k-mers whose order to consider (default = 3, only usable in a minhash screen).");
+    ordered_len.setRequired(false);
+    options.addOption(ordered_len);
+
+    // ---- Chunk parameters ----
+    // Load in chunks or not
     Option in_chunks = new Option("c", "chunks", false, "Load read in chunks (default = false)");
     in_chunks.setRequired(false);
     options.addOption(in_chunks);
 
+    // Chunk size
     Option chunk_size = new Option("cs", "chunk-size", true, "Number of reads to load at once (default = 2000)");
     chunk_size.setRequired(false);
     options.addOption(chunk_size);
 
+    // Print chunk updates
     Option chunk_updates = new Option("cu", "chunk-updates", false, "Whether to print results after each chunk (default = false)");
     chunk_updates.setRequired(false);
     options.addOption(chunk_updates);
 
-    // Save/load screen
+    // ---- Save/load screen ----
+    // Save screen
     Option screen_only = new Option("so", "screen-only", false, "Only generate screen (default = false)");
     screen_only.setRequired(false);
     options.addOption(screen_only);
 
+    // Load Screen
     Option load_screen = new Option("ls", "load-screen", false, "Use pre-generated screen (default = false)");
     load_screen.setRequired(false);
     options.addOption(load_screen);
 
+    // Save location for screen
     Option screen_location = new Option("sl", "screen-location", true, "Where to save screen/load screen from (default = ./screens)");
     screen_location.setRequired(false);
     options.addOption(screen_location);
 
-    // Read Logging
+    // ---- Read Logging ----
+    // Enable or disable read logging
     Option read_logging = new Option("rlg", "read-logging", false, "Save read logs (default = true)");
     read_logging.setRequired(false);
     options.addOption(read_logging);
 
+    // Logging location
     Option read_location = new Option("rlc", "read-location", true, "Directory for read logs (default = ./logs)");
     read_location.setRequired(false);
     options.addOption(read_location);
 
 
-    // Cluster Parameters
+    // ---- Cluster Parameters ----
     Option cluster = new Option("ct", "cluster", false, "Use cluster-based approach (default = false).");
     cluster.setRequired(false);
     options.addOption(cluster);
@@ -175,47 +254,6 @@ public class Settings {
     Option downsample_factor = new Option("df", "downsample_factor", true, "The downsampling factor to use in the specified method (default = 1");
     downsample_factor.setRequired(false);
     options.addOption(downsample_factor);
-
-    // Main parameters
-    Option genome_folder = new Option("g", "genome", true, "Directory containing genomes");
-    genome_folder.setRequired(false);
-    options.addOption(genome_folder);
-
-    Option read_folder = new Option("r", "reads", true, "Directory containing reads");
-    read_folder.setRequired(false);
-    options.addOption(read_folder);
-
-    Option read_length = new Option("rl", "read-length", true, "Read Lengths");
-    read_length.setRequired(false);
-    options.addOption(read_length);
-
-    Option read_error = new Option("re", "read-error", true, "Read Error");
-    read_error.setRequired(false);
-    options.addOption(read_error);
-
-    Option target_matches = new Option("tm", "target-matches", true, "Read Error");
-    target_matches.setRequired(false);
-    options.addOption(target_matches);
-
-    Option screen_type = new Option("s", "screen-type", true, "Which screen-generation approach to use (default = MinHash, options = minhash, [u]niform, [m]inimizer, or [e]xhaustive)");
-    screen_type.setRequired(false);
-    options.addOption(screen_type);
-
-    Option output_file = new Option("o", "output", true, "Where to save experiment output (default = ./)");
-    output_file.setRequired(false);
-    options.addOption(output_file);
-
-    Option hash_type = new Option("hf", "hash", true, "Which hash function to use (default = Java's built in Hashcode, options = hashcode, [mmh3], [mmh3-128])");
-    hash_type.setRequired(false);
-    options.addOption(hash_type);
-
-    Option fixed = new Option("f", "fixed", true, "If the screen size should be fixed, then please specify the size. For minimizer-based screens, this will be used window size.");
-    fixed.setRequired(false);
-    options.addOption(fixed);
-
-    Option unmatched = new Option("um", "unmatched", false, "Genomes and reads do not match (default = genomes and reads match)");
-    unmatched.setRequired(false);
-    options.addOption(unmatched);
 
     // Read Filtering - TODO: Finalize this for later iterations
     Option filter_reads = new Option("fr", "filter-reads", false, "Filter out low-quality reads (default = false).");
@@ -367,6 +405,28 @@ public class Settings {
       FILTER_READS = true;
     } else {
       FILTER_READS = false;
+    }
+
+    // MinHash options
+    // Weighted
+    if (cmd.hasOption("wm")) {
+      WEIGHTED = true;
+    } else {
+      WEIGHTED = false;
+    }
+
+    // Ordered
+    if (cmd.hasOption("om")) {
+      ORDERED = true;
+    } else {
+      ORDERED = false;
+    }
+
+    // Ordered length
+    if (cmd.hasOption("oml")) {
+      ORDERED_LEN = Integer.parseInt(cmd.getOptionValue("df"));
+    } else {
+      ORDERED_LEN = 3;
     }
 
     // KEY PARAMETERS

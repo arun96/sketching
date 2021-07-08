@@ -70,6 +70,11 @@ Key Parameters:
 Matched Reads/Genomes vs Classification without a ground truth:
 - `-um/--unmatched`: Use this parameter if the reads and the genomes do not correspond - by default, the code will assume that there is a matching read set for each genome (generated using the simulator above), and will proceed with classification assuming there is some ground truth. If this option is selected, detailed classification logs will be saved for each read, and no accuracy metrics will be printed. NOTE: Over time, this will become the default, and a parameter will be needed to indicate the genomes and reads are matched. In this mode, read logging is enabled by default.
 
+Additional Options for MinHash:
+- `-wm/--weighted-minhash`: Use this flag to enable weighted minhash. By default, it is false.
+- `-om/--ordered-minhash`: Use this flag to enable ordered minhash. By default, it is false.
+- `-oml/--ordered-minhash-len`: If `-om` is used, then this will specify the number of k-mers whose order should be retained relative to each other. By default, this is 3.
+
 Fixed Size Screens:
 - `-f/--fixed <Integer>`: Use if the screen size should not be calculated, but instead the specified size/window size should be used for all screens. For uniform and MinHash screens, this will be the sketch size. For Minimizer-based screens, this will be the window size. This is not available for exhaustive screens, which just use all hashes in a given genome.
 

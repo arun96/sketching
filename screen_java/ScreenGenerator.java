@@ -31,7 +31,7 @@ public class ScreenGenerator {
 
   // TODO - add option to store weight/order for MinHash
   // Weight - need some connection between k-mer and weights
-  // Order - need to store a list of tuples 
+  // Order - need to store a list of tuples
 
   public static void main(String[] args) throws Exception
   {

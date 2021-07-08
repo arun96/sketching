@@ -19,7 +19,11 @@ public class MinHashScreen extends ScreenGenerator {
   // Screen Generator for MinHash-based screen
   MinHashScreen() throws Exception
   {
-    System.out.println("Generating MinHash-based Screen, using " + getHashName(Settings.HASH_TYPE) + " hash function.");
+    if (Settings.FIXED) {
+      System.out.println("Generating MinHash-based screen with fixed size = " + Settings.FIXED_SIZE + ", using " + getHashName(Settings.HASH_TYPE) + " hash function.");
+    } else {
+      System.out.println("Generating MinHash-based Screen, using " + getHashName(Settings.HASH_TYPE) + " hash function.");
+    }
 
     // Store variables
     this.targetMatches = Settings.TARGET_MATCHES;
@@ -45,69 +49,23 @@ public class MinHashScreen extends ScreenGenerator {
       genomeLengths[i] = gnm.length();
     }
 
-    // Compute sketch size
+    // Compute sketch size/ set it if fixed
     sketch_size = new int[numGenomes];
     for (int j = 0; j < numGenomes; j++)
     {
-      sketch_size[j] = getSketchSize(genomeLengths[j], readLen, readErr, targetMatches, k);
+      if (Settings.FIXED) {
+        sketch_size[j] = Settings.FIXED_SIZE;
+      } else {
+        sketch_size[j] = getSketchSize(genomeLengths[j], readLen, readErr, targetMatches, k);
 
-      // Max sketch size
-      if (sketch_size[j] > (genomeLengths[j] - k)){
-        sketch_size[j] = genomeLengths[j] - k;
+        // Max sketch size
+        if (sketch_size[j] > (genomeLengths[j] - k)){
+          sketch_size[j] = genomeLengths[j] - k;
+        }
       }
     }
 
     // Get sketch using genomes and sketch sizes
-
-    // Store the sketch
-    sketch_hash = new ArrayList<HashSet<Integer>>();
-
-    // For each genome
-    for (int x = 0; x < numGenomes; x++)
-    {
-      // Row corresponding to this genome
-      sketch_hash.add(getMinHashes(genomes[x], sketch_size[x], k));
-    }
-  }
-
-  // Screen Generator for fixed-size MinHash-based sketches
-  MinHashScreen(String fixed) throws Exception
-  {
-    System.out.println("Generating MinHash-based screen with fixed size = " + Settings.FIXED_SIZE + ", using " + getHashName(Settings.HASH_TYPE) + " hash function.");
-
-    // Store variables
-    this.targetMatches = Settings.TARGET_MATCHES;
-    this.readLen = Settings.READ_LENGTH;
-    this.readErr = Settings.READ_ERROR;
-    this.genomeFolder = Settings.GENOME_FOLDER;
-    this.k = Settings.K;
-    this.genomeNames = Settings.GENOMES;
-    this.numGenomes = genomeNames.length;
-    this.window = 0;
-
-    // Get genome lengths
-    int[] genomeLengths = new int[numGenomes];
-
-    // Array for the genomes
-    String[] genomes = new String[numGenomes];
-
-    // Read in the genomes, save length and the genome
-    for (int i = 0; i < numGenomes; i++)
-    {
-      String gnm = getGenome(genomeFolder + genomeNames[i]);
-      genomes[i] = gnm;
-      genomeLengths[i] = gnm.length();
-    }
-
-    // Fixed sketch size for all genomes!
-    sketch_size = new int[numGenomes];
-    for (int j = 0; j < numGenomes; j++)
-    {
-      sketch_size[j] = Settings.FIXED_SIZE;
-    }
-
-    // Get sketch using genomes and the fixed size
-
     // Store the sketch
     sketch_hash = new ArrayList<HashSet<Integer>>();
 
