@@ -59,8 +59,8 @@ public class Settings {
 
   // MINHASH OPTIONS
   static boolean WEIGHTED;
-  static boolean ORDERED;
-  static int ORDERED_LEN;
+  static boolean ORDER;
+  static int ORDER_LEN;
 
   // DEBUGGING
   static boolean TRACK_MINIMIZERS;
@@ -178,13 +178,13 @@ public class Settings {
     weighted.setRequired(false);
     options.addOption(weighted);
 
-    Option ordered = new Option("om", "ordered-minhash", false, "Use the ordered minhash approach (default = false, only usable in a minhash screen).");
-    ordered.setRequired(false);
-    options.addOption(ordered);
+    Option order = new Option("om", "order-minhash", false, "Use the order minhash approach (default = false, only usable in a minhash screen).");
+    order.setRequired(false);
+    options.addOption(order);
 
-    Option ordered_len = new Option("oml", "ordered-minhash-len", true, "Number of k-mers whose order to consider (default = 3, only usable in a minhash screen).");
-    ordered_len.setRequired(false);
-    options.addOption(ordered_len);
+    Option order_len = new Option("oml", "order-minhash-len", true, "Number of k-mers whose order to consider (default = 3, only usable in a minhash screen).");
+    order_len.setRequired(false);
+    options.addOption(order_len);
 
     // ---- Chunk parameters ----
     // Load in chunks or not
@@ -415,18 +415,18 @@ public class Settings {
       WEIGHTED = false;
     }
 
-    // Ordered
+    // Order
     if (cmd.hasOption("om")) {
-      ORDERED = true;
+      ORDER = true;
     } else {
-      ORDERED = false;
+      ORDER = false;
     }
 
     // Ordered length
     if (cmd.hasOption("oml")) {
-      ORDERED_LEN = Integer.parseInt(cmd.getOptionValue("df"));
+      ORDER_LEN = Integer.parseInt(cmd.getOptionValue("df"));
     } else {
-      ORDERED_LEN = 3;
+      ORDER_LEN = 3;
     }
 
     // KEY PARAMETERS
