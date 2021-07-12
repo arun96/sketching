@@ -78,6 +78,7 @@ public class OrderMinHashScreen extends ScreenGenerator {
     }
   }
 
+  // TODO - fix this for order minhash
   // Option for pre-generated screens
   OrderMinHashScreen(String[] genomes, ArrayList<HashSet<Integer>> sketch) throws Exception {
     System.out.println("Creating MinHash-based Screen...");

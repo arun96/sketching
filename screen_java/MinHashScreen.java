@@ -65,6 +65,8 @@ public class MinHashScreen extends ScreenGenerator {
       }
     }
 
+    // TODO - add method for calculating and storing weights here
+
     // Get sketch using genomes and sketch sizes
     // Store the sketch
     sketch_hash = new ArrayList<HashSet<Integer>>();

@@ -60,14 +60,15 @@ public class ParallelScreenerCluster{
   AtomicInteger read_number;
 
 
-  ParallelScreenerCluster(ArrayList<HashSet<Integer>> sketch_hash, ArrayList<String> reads, int window, int source, int read_start, ClusterGenerator cg, HashMap<String, HashSet<Integer>> cluster_map){
+  ParallelScreenerCluster(ScreenGenerator sg, ArrayList<String> reads, int source, int read_start, ClusterGenerator cg, HashMap<String, HashSet<Integer>> cluster_map){
 
     // Store parameters
-    this.sketch_hash = sketch_hash;
+    this.sketch_hash = sg.sketch_hash;
+    this.window = sg.window;
+
     this.reads = reads;
 
     this.num_threads = Settings.NUM_THREADS;
-    this.window = window;
 
     this.source = source;
     this.threshold = Settings.THRESHOLD;

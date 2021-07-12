@@ -30,8 +30,16 @@ public class ScreenGenerator {
   public int window;
 
   // TODO - add option to store weight/order for MinHash
+  public Map<Integer, Integer> weights;
+
   // Weight - need some connection between k-mer and weights
+  // Regular sketch, but a dictionary matching k-mer hashes to weights
+  // Map<Integer, Integer> map = new HashMap<Integer, Integer>();
+  // Could create it from the sketch, instead of from the genomes themselves?
+
   // Order - need to store a list of tuples
+  // Normal - ArrayList<HashSet<Integer>>
+  // We need ArrayList of ArrayList of Tuples
 
   public static void main(String[] args) throws Exception
   {
@@ -176,35 +184,7 @@ public class ScreenGenerator {
     return minhashvals;
   }
 
-  // TODO
-  // Gets n minimal hashes, and their weights, from a given string
-  HashSet<Integer> getWeightedMinHashes(String g, int sketch_size, int k){
-    int gl = g.length();
-    int boundary = gl - k;
-    HashSet<Integer> hashmers_set = new HashSet<Integer>();
-
-    // Build list of hashed mers - TODO add a count of how many occurrences there are
-    for (int p = 0; p < boundary; p++) {
-      int start = p;
-      int end = p + k;
-      String curr = g.substring(start, end);
-      hashmers_set.add(getHash(getCanonical(curr)));
-    }
-
-    // Sort this list
-    ArrayList<Integer> hashmers = new ArrayList<Integer>(hashmers_set);
-    Collections.sort(hashmers);
-
-    HashSet<Integer> minhashvals = new HashSet<Integer>();
-
-    // Return the n minimal ones
-    for (int q = 0; q < sketch_size; q++) {
-      minhashvals.add(hashmers.get(q));
-    }
-    return minhashvals;
-
-    //TODO - need to get weights, and store it in the weights object
-  }
+  // TODO - function to get weights
 
   //TODO - an ordered minhash version too
 
@@ -258,4 +238,11 @@ public class ScreenGenerator {
     }
     return minimizers;
   }
+
+  // ----- WEIGHTED MINHASH HELPER FUNCTIONS ------
+  // TODO
+  // Map<Integer, Integer> getWeights
+
+  // ----- ORDER MINHASH HELPER FUNCTIONS ------
+  // TODO
 }

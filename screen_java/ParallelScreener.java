@@ -49,14 +49,15 @@ public class ParallelScreener{
   AtomicInteger read_number;
 
 
-  ParallelScreener(ArrayList<HashSet<Integer>> sketch_hash, ArrayList<String> reads, int window, int source, int read_start){
+  ParallelScreener(ScreenGenerator sg, ArrayList<String> reads, int source, int read_start){
 
     // Store parameters
-    this.sketch_hash = sketch_hash;
+    this.sketch_hash = sg.sketch_hash;
+    this.window = sg.window;
+
     this.reads = reads;
 
     this.num_threads = Settings.NUM_THREADS;
-    this.window = window;
 
     this.source = source;
     this.threshold = Settings.THRESHOLD;
