@@ -49,7 +49,7 @@ public class ParallelScreener{
   AtomicInteger read_number;
 
 
-  ParallelScreener(ScreenGenerator sg, ArrayList<String> reads, int source, int read_start){
+  ParallelScreener(Screen sg, ArrayList<String> reads, int source, int read_start){
 
     // Store parameters
     this.sketch_hash = sg.sketch_hash;

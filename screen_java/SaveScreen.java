@@ -26,7 +26,7 @@ public class SaveScreen {
   ArrayList<HashSet<Integer>> sketch;
   int numGenomes;
 
-  SaveScreen(ScreenGenerator sg) throws Exception {
+  SaveScreen(Screen sg) throws Exception {
 
     this.genomeNames = Settings.GENOMES;
     this.sketch = sg.sketch_hash;

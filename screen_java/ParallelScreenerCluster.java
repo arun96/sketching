@@ -60,7 +60,7 @@ public class ParallelScreenerCluster{
   AtomicInteger read_number;
 
 
-  ParallelScreenerCluster(ScreenGenerator sg, ArrayList<String> reads, int source, int read_start, ClusterGenerator cg, HashMap<String, HashSet<Integer>> cluster_map){
+  ParallelScreenerCluster(Screen sg, ArrayList<String> reads, int source, int read_start, ClusterGenerator cg, HashMap<String, HashSet<Integer>> cluster_map){
 
     // Store parameters
     this.sketch_hash = sg.sketch_hash;

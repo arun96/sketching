@@ -10,7 +10,7 @@ import java.util.*;
 import java.lang.*;
 import java.util.Collection;
 
-public class MinHashScreen extends ScreenGenerator {
+public class MinHashScreen extends Screen {
 
   public static void main(String[] args) throws Exception
   {
@@ -65,8 +65,6 @@ public class MinHashScreen extends ScreenGenerator {
       }
     }
 
-    // TODO - add method for calculating and storing weights here
-
     // Get sketch using genomes and sketch sizes
     // Store the sketch
     sketch_hash = new ArrayList<HashSet<Integer>>();
@@ -74,8 +72,28 @@ public class MinHashScreen extends ScreenGenerator {
     // For each genome
     for (int x = 0; x < numGenomes; x++)
     {
-      // Row corresponding to this genome
       sketch_hash.add(getMinHashes(genomes[x], sketch_size[x], k));
+    }
+
+    if (Settings.WEIGHTED) {
+
+      // Create weights dictionary
+      System.out.println("Calculating Weights...");
+      weights = new HashMap<Integer, Integer>();
+
+      HashSet<Integer> total_sketch = new HashSet<Integer>();
+      total_sketch = combineSketch(sketch_hash);
+
+      for (int x = 0; x < numGenomes; x++)
+      {
+        weights = getSketchWeights(genomes[x], total_sketch, k, weights);
+      }
+
+      // Debugging
+      // max_weight = Collections.max(weights.values());
+      // System.out.println(max_weight);
+      // System.out.println(total_sketch.size());
+      // System.out.println(weights.size());
     }
   }
 

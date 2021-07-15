@@ -10,7 +10,7 @@ import java.util.*;
 import java.lang.*;
 import java.util.Collection;
 
-public class OrderMinHashScreen extends ScreenGenerator {
+public class OrderMinHashScreen extends Screen {
 
   public static void main(String[] args) throws Exception
   {

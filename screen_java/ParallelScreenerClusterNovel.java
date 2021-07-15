@@ -58,12 +58,12 @@ public class ParallelScreenerClusterNovel{
   AtomicInteger read_number;
 
 
-  ParallelScreenerClusterNovel(ScreenGenerator sg, ArrayList<String> reads, int readSet, int read_start, ClusterGenerator cg, HashMap<String, HashSet<Integer>> cluster_map){
+  ParallelScreenerClusterNovel(Screen sg, ArrayList<String> reads, int readSet, int read_start, ClusterGenerator cg, HashMap<String, HashSet<Integer>> cluster_map){
 
     // Store parameters
     this.sketch_hash = sg.sketch_hash;
     this.window = sg.window;
-    
+
     this.reads = reads;
 
     this.num_threads = Settings.NUM_THREADS;

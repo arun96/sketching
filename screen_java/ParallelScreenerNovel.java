@@ -47,7 +47,7 @@ public class ParallelScreenerNovel{
   AtomicInteger read_number;
 
 
-  ParallelScreenerNovel(ScreenGenerator sg, ArrayList<String> reads, int readSet, int read_start){
+  ParallelScreenerNovel(Screen sg, ArrayList<String> reads, int readSet, int read_start){
 
     // Store parameters
     this.sketch_hash = sg.sketch_hash;

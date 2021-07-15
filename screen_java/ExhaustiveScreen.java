@@ -10,7 +10,7 @@ import java.util.*;
 import java.lang.*;
 import java.util.Collection;
 
-public class ExhaustiveScreen extends ScreenGenerator {
+public class ExhaustiveScreen extends Screen {
 
   public static void main(String[] args) throws Exception
   {

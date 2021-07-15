@@ -16,7 +16,7 @@ import com.google.common.hash.*;
 import com.google.common.hash.Hashing;
 import com.google.common.hash.HashFunction;
 
-public class ScreenGenerator {
+public class Screen {
   // Key Variables
   public int targetMatches;
   public int readLen;
@@ -29,14 +29,12 @@ public class ScreenGenerator {
   public ArrayList<HashSet<Integer>> sketch_hash;
   public int window;
 
-  // TODO - add option to store weight/order for MinHash
-  public Map<Integer, Integer> weights;
-
   // Weight - need some connection between k-mer and weights
-  // Regular sketch, but a dictionary matching k-mer hashes to weights
-  // Map<Integer, Integer> map = new HashMap<Integer, Integer>();
-  // Could create it from the sketch, instead of from the genomes themselves?
+  public Map<Integer, Integer> weights;
+  public int max_weight;
 
+
+  // TODO
   // Order - need to store a list of tuples
   // Normal - ArrayList<HashSet<Integer>>
   // We need ArrayList of ArrayList of Tuples
@@ -184,7 +182,52 @@ public class ScreenGenerator {
     return minhashvals;
   }
 
-  // TODO - function to get weights
+  // Helper function to combine sketches into a single set
+  HashSet<Integer> combineSketch(ArrayList<HashSet<Integer>> sketch) {
+    HashSet<Integer> combined_sketch = new HashSet<Integer>();
+    for (int j = 0; j < sketch.size(); j++) {
+      combined_sketch.addAll(sketch.get(j));
+    }
+    return combined_sketch;
+
+  }
+  // Helper function to populate a weights hashmap with weights of k-mers in a sketch
+  Map<Integer, Integer> getSketchWeights(String g, HashSet<Integer> sketch, int k, Map<Integer, Integer> map){
+
+    int gl = g.length();
+    int boundary = gl - k;
+
+    // Track already seen sketch k-mers
+    HashSet<Integer> occurred = new HashSet<Integer>();
+
+    for (int p = 0; p < boundary; p++) {
+      int start = p;
+      int end = p + k;
+      String curr = g.substring(start, end);
+      int hashmer = getHash(getCanonical(curr));
+
+      // If sketch contains this k-mer
+      if (sketch.contains(hashmer)){
+
+        // If this k-mer has not been seen before
+        if (!occurred.contains(hashmer)) {
+
+          // Mark as seen
+          occurred.add(hashmer);
+
+          // If not in the weights dictionary, create and increment
+          if (!map.containsKey(hashmer)) {
+              map.put(hashmer, 0);
+          } else {
+            map.put(hashmer, map.get(hashmer)+1);
+          }
+        }
+      }
+    }
+
+    // return the weights
+    return map;
+  }
 
   //TODO - an ordered minhash version too
 
