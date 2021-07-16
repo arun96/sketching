@@ -79,7 +79,7 @@ public class ReadClassifierNovel extends Classifier{
   }
 
   // Misclassification matrix can be pieced together from saved read logs
-  void classifyRead(ArrayList<HashSet<Integer>> sketch_hash) {
+  void classifyRead(Screen sg) {
 
     // System.out.println(source + " " + read_number);
 
@@ -99,7 +99,7 @@ public class ReadClassifierNovel extends Classifier{
       read_hashes = getReadKmersHash(read, k);
     }
 
-    int[] read_scores = screenReadHash(sketch_hash, read_hashes);
+    int[] read_scores = screenReadHash(sg, read_hashes);
 
     predicted = getMaxIndex(read_scores);
 

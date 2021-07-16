@@ -19,6 +19,9 @@ public class ParallelScreenerNovel{
   // Concurrent List of reads to be processed
   ConcurrentLinkedQueue<String> reads_to_process;
 
+  // Screen
+  Screen sg;
+
   // Genome sketches
   ArrayList<HashSet<Integer>> sketch_hash;
 
@@ -50,8 +53,10 @@ public class ParallelScreenerNovel{
   ParallelScreenerNovel(Screen sg, ArrayList<String> reads, int readSet, int read_start){
 
     // Store parameters
-    this.sketch_hash = sg.sketch_hash;
-    this.window = sg.window;
+    this.sg = sg;
+
+    // this.sketch_hash = sg.sketch_hash;
+    // this.window = sg.window;
 
     this.reads = reads;
 
@@ -104,8 +109,8 @@ public class ParallelScreenerNovel{
         // Update read number
         read_number.incrementAndGet();
 
-        ReadClassifierNovel rc = new ReadClassifierNovel(readSet, read, window, curr_read, sketch_hash.size());
-        rc.classifyRead(sketch_hash);
+        ReadClassifierNovel rc = new ReadClassifierNovel(readSet, read, sg.window, curr_read, sg.sketch_hash.size());
+        rc.classifyRead(sg);
 
         // Update counts
         if (rc.filtered_out) {

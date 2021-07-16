@@ -23,7 +23,7 @@ import com.google.common.hash.HashFunction;
 import com.apporiented.algorithm.clustering.*;
 import com.apporiented.algorithm.clustering.visualization.*;
 
-// Class that contains all basic functions needed for read classification 
+// Class that contains all basic functions needed for read classification
 public class Classifier {
 
   // ---- Parameters for all types of classifiers (matched, novel, clustering) ----
@@ -105,17 +105,25 @@ public class Classifier {
   }
 
   // Screens read kmer hashes against sketch
-  int[] screenReadHash(ArrayList<HashSet<Integer>> sketch, ArrayList<Integer> readMers){
+  int[] screenReadHash(Screen sg, ArrayList<Integer> readMers){
 
     // Number of genomes in screen
-    int num = sketch.size();
+    int num = sg.sketch_hash.size();
     // Track number of matches
     int[] scores = new int[num];
     // For each sketch in the screen
     for (int i = 0; i < num; i++)
     {
+      int score = 0;
       // Get and store overlap
-      int score = getOverlapHash(sketch.get(i), readMers);
+      if (Settings.WEIGHTED) {
+        // System.out.println("Weighted");
+        score = getOverlapHashWeighted(sg.sketch_hash.get(i), readMers, sg.weights);
+      } else {
+        score = getOverlapHash(sg.sketch_hash.get(i), readMers);
+      }
+
+      // int score = getOverlapHash(sg.sketch_hash.get(i), readMers);
       scores[i] = score;
     }
     return scores;
@@ -159,24 +167,105 @@ public class Classifier {
   {
     int overlap = 0;
 
-    // DEBUGGING - tracking number of duplicates
-    int dupe = 0;
-    // DEBUGGING - track the number of duplicates k-mers
-    Set<Integer> already_counted  = new HashSet<Integer>();
-
     // Iterate through all the k-mers in the read, compare them to the sketch set
     for (int i = 0; i < readMers_list.size(); i++) {
-      if (sketch_set.contains(readMers_list.get(i))) {
-        if (already_counted.contains(readMers_list.get(i))) {
-          // DEBUGGING - keeping track of duplicate k-mers
-          dupe++;
-        } else {
-          already_counted.add(readMers_list.get(i));
-          overlap++;
-        }
+      int curr = readMers_list.get(i);
+      if (sketch_set.contains(curr)) {
+        overlap++;
       }
     }
     return overlap;
+  }
+
+  // Finds number of shared elements between a sketch and a list of query kmers
+  int getOverlapHashWeighted(HashSet<Integer> sketch_set, ArrayList<Integer> readMers_list, Map<Integer, Integer> weights)
+  {
+    int overlap = 0;
+
+    // Iterate through all the k-mers in the read, compare them to the sketch set
+    for (int i = 0; i < readMers_list.size(); i++) {
+      int curr = readMers_list.get(i);
+      if (sketch_set.contains(curr)) {
+        overlap = overlap + getWeight(weights, curr);
+      }
+    }
+    return overlap;
+  }
+
+  // Helper function to get the weight of a k-mer
+  // TODO - finalize/parameterize
+  int getWeight(Map<Integer, Integer> weights, int hashmer) {
+
+    // Measure of uniqueness - total number of genomes  - weight
+    int weight = Settings.GENOMES.length - weights.get(hashmer);
+
+    return weight;
+  }
+
+
+  // ---- CLUSTER SCREENING ----
+
+  // Screen read kmers against clustered approach
+  String[] screenReadCluster(ArrayList<HashSet<Integer>> sketch, HashMap<String, HashSet<Integer>> cluster_map, Cluster cluster, HashMap<String, ArrayList<String>> cluster_sketch_map, HashMap<String, Integer> genome_sketch_map, ArrayList<Integer> readMers, ArrayList<Integer> scores, boolean tie){
+
+    int pred = 0;
+    int selected = 0;
+    int latest_score = 0;
+    boolean leaf = false;
+    ArrayList<String> path_list = new ArrayList<String>();
+
+    while(true) {
+
+      if (cluster.isLeaf()) {
+        // path_list.add(cluster.getName());
+        break;
+      }
+
+      // Get all children of the cluster
+      List<Cluster> children = cluster.getChildren();
+
+      // Initialize an array to store the score for each child
+      int[] matches = new int[children.size()];
+
+      // For each child
+      for (int i = 0; i < children.size(); i++) {
+
+        String n = children.get(i).getName();
+        // System.out.println("Current Cluster:");
+        // System.out.println(n);
+
+        if (children.get(i).isLeaf()) {
+
+          int si = genome_sketch_map.get(n);
+          int s = getOverlapHash(sketch.get(si), readMers);
+
+          matches[i] = s;
+
+        } else {
+
+          int ss = getOverlapHash(cluster_map.get(n), readMers);
+          matches[i] = ss;
+        }
+      }
+
+      // Get the cluster to descend into
+      selected = getMaxIndex(matches);
+
+      // Checking for tie
+      if (sameCounts(matches, selected) > 0) {
+        tie = true;
+      }
+
+      // Descend into cluster and update
+      cluster = children.get(selected);
+      path_list.add(cluster.getName());
+      scores.add(matches[selected]);
+    }
+
+    // Return the path that was taken
+    //int[] path_list = path.stream().mapToInt(i -> i).toArray();
+    String[] path = path_list.toArray(new String[0]);
+    return path;
   }
 
   // ----- UTILITY FUNCTIONS ------

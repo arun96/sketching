@@ -19,15 +19,18 @@ public class ParallelScreener{
   // Concurrent List of reads to be processed
   ConcurrentLinkedQueue<String> reads_to_process;
 
+  // Screen
+  Screen sg;
+
   // Genome sketches
-  ArrayList<HashSet<Integer>> sketch_hash;
+  //  ArrayList<HashSet<Integer>> sketch_hash;
 
   // Input set of reads to be processed
   ArrayList<String> reads;
 
   // Specified parameters
   int num_threads;
-  int window;
+  // int window;
 
   // Min Number of matches for read to be classified
   int threshold;
@@ -52,8 +55,10 @@ public class ParallelScreener{
   ParallelScreener(Screen sg, ArrayList<String> reads, int source, int read_start){
 
     // Store parameters
-    this.sketch_hash = sg.sketch_hash;
-    this.window = sg.window;
+    this.sg = sg;
+
+    // this.sketch_hash = sg.sketch_hash;
+    // this.window = sg.window;
 
     this.reads = reads;
 
@@ -106,8 +111,8 @@ public class ParallelScreener{
         // Update read number
         read_number.incrementAndGet();
 
-        ReadClassifier rc = new ReadClassifier(read, window, source, curr_read, sketch_hash.size());
-        rc.classifyRead(sketch_hash);
+        ReadClassifier rc = new ReadClassifier(read, sg.window, source, curr_read, sg.sketch_hash.size());
+        rc.classifyRead(sg);
 
         // Update counts
         if (rc.filtered_out) {

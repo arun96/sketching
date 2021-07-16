@@ -63,8 +63,8 @@ public class Screen {
     // Compute number of necessary matches per read length given error rate, extend to whole genome
     double kmer_error_rate = Math.pow((1-readError), k);
     double necessary_matches = ((double) targetMatches)/kmer_error_rate;
-    double genome_segements = ((double) genomeLength) / ((double) readLength);
-    double total_num_sketches = necessary_matches * genome_segements;
+    double genome_segments = ((double) genomeLength) / ((double) readLength);
+    double total_num_sketches = necessary_matches * genome_segments;
     return (int) total_num_sketches;
   }
 

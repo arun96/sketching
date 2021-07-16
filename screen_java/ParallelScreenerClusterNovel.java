@@ -23,6 +23,9 @@ public class ParallelScreenerClusterNovel{
   // Concurrent List of reads to be processed
   ConcurrentLinkedQueue<String> reads_to_process;
 
+  // Screen
+  Screen sg;
+
   // Genome sketches
   ArrayList<HashSet<Integer>> sketch_hash;
 
@@ -61,8 +64,9 @@ public class ParallelScreenerClusterNovel{
   ParallelScreenerClusterNovel(Screen sg, ArrayList<String> reads, int readSet, int read_start, ClusterGenerator cg, HashMap<String, HashSet<Integer>> cluster_map){
 
     // Store parameters
-    this.sketch_hash = sg.sketch_hash;
-    this.window = sg.window;
+    this.sg = sg;
+    // this.sketch_hash = sg.sketch_hash;
+    // this.window = sg.window;
 
     this.reads = reads;
 
@@ -123,8 +127,8 @@ public class ParallelScreenerClusterNovel{
         // Update read number
         read_number.incrementAndGet();
 
-        ReadClassifierClusterNovel rc = new ReadClassifierClusterNovel(read, window, readSet, curr_read, cluster, cluster_sketch_map, genome_sketch_map, cluster_height_map, sketch_hash.size());
-        rc.classifyRead(sketch_hash, cluster_map);
+        ReadClassifierClusterNovel rc = new ReadClassifierClusterNovel(read, sg.window, readSet, curr_read, cluster, cluster_sketch_map, genome_sketch_map, cluster_height_map, sg.sketch_hash.size());
+        rc.classifyRead(sg, cluster_map);
 
         // Update counts - TODO: this remains same for cluster
         if (rc.filtered_out) {

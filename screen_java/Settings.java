@@ -407,27 +407,6 @@ public class Settings {
       FILTER_READS = false;
     }
 
-    // MinHash options
-    // Weighted
-    if (cmd.hasOption("wm")) {
-      WEIGHTED = true;
-    } else {
-      WEIGHTED = false;
-    }
-
-    // Order
-    if (cmd.hasOption("om")) {
-      ORDER = true;
-    } else {
-      ORDER = false;
-    }
-
-    // Ordered length
-    if (cmd.hasOption("oml")) {
-      ORDER_LEN = Integer.parseInt(cmd.getOptionValue("df"));
-    } else {
-      ORDER_LEN = 3;
-    }
 
     // KEY PARAMETERS
 
@@ -459,6 +438,28 @@ public class Settings {
     } else {
       System.out.println("Invalid Screen Generation approach specified - using MinHash for screen generation");
       MINHASH = true;
+    }
+
+    // MinHash options
+    // Weighted
+    if (cmd.hasOption("wm") && MINHASH) {
+      WEIGHTED = true;
+    } else {
+      WEIGHTED = false;
+    }
+
+    // Order
+    if (cmd.hasOption("om") && MINHASH) {
+      ORDER = true;
+    } else {
+      ORDER = false;
+    }
+
+    // Ordered length
+    if (cmd.hasOption("oml") && ORDER) {
+      ORDER_LEN = Integer.parseInt(cmd.getOptionValue("df"));
+    } else {
+      ORDER_LEN = 3;
     }
 
     if (cmd.hasOption("f")) {

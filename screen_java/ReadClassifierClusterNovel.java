@@ -61,7 +61,7 @@ public class ReadClassifierClusterNovel extends Classifier {
   }
 
   // Misclassification matrix can be pieced together from saved read logs
-  void classifyRead(ArrayList<HashSet<Integer>> sketch_hash, HashMap<String, HashSet<Integer>> cluster_map) {
+  void classifyRead(Screen sg, HashMap<String, HashSet<Integer>> cluster_map) {
 
     // TODO - generalize filtering
     // Read Filtering
@@ -82,7 +82,7 @@ public class ReadClassifierClusterNovel extends Classifier {
     boolean tie = false;
     ArrayList<Integer> scores = new ArrayList<Integer>();
 
-    String [] path = screenReadCluster(sketch_hash, cluster_map, cluster, cluster_sketch_map, genome_sketch_map, read_hashes, scores, tie);
+    String [] path = screenReadCluster(sg.sketch_hash, cluster_map, cluster, cluster_sketch_map, genome_sketch_map, read_hashes, scores, tie);
 
     predicted = genome_sketch_map.get(path[path.length - 1]);
 
@@ -100,72 +100,8 @@ public class ReadClassifierClusterNovel extends Classifier {
     }
 
     if (Settings.READ_LOGGING) {
-      saveReadResultsCluster(Settings.READ_LOCATION, read_set, read_number, path, score, predicted, sketch_hash.size());
+      saveReadResultsCluster(Settings.READ_LOCATION, read_set, read_number, path, score, predicted, sg.sketch_hash.size());
     }
-  }
-
-  // ----- HELPER FUNCTIONS FOR SCREENING ------
-
-  // Screen read kmers against clustered approach
-  String[] screenReadCluster(ArrayList<HashSet<Integer>> sketch, HashMap<String, HashSet<Integer>> cluster_map, Cluster cluster, HashMap<String, ArrayList<String>> cluster_sketch_map, HashMap<String, Integer> genome_sketch_map, ArrayList<Integer> readMers, ArrayList<Integer> scores, boolean tie){
-
-    int pred = 0;
-    int selected = 0;
-    int latest_score = 0;
-    boolean leaf = false;
-    ArrayList<String> path_list = new ArrayList<String>();
-
-    while(true) {
-
-      if (cluster.isLeaf()) {
-        // path_list.add(cluster.getName());
-        break;
-      }
-
-      List<Cluster> children = cluster.getChildren();
-
-
-      int[] matches = new int[children.size()];
-
-      // For each child
-      for (int i = 0; i < children.size(); i++) {
-
-        String n = children.get(i).getName();
-        // System.out.println("Current Cluster:");
-        // System.out.println(n);
-
-        if (children.get(i).isLeaf()) {
-
-          int si = genome_sketch_map.get(n);
-          int s = getOverlapHash(sketch.get(si), readMers);
-
-          matches[i] = s;
-
-        } else {
-
-          int ss = getOverlapHash(cluster_map.get(n), readMers);
-          matches[i] = ss;
-        }
-      }
-
-      // Get the cluster to descend into
-      selected = getMaxIndex(matches);
-
-      // Checking for tie
-      if (sameCounts(matches, selected) > 0) {
-        tie = true;
-      }
-
-      // Descend into cluster and update
-      cluster = children.get(selected);
-      path_list.add(cluster.getName());
-      scores.add(matches[selected]);
-    }
-
-    // Return the path that was taken
-    //int[] path_list = path.stream().mapToInt(i -> i).toArray();
-    String[] path = path_list.toArray(new String[0]);
-    return path;
   }
 
   // ----- READ LOGGING -----
