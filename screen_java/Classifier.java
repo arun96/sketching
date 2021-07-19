@@ -118,7 +118,7 @@ public class Classifier {
       // Get and store overlap
       if (Settings.WEIGHTED) {
         // System.out.println("Weighted");
-        score = getOverlapHashWeighted(sg.sketch_hash.get(i), readMers, sg.weights);
+        score = getOverlapHashWeighted(sg.sketch_hash.get(i), readMers, sg.weights, sg.genomeNames.length);
       } else {
         score = getOverlapHash(sg.sketch_hash.get(i), readMers);
       }
@@ -177,8 +177,8 @@ public class Classifier {
     return overlap;
   }
 
-  // Finds number of shared elements between a sketch and a list of query kmers
-  int getOverlapHashWeighted(HashSet<Integer> sketch_set, ArrayList<Integer> readMers_list, Map<Integer, Integer> weights)
+  // Finds weight of shared elements between a sketch and a list of query kmers
+  int getOverlapHashWeighted(HashSet<Integer> sketch_set, ArrayList<Integer> readMers_list, Map<Integer, Integer> weights, int max_weight)
   {
     int overlap = 0;
 
@@ -186,7 +186,7 @@ public class Classifier {
     for (int i = 0; i < readMers_list.size(); i++) {
       int curr = readMers_list.get(i);
       if (sketch_set.contains(curr)) {
-        overlap = overlap + getWeight(weights, curr);
+        overlap = overlap + getWeight(weights, max_weight, curr);
       }
     }
     return overlap;
@@ -194,10 +194,10 @@ public class Classifier {
 
   // Helper function to get the weight of a k-mer
   // TODO - finalize/parameterize
-  int getWeight(Map<Integer, Integer> weights, int hashmer) {
+  int getWeight(Map<Integer, Integer> weights, int max_weight, int hashmer) {
 
     // Measure of uniqueness - total number of genomes  - weight
-    int weight = Settings.GENOMES.length - weights.get(hashmer);
+    int weight = max_weight - weights.get(hashmer);
 
     return weight;
   }

@@ -98,8 +98,12 @@ public class MinHashScreen extends Screen {
   }
 
   // Option for pre-generated screens
-  MinHashScreen(String[] genomes, ArrayList<HashSet<Integer>> sketch) throws Exception {
+  MinHashScreen(String[] genomes, ArrayList<HashSet<Integer>> sketch, Map<Integer, Integer> loaded_weights) throws Exception {
     System.out.println("Creating MinHash-based Screen...");
+
+    weights = new HashMap<Integer, Integer>();
+    sketch_hash = new ArrayList<HashSet<Integer>>();
+
     this.targetMatches = Settings.TARGET_MATCHES;
     this.readLen = Settings.READ_LENGTH;
     this.readErr = Settings.READ_ERROR;
@@ -109,6 +113,7 @@ public class MinHashScreen extends Screen {
     this.numGenomes = genomeNames.length;
     this.window = 0;
     sketch_hash = sketch;
+    weights = loaded_weights;
   }
 
 }

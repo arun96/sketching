@@ -31,7 +31,6 @@ public class Screen {
 
   // Weight - need some connection between k-mer and weights
   public Map<Integer, Integer> weights;
-  public int max_weight;
 
 
   // TODO
@@ -46,19 +45,6 @@ public class Screen {
   // ----- UTILITY FUNCTIONS ------
   // Compute the sketch size, given a genome, read lengths, error rates and # of target matches
   int getSketchSize(int genomeLength, int readLength, double readError, int targetMatches, int k){
-    // double unaffectedChance = 1.0 - readError;
-    // double multiplier = Math.pow(unaffectedChance, k);
-    //
-    // double genomeLengthD = (double) genomeLength;
-    // double readLengthD = (double) readLength;
-    // double targetMatchesD = (double) targetMatches;
-    //
-    // double numerator = (targetMatchesD * genomeLengthD);
-    // double denominator = (readLengthD * multiplier);
-    //
-    // double num_sketches = numerator/denominator;
-    // return (int) num_sketches;
-
     // NEW
     // Compute number of necessary matches per read length given error rate, extend to whole genome
     double kmer_error_rate = Math.pow((1-readError), k);
@@ -182,7 +168,7 @@ public class Screen {
     return minhashvals;
   }
 
-  // Helper function to combine sketches into a single set
+  // Helper function to combine sketches into a single set - used for weighted minhash
   HashSet<Integer> combineSketch(ArrayList<HashSet<Integer>> sketch) {
     HashSet<Integer> combined_sketch = new HashSet<Integer>();
     for (int j = 0; j < sketch.size(); j++) {
@@ -224,12 +210,40 @@ public class Screen {
         }
       }
     }
-
     // return the weights
     return map;
   }
 
   //TODO - an ordered minhash version too
+  // Maybe used a LinkedHashSet?
+  HashSet<Integer> getOrderMinHashes(String g, int sketch_size, int k) {
+    int gl = g.length();
+    int boundary = gl - k;
+    LinkedHashSet<Integer> hashmers_set = new LinkedHashSet<Integer>();
+
+    // TODO - look into how a java heap could be used for this?
+
+    // TODO - set to infinity
+    int max_val = 0;
+    int size = 0;
+
+    // for (int p = 0; p < boundary; p++) {
+    //   int start = p;
+    //   int end = p + k;
+    //   String curr = g.substring(start, end);
+    //   int curr_hash = getHash(getCanonical(curr));
+    //
+    //   if (size < sketch_size) {
+    //     hashmers_set.add(curr_hash);
+    //   } else if ((size >= sketch_size) && (curr_hash < max_val)) {
+    //     // Add to the list, remove the max value
+    //     // Find new max
+    //   } else {
+    //   }
+
+    return hashmers_set;
+  }
+
 
   // ----- EXHAUSTIVE HASH HELPER FUNCTIONS -----
 

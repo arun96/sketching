@@ -56,6 +56,7 @@ public class Settings {
   static boolean UNIFORM;
   static boolean MINIMIZER;
   static boolean EXHAUSTIVE;
+  static String SCREEN_TYPE;
 
   // MINHASH OPTIONS
   static boolean WEIGHTED;
@@ -174,11 +175,11 @@ public class Settings {
     options.addOption(unmatched);
 
     // ---- MinHash options ----
-    Option weighted = new Option("wm", "weighted-minhash", false, "Use the weighted minhash approach (default = false, only usable in a minhash screen).");
+    Option weighted = new Option("wmh", "weighted-minhash", false, "Use the weighted minhash approach (default = false, only usable in a minhash screen).");
     weighted.setRequired(false);
     options.addOption(weighted);
 
-    Option order = new Option("om", "order-minhash", false, "Use the order minhash approach (default = false, only usable in a minhash screen).");
+    Option order = new Option("omh", "order-minhash", false, "Use the order minhash approach (default = false, only usable in a minhash screen).");
     order.setRequired(false);
     options.addOption(order);
 
@@ -429,12 +430,16 @@ public class Settings {
     String st = cmd.getOptionValue("s");
     if (st == null){
       MINHASH = true;
+      SCREEN_TYPE = "minhash";
     } else if (st.equals("m") || st.equals("M")) {
       MINIMIZER = true;
+      SCREEN_TYPE = "minimizer";
     } else if (st.equals("u") || st.equals("U")) {
       UNIFORM = true;
+      SCREEN_TYPE = "uniform";
     } else if (st.equals("e") || st.equals("E")) {
       EXHAUSTIVE = true;
+      SCREEN_TYPE = "exhaustive";
     } else {
       System.out.println("Invalid Screen Generation approach specified - using MinHash for screen generation");
       MINHASH = true;
@@ -442,14 +447,14 @@ public class Settings {
 
     // MinHash options
     // Weighted
-    if (cmd.hasOption("wm") && MINHASH) {
+    if (cmd.hasOption("wmh") && MINHASH) {
       WEIGHTED = true;
     } else {
       WEIGHTED = false;
     }
 
     // Order
-    if (cmd.hasOption("om") && MINHASH) {
+    if (cmd.hasOption("omh") && MINHASH) {
       ORDER = true;
     } else {
       ORDER = false;

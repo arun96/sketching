@@ -35,7 +35,6 @@ public class ReadScreener extends Screener {
     // 0 if MinHash or uniform, >0 if Minimizer-based
     this.window = sg.window;
 
-
     // Print Sketch Sizes
     for (int a = 0; a < numGenomes; a++)
     {

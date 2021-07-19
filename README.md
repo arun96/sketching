@@ -71,6 +71,7 @@ Matched Reads/Genomes vs Classification without a ground truth:
 - `-um/--unmatched`: Use this parameter if the reads and the genomes do not correspond - by default, the code will assume that there is a matching read set for each genome (generated using the simulator above), and will proceed with classification assuming there is some ground truth. If this option is selected, detailed classification logs will be saved for each read, and no accuracy metrics will be printed. NOTE: Over time, this will become the default, and a parameter will be needed to indicate the genomes and reads are matched. In this mode, read logging is enabled by default.
 
 Additional Options for MinHash:
+NOTE: These sections are still under development.
 - `-wm/--weighted-minhash`: Use this flag to enable weighted minhash. By default, it is false.
 - `-om/--order-minhash`: Use this flag to enable order minhash. By default, it is false.
 - `-oml/--order-minhash-len`: If `-om` is used, then this will specify the number of k-mers whose order should be retained relative to each other. By default, this is 3.
@@ -89,10 +90,10 @@ Read Logging:
 
 "Screen Only":
 - `-so/--screen-only`: Use if you only want to generate the screen, but not classify any reads.
-- `-sl/--screen-location <Directory>`: Used for both screen-generation and loading pre-generated screens. Specifies the location where the generated screens will be saved. Screens will be saved in `.bin` files with names matching the input genome files.
+- `-sl/--screen-location <Directory>`: Used for both screen-generation and loading pre-generated screens. Specifies the location where the generated screens will be saved. Screens will be saved in `.bin` files with names matching the input genome files. If weighted minhash or order minhash are being used, then an additional `.bin` file will be saved with the weights/order, and will be loaded when used. Finally, a `params.txt` file with the details of the experiment will be generated - you will need to use the information in this file when loading the saved screen.
 
 Load Pre-Generated Screen:
-- `-ls/--load-screen`: Use this if you want to use a pre-generated screen, and supply the input reads to classify against it. Please remember to set matched/unmatched (`-um`) depending on the type of classification you want to do, and please specify the error rate, read length and target matches used when generating this screen.
+- `-ls/--load-screen`: Use this if you want to use a pre-generated screen, and supply the input reads to classify against it. Please remember to set matched/unmatched (`-um`) depending on the type of classification you want to do, and please specify the error rate, read length and target matches used when generating this screen, as well as the weighted or order minhash parameters if either was used. The details for the screens that are loaded can be found in the same directory in the `params.txt` file, so refer to that to get the correct values.
 - `-sl/--screen-location <Directory>`: Used for both screen-generation and loading pre-generated screens. Specifies the location where the pre-generated screens will be loaded from. Pre-generated screens will be loaded from `.bin` files with names matching the input genome files.
 
 Experiment Parameters
@@ -101,6 +102,7 @@ Experiment Parameters
 - `-rlns/--read-lines`: The number of lines in the read fasta/fastq file that are dedicated to a single read. By default, it is 2 (read name + the read itself), but this could be 4 in some cases.
 
 Clustering-based Approach:
+NOTE: This section is still under development.
 - `-ct/--cluster`: Use this flag to enable the clustering approach, where the generated screens will be clustered and arranged into a tree. By default, this is false, and regular classification will occur.
 - `-css/--cluster-sketch-size`: Used to specify the size of the sketches used to cluster the genomes. By default is set to 100, but can be set to any value as long as clustering is enabled.
 - `dt/--downsample-type`: Used to specify the downsampling format we want to use in cluster generation. By default, sketches are `[n]`ot downsampled, but other options include downsampling by a `[c]`onstant factor or scaled for `[h]`eight.

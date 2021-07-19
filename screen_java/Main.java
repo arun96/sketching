@@ -44,7 +44,7 @@ public class Main {
       System.out.println("Screen-Generation mode - screens will be saved here: " + Settings.SCREEN_LOCATION);
       run_screen();
     } else if (Settings.LOAD_SCREEN) {
-      System.out.println("Loading pre-generated screen from: " + Settings.SCREEN_LOCATION);
+      System.out.println("Loading pre-generated screen from: " + Settings.SCREEN_LOCATION + ". Please make sure input parameters match those of generated screens (found in params.txt).");
       run_load();
     } else if (Settings.CLUSTER_BASED) {
       run_cluster();
@@ -145,7 +145,7 @@ public class Main {
     } else {
       LoadScreen ls = new LoadScreen();
       if (Settings.MINHASH) {
-        MinHashScreen screen = new MinHashScreen(ls.genomeNames, ls.sketch);
+        MinHashScreen screen = new MinHashScreen(ls.genomeNames, ls.sketch, ls.weights);
 
         if (Settings.MATCHED_READS_GENOMES) {
           ReadScreener rs = new ReadScreener(screen);

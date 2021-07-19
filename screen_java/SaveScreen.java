@@ -23,24 +23,37 @@ import com.google.common.hash.HashFunction;
 public class SaveScreen {
 
   String[] genomeNames;
-  ArrayList<HashSet<Integer>> sketch;
   int numGenomes;
 
   SaveScreen(Screen sg) throws Exception {
 
     this.genomeNames = Settings.GENOMES;
-    this.sketch = sg.sketch_hash;
     this.numGenomes = genomeNames.length;
 
     // Save screens to individual files
     for (int a = 0; a < numGenomes; a++)
     {
       String filename = Settings.SCREEN_LOCATION + genomeNames[a] + ".bin";
-      saveToFile(sketch.get(a), filename);
+      saveToFile(sg.sketch_hash.get(a), filename);
 
     }
+    System.out.println("Screens saved!");
 
-    System.out.println("Screens generated and saved!");
+    // Save weights
+    if (Settings.WEIGHTED) {
+      String weights_filename = Settings.SCREEN_LOCATION + "weights.bin";
+      saveWeightsToFile(sg.weights, weights_filename);
+      System.out.println("Weights saved!");
+    }
+
+    // Save Order - TODO
+
+    // Clusters - TODO
+
+    // Experiment parameters
+    String paramsFile = Settings.SCREEN_LOCATION + "params.txt";
+    saveParams(sg, Settings.SCREEN_TYPE, Settings.HASH_TYPE, paramsFile);
+
   }
 
   // Save individual genome sketch to file
@@ -52,14 +65,36 @@ public class SaveScreen {
     fos.close();
   }
 
-  // TODO - clean this up
-  void saveToFileWhole(ArrayList<HashSet<Integer>> sketch, String f) throws Exception {
+  // Save weights to file
+  void saveWeightsToFile(Map<Integer, Integer> weights, String f) throws Exception {
     FileOutputStream fos = new FileOutputStream(f);
     ObjectOutputStream oos = new ObjectOutputStream(fos);
-    oos.writeObject(sketch);
+    oos.writeObject(weights);
     oos.close();
     fos.close();
   }
+
+  void saveParams(Screen sg, String screen_type, String hash_type, String f) throws Exception {
+    PrintWriter out = new PrintWriter(new File(f));
+    out.println("Screen Details:");
+    out.println("Screen Type: " + screen_type);
+    out.println("Hash Function used: " + hash_type);
+    out.println("K: " + sg.k);
+    out.println("Target Matches: " + sg.targetMatches);
+    out.println("Read Length: " + sg.readLen);
+    out.println("Read Error: " + sg.readErr);
+    out.println("Window Size: " + sg.window);
+    out.close();
+  }
+
+  // TODO - delete when ready
+  // void saveToFileWhole(ArrayList<HashSet<Integer>> sketch, String f) throws Exception {
+  //   FileOutputStream fos = new FileOutputStream(f);
+  //   ObjectOutputStream oos = new ObjectOutputStream(fos);
+  //   oos.writeObject(sketch);
+  //   oos.close();
+  //   fos.close();
+  // }
 
 
 }
