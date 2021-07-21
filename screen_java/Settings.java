@@ -58,8 +58,11 @@ public class Settings {
   static boolean EXHAUSTIVE;
   static String SCREEN_TYPE;
 
-  // MINHASH OPTIONS
+  // MINHASH OPTIONS - WEIGHTED
   static boolean WEIGHTED;
+  static int WEIGHTING;
+
+  // MINHASH OPTIONS - ORDER
   static boolean ORDER;
   static int ORDER_LEN;
 
@@ -175,10 +178,17 @@ public class Settings {
     options.addOption(unmatched);
 
     // ---- MinHash options ----
+
+    // Weighted
     Option weighted = new Option("wmh", "weighted-minhash", false, "Use the weighted minhash approach (default = false, only usable in a minhash screen).");
     weighted.setRequired(false);
     options.addOption(weighted);
 
+    Option weighting = new Option("wmhw", "weighted-minhash-weighting", true, "Specifies a multiplier for a unique k-mers, to help with breaking ties (default = 1)");
+    weighting.setRequired(false);
+    options.addOption(weighting);
+
+    // Order
     Option order = new Option("omh", "order-minhash", false, "Use the order minhash approach (default = false, only usable in a minhash screen).");
     order.setRequired(false);
     options.addOption(order);
@@ -451,6 +461,12 @@ public class Settings {
       WEIGHTED = true;
     } else {
       WEIGHTED = false;
+    }
+
+    if (cmd.hasOption("wmhw") && WEIGHTED) {
+      WEIGHTING = Integer.parseInt(cmd.getOptionValue("wmhw"));
+    } else {
+      WEIGHTING = 0;
     }
 
     // Order

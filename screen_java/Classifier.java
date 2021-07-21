@@ -196,8 +196,16 @@ public class Classifier {
   // TODO - finalize/parameterize
   int getWeight(Map<Integer, Integer> weights, int max_weight, int hashmer) {
 
-    // Measure of uniqueness - total number of genomes  - weight
-    int weight = max_weight - weights.get(hashmer);
+    // Measure of uniqueness
+    int weight = 0;
+    int weight_mer = weights.get(hashmer);
+
+    // Treat unique k-mers differently
+    if (weight_mer == 1) {
+      weight = (max_weight - weight_mer) * Settings.WEIGHTING;
+    } else {
+        weight = (max_weight - weight_mer);
+    }
 
     return weight;
   }

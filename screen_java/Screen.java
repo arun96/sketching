@@ -37,6 +37,7 @@ public class Screen {
   // Order - need to store a list of tuples
   // Normal - ArrayList<HashSet<Integer>>
   // We need ArrayList of ArrayList of Tuples
+  public ArrayList<Map<Integer,Integer>> order;
 
   public static void main(String[] args) throws Exception
   {
@@ -214,34 +215,45 @@ public class Screen {
     return map;
   }
 
-  //TODO - an ordered minhash version too
-  // Maybe used a LinkedHashSet?
-  HashSet<Integer> getOrderMinHashes(String g, int sketch_size, int k) {
+  // Order MinHash - TODO: Finish this
+  HashSet<Integer> getOrderMinHashes(String g, int sketch_size, int k, Map<Integer, Integer> sketch_position){
     int gl = g.length();
     int boundary = gl - k;
-    LinkedHashSet<Integer> hashmers_set = new LinkedHashSet<Integer>();
+    HashSet<Integer> hashmers_set = new HashSet<Integer>();
 
-    // TODO - look into how a java heap could be used for this?
+    // position trackers
+    Map<Integer, Integer> hashmer_position = new HashMap<Integer, Integer>();
 
-    // TODO - set to infinity
-    int max_val = 0;
-    int size = 0;
+    // Build list of hashed mers
+    for (int p = 0; p < boundary; p++) {
+      int start = p;
+      int end = p + k;
+      String curr = g.substring(start, end);
+      int hashmer = getHash(getCanonical(curr));
+      hashmers_set.add(hashmer);
 
-    // for (int p = 0; p < boundary; p++) {
-    //   int start = p;
-    //   int end = p + k;
-    //   String curr = g.substring(start, end);
-    //   int curr_hash = getHash(getCanonical(curr));
-    //
-    //   if (size < sketch_size) {
-    //     hashmers_set.add(curr_hash);
-    //   } else if ((size >= sketch_size) && (curr_hash < max_val)) {
-    //     // Add to the list, remove the max value
-    //     // Find new max
-    //   } else {
-    //   }
+      // first occurrence of this k-mer
+      if (!hashmer_position.containsKey(hashmer)) {
+        hashmer_position.put(hashmer, start);
+      }
+    }
 
-    return hashmers_set;
+    // Sort this list
+    ArrayList<Integer> hashmers = new ArrayList<Integer>(hashmers_set);
+    Collections.sort(hashmers);
+
+    HashSet<Integer> minhashvals = new HashSet<Integer>();
+
+    // Return the n minimal ones
+    for (int q = 0; q < sketch_size; q++) {
+      int curr_hash = hashmers.get(q);
+      minhashvals.add(curr_hash);
+      // store the position for this k-mer
+      sketch_position.put(curr_hash, hashmer_position.get(curr_hash));
+    }
+
+    // TODO - return this order dictionary/map along with sketch
+    return minhashvals;
   }
 
 

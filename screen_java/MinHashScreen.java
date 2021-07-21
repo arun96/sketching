@@ -69,12 +69,25 @@ public class MinHashScreen extends Screen {
     // Store the sketch
     sketch_hash = new ArrayList<HashSet<Integer>>();
 
+    // Order
+    order = new ArrayList<Map<Integer,Integer>>();
+
     // For each genome
     for (int x = 0; x < numGenomes; x++)
     {
-      sketch_hash.add(getMinHashes(genomes[x], sketch_size[x], k));
+      // If Order MinHash is enabled
+      if (Settings.ORDER) {
+        Map<Integer, Integer> sketch_position = new HashMap<Integer, Integer>();
+        sketch_hash.add(getOrderMinHashes(genomes[x], sketch_size[x], k, sketch_position));
+        order.add(sketch_position);
+
+      // Regular MinHash
+      } else {
+        sketch_hash.add(getMinHashes(genomes[x], sketch_size[x], k));
+      }
     }
 
+    // If Weighted MinHash is enabled
     if (Settings.WEIGHTED) {
 
       // Create weights dictionary

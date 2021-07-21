@@ -72,9 +72,10 @@ Matched Reads/Genomes vs Classification without a ground truth:
 
 Additional Options for MinHash:
 NOTE: These sections are still under development.
-- `-wm/--weighted-minhash`: Use this flag to enable weighted minhash. By default, it is false.
-- `-om/--order-minhash`: Use this flag to enable order minhash. By default, it is false.
-- `-oml/--order-minhash-len`: If `-om` is used, then this will specify the number of k-mers whose order should be retained relative to each other. By default, this is 3.
+- `-wmh/--weighted-minhash`: Use this flag to enable weighted minhash. By default, it is false.
+- `-wmhw/--weighted-minhash`: If `wmh` is used, this can be used to specify the multiplier given to unique k-mers (i.e. k-mers that only occur in one genome in the screen). By default it is one (as all k-mer weights are the total number of genomes - the number of genomes they occur in), but with this option unique k-mers can be weighted higher, helping to break ties.
+- `-omh/--order-minhash`: Use this flag to enable order minhash. By default, it is false.
+- `-omhl/--order-minhash-len`: If `-omh` is used, then this will specify the number of k-mers whose order should be retained relative to each other. By default, this is 3.
 
 Fixed Size Screens:
 - `-f/--fixed <Integer>`: Use if the screen size should not be calculated, but instead the specified size/window size should be used for all screens. For uniform and MinHash screens, this will be the sketch size. For Minimizer-based screens, this will be the window size. This is not available for exhaustive screens, which just use all hashes in a given genome.
