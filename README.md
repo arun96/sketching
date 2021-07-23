@@ -89,13 +89,16 @@ Read Logging:
 - `-rlg/--read-logging`: Use if read-logging should be enabled. This is enabled by default in unmatched mode (`-um`).
 - `rlc/--read-location <Directory>`: The directory that read logs should be saved to. They will be named with the naming convention `<Readset Number>_<Read_Number>.log` - for example, `3_23.log` is the log for the 24th read from the 3rd read set.
 
-"Screen Only":
+Generating Screens without doing classification:
 - `-so/--screen-only`: Use if you only want to generate the screen, but not classify any reads.
 - `-sl/--screen-location <Directory>`: Used for both screen-generation and loading pre-generated screens. Specifies the location where the generated screens will be saved. Screens will be saved in `.bin` files with names matching the input genome files. If weighted minhash or order minhash are being used, then an additional `.bin` file will be saved with the weights/order, and will be loaded when used. Finally, a `params.txt` file with the details of the experiment will be generated - you will need to use the information in this file when loading the saved screen.
 
 Load Pre-Generated Screen:
 - `-ls/--load-screen`: Use this if you want to use a pre-generated screen, and supply the input reads to classify against it. Please remember to set matched/unmatched (`-um`) depending on the type of classification you want to do, and please specify the error rate, read length and target matches used when generating this screen, as well as the weighted or order minhash parameters if either was used. The details for the screens that are loaded can be found in the same directory in the `params.txt` file, so refer to that to get the correct values.
 - `-sl/--screen-location <Directory>`: Used for both screen-generation and loading pre-generated screens. Specifies the location where the pre-generated screens will be loaded from. Pre-generated screens will be loaded from `.bin` files with names matching the input genome files.
+
+Save Screen while doing regular classification:
+- `-ss/--save-screen`: Use this to save screens after generation, but before the classification stage. Use the `-sl` parameter to specify the location it is saved to.
 
 Experiment Parameters
 - `-k/--kmer <Integer>`: The k-mer size to use. By default, it is 21.

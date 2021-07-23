@@ -349,10 +349,15 @@ public class Classifier {
   boolean read_filtering(String read, int read_length) {
     boolean filter_out = false;
     String pattern = "[acgtACGT]+";
-    if (read.matches(pattern)) {
-      filter_out = false;
-    } else {
+    // Handle read being null issue
+    if (read == null) {
       filter_out = true;
+    } else {
+      if (read.matches(pattern)) {
+        filter_out = false;
+      } else {
+        filter_out = true;
+      }
     }
     return filter_out;
   }

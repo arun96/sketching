@@ -91,6 +91,9 @@ public class Settings {
   static boolean LOAD_SCREEN;
   // uses the same screen-location parameter to load
 
+  // Save Screen
+  static boolean SAVE_SCREEN;
+
   // CLUSTER PARAMETERS - TODO: FINISH THIS
   static boolean CLUSTER_BASED;
   static int CLUSTER_SKETCH_SIZE;
@@ -214,17 +217,22 @@ public class Settings {
     options.addOption(chunk_updates);
 
     // ---- Save/load screen ----
-    // Save screen
+    // Screen Only
     Option screen_only = new Option("so", "screen-only", false, "Only generate screen (default = false)");
     screen_only.setRequired(false);
     options.addOption(screen_only);
+
+    // Save screen when generated, and then continue
+    Option save_screen = new Option("ss", "save-screen", false, "Save screens once generated, then continue with screening, (default = false).");
+    save_screen.setRequired(false);
+    options.addOption(save_screen);
 
     // Load Screen
     Option load_screen = new Option("ls", "load-screen", false, "Use pre-generated screen (default = false)");
     load_screen.setRequired(false);
     options.addOption(load_screen);
 
-    // Save location for screen
+    // Save/Load location for screen
     Option screen_location = new Option("sl", "screen-location", true, "Where to save screen/load screen from (default = ./screens)");
     screen_location.setRequired(false);
     options.addOption(screen_location);
@@ -351,6 +359,13 @@ public class Settings {
       LOAD_SCREEN = true;
     } else {
       LOAD_SCREEN = false;
+    }
+
+    // Save screen once generated, then continue
+    if (cmd.hasOption("ss")) {
+      SAVE_SCREEN = true;
+    } else {
+      SAVE_SCREEN = false;
     }
 
     // Read Logging Options

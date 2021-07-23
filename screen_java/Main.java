@@ -28,29 +28,37 @@ public class Main {
 
     Settings.parseArgs(args);
 
+    // If the genomes and reads are paired, we can  report accuracy/know the ground truth
     if (Settings.MATCHED_READS_GENOMES) {
       System.out.println("Running experiment with matched genomes and reads - accuracy will be computed and output.");
     } else {
       System.out.println("Running experiment unmatched genomes and reads - read classification results can be found in log files.");
     }
 
+    // If Read Logging is enabled
     if (Settings.READ_LOGGING){
       System.out.println("Read Logging is enabled - logs will be saved here: " + Settings.READ_LOCATION);
     }
 
     // System.out.println(Settings.READ_LENGTH + " " + Settings.READ_ERROR + " " + Settings.TARGET_MATCHES);
 
-    if (Settings.SCREEN_ONLY) {
-      System.out.println("Screen-Generation mode - screens will be saved here: " + Settings.SCREEN_LOCATION);
-      run_screen();
-    } else if (Settings.LOAD_SCREEN) {
-      System.out.println("Loading pre-generated screen from: " + Settings.SCREEN_LOCATION + ". Please make sure input parameters match those of generated screens (found in params.txt).");
-      run_load();
-    } else if (Settings.CLUSTER_BASED) {
-      run_cluster();
+    // Runs the read screening
+    if (Settings.BAD_INPUT) {
+      System.out.println("Invalid input parameters - please read the README!");
+      return;
     } else {
-      // Run the screen-generation and read classification processes
-      run();
+      if (Settings.SCREEN_ONLY) {
+        System.out.println("Screen-Generation mode - screens will be saved here: " + Settings.SCREEN_LOCATION);
+        run_screen();
+      } else if (Settings.LOAD_SCREEN) {
+        System.out.println("Loading pre-generated screen from: " + Settings.SCREEN_LOCATION + ". Please make sure input parameters match those of generated screens (found in params.txt).");
+        run_load();
+      } else if (Settings.CLUSTER_BASED) {
+        run_cluster();
+      } else {
+        // Run the screen-generation and read classification processes
+        run();
+      }
     }
 
   }
@@ -58,50 +66,36 @@ public class Main {
   // ---- Vanilla screen-generation and read-screening ----
   static void run() throws Exception {
 
-    // Runs the read screening
-    if (Settings.BAD_INPUT) {
-      System.out.println("Invalid input parameters - please read the README!");
+    Screen screen = null;
 
-    // MinHash
+    if (Settings.MINHASH){
+      screen = new MinHashScreen();
+
+    // Minimizer
+    } else if (Settings.MINIMIZER){
+      screen = new MinimizerScreen();
+
+    // Uniform
+    } else if (Settings.UNIFORM) {
+      screen = new UniformScreen();
+
+    // Exhaustive
+    } else if (Settings.EXHAUSTIVE) {
+      screen = new ExhaustiveScreen();
+
     } else {
-      if (Settings.MINHASH){
-        MinHashScreen screen = new MinHashScreen();
-        if (Settings.MATCHED_READS_GENOMES) {
-          ReadScreener rs = new ReadScreener(screen);
-        } else {
-          ReadScreenerNovel rs = new ReadScreenerNovel(screen);
-        }
+      System.out.println("Invalid input parameters - please read the README!");
+      return;
+    }
 
-      // Minimizer
-      } else if (Settings.MINIMIZER){
-        MinimizerScreen screen = new MinimizerScreen();
-        if (Settings.MATCHED_READS_GENOMES) {
-          ReadScreener rs = new ReadScreener(screen);
-        } else {
-          ReadScreenerNovel rs = new ReadScreenerNovel(screen);
-        }
+    if (Settings.SAVE_SCREEN){
+      SaveScreen SS = new SaveScreen(screen);
+    }
 
-      // Uniform
-      } else if (Settings.UNIFORM) {
-        UniformScreen screen = new UniformScreen();
-        if (Settings.MATCHED_READS_GENOMES) {
-          ReadScreener rs = new ReadScreener(screen);
-        } else {
-          ReadScreenerNovel rs = new ReadScreenerNovel(screen);
-        }
-
-      // Exhaustive
-      } else if (Settings.EXHAUSTIVE) {
-        ExhaustiveScreen screen = new ExhaustiveScreen();
-        if (Settings.MATCHED_READS_GENOMES) {
-          ReadScreener rs = new ReadScreener(screen);
-        } else {
-          ReadScreenerNovel rs = new ReadScreenerNovel(screen);
-        }
-
-      } else {
-        System.out.println("Invalid input parameters - please read the README!");
-      }
+    if (Settings.MATCHED_READS_GENOMES) {
+      ReadScreener rs = new ReadScreener(screen);
+    } else {
+      ReadScreenerNovel rs = new ReadScreenerNovel(screen);
     }
   }
 
@@ -110,83 +104,66 @@ public class Main {
 
     System.out.println("Generating and saving screen!");
 
-    // If there is bad input
-    if (Settings.BAD_INPUT) {
-      System.out.println("Invalid input parameters - please read the README!");
+    Screen screen = null;
+
+    if (Settings.MINHASH){
+      screen = new MinHashScreen();
+
+    } else if (Settings.MINIMIZER){
+      screen = new MinimizerScreen();
+
+    } else if (Settings.UNIFORM) {
+      screen = new UniformScreen();
+
+    } else if (Settings.EXHAUSTIVE) {
+      screen = new ExhaustiveScreen();
 
     } else {
-      if (Settings.MINHASH){
-        MinHashScreen screen = new MinHashScreen();
-        SaveScreen SS = new SaveScreen(screen);
-
-      } else if (Settings.MINIMIZER){
-        MinimizerScreen screen = new MinimizerScreen();
-        SaveScreen SS = new SaveScreen(screen);
-
-      } else if (Settings.UNIFORM) {
-        UniformScreen screen = new UniformScreen();
-        SaveScreen SS = new SaveScreen(screen);
-
-      } else if (Settings.EXHAUSTIVE) {
-        ExhaustiveScreen screen = new ExhaustiveScreen();
-        SaveScreen SS = new SaveScreen(screen);
-
-      } else {
-        System.out.println("Invalid input parameters - please read the README!");
-      }
+      System.out.println("Invalid input parameters - please read the README!");
+      return;
     }
+
+    SaveScreen SS = new SaveScreen(screen);
   }
 
-  // ---- Load a pre-generated screen, and then run regular read screening. ------
+  // ---- Load a pre-generated screen, and then run regular read screening. ----
   static void run_load() throws Exception {
     // Runs the read screening
-    if (Settings.BAD_INPUT) {
-      System.out.println("Invalid input parameters - please read the README!");
+
+    // Load saved screen
+    LoadScreen ls = new LoadScreen();
+
+    Screen screen = null;
+
+    if (Settings.MINHASH) {
+      screen = new MinHashScreen(ls.genomeNames, ls.sketch, ls.weights);
+
+
+    } else if (Settings.MINIMIZER){
+      screen = new MinimizerScreen(ls.genomeNames, ls.sketch);
+
+    } else if (Settings.UNIFORM) {
+      screen = new UniformScreen(ls.genomeNames, ls.sketch);
+
+    } else if (Settings.EXHAUSTIVE) {
+      screen = new ExhaustiveScreen(ls.genomeNames, ls.sketch);
+
     } else {
-      LoadScreen ls = new LoadScreen();
-      if (Settings.MINHASH) {
-        MinHashScreen screen = new MinHashScreen(ls.genomeNames, ls.sketch, ls.weights);
+      System.out.println("Invalid input parameters - please read the README!");
+      return;
+    }
 
-        if (Settings.MATCHED_READS_GENOMES) {
-          ReadScreener rs = new ReadScreener(screen);
-        } else {
-          ReadScreenerNovel rs = new ReadScreenerNovel(screen);
-        }
-
-      } else if (Settings.MINIMIZER){
-        MinimizerScreen screen = new MinimizerScreen(ls.genomeNames, ls.sketch);
-
-        if (Settings.MATCHED_READS_GENOMES) {
-          ReadScreener rs = new ReadScreener(screen);
-        } else {
-          ReadScreenerNovel rs = new ReadScreenerNovel(screen);
-        }
-
-      } else if (Settings.UNIFORM) {
-        UniformScreen screen = new UniformScreen(ls.genomeNames, ls.sketch);
-
-        if (Settings.MATCHED_READS_GENOMES) {
-          ReadScreener rs = new ReadScreener(screen);
-        } else {
-          ReadScreenerNovel rs = new ReadScreenerNovel(screen);
-        }
-
-      } else if (Settings.EXHAUSTIVE) {
-        ExhaustiveScreen screen = new ExhaustiveScreen(ls.genomeNames, ls.sketch);
-
-        if (Settings.MATCHED_READS_GENOMES) {
-          ReadScreener rs = new ReadScreener(screen);
-        } else {
-          ReadScreenerNovel rs = new ReadScreenerNovel(screen);
-        }
-
-      } else {
-        System.out.println("Invalid input parameters - please read the README!");
-      }
+    if (Settings.MATCHED_READS_GENOMES) {
+      ReadScreener rs = new ReadScreener(screen);
+    } else {
+      ReadScreenerNovel rs = new ReadScreenerNovel(screen);
     }
   }
 
+  // ---- Run the clustering based approach ----
   static void run_cluster() throws Exception {
+
+    // Cluster generation
     System.out.println("Clustering genomes...");
     ClusterGenerator cg = new ClusterGenerator();
     System.out.println("Clusters generated:");
@@ -197,43 +174,33 @@ public class Main {
 
     System.out.println("Starting Screen Generation and Classification...");
 
-    // Runs the read screening
+    Screen screen = null;
 
-    if (Settings.BAD_INPUT) {
-      System.out.println("Invalid input parameters - please read the README!");
+    if (Settings.MINHASH){
+      screen = new MinHashScreen();
+
+
+    } else if (Settings.MINIMIZER){
+      screen = new MinimizerScreen();
+
+    } else if (Settings.UNIFORM) {
+      screen = new UniformScreen();
+
+      // TODO - exhaustive option?
+
     } else {
-      if (Settings.MINHASH){
-        MinHashScreen screen = new MinHashScreen();
+      System.out.println("Invalid input parameters - please read the README!");
+      return;
+    }
 
-        if (Settings.MATCHED_READS_GENOMES) {
-          ReadScreenerCluster rs = new ReadScreenerCluster(screen, cg);
-        } else {
-          ReadScreenerClusterNovel rs = new ReadScreenerClusterNovel(screen, cg);
-        }
+    if (Settings.SAVE_SCREEN){
+      SaveScreen SS = new SaveScreen(screen);
+    }
 
-      } else if (Settings.MINIMIZER){
-        MinimizerScreen screen = new MinimizerScreen();
-
-        if (Settings.MATCHED_READS_GENOMES) {
-          ReadScreenerCluster rs = new ReadScreenerCluster(screen, cg);
-        } else {
-          ReadScreenerClusterNovel rs = new ReadScreenerClusterNovel(screen, cg);
-        }
-
-      } else if (Settings.UNIFORM) {
-        UniformScreen screen = new UniformScreen();
-
-        if (Settings.MATCHED_READS_GENOMES) {
-          ReadScreenerCluster rs = new ReadScreenerCluster(screen, cg);
-        } else {
-          ReadScreenerClusterNovel rs = new ReadScreenerClusterNovel(screen, cg);
-        }
-
-        // TODO - exhaustive option?
-
-      } else {
-        System.out.println("Invalid input parameters - please read the README!");
-      }
+    if (Settings.MATCHED_READS_GENOMES) {
+      ReadScreenerCluster rs = new ReadScreenerCluster(screen, cg);
+    } else {
+      ReadScreenerClusterNovel rs = new ReadScreenerClusterNovel(screen, cg);
     }
   }
 }
