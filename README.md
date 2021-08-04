@@ -1,7 +1,7 @@
 # Overview
 Code used to run my sketching read classification experiments.
 
-This is very much unfinished/unpolished, and I will continue to add to it and update the README to reflect the changes.
+I will continue to add to it and update the README to reflect any changes. Stay tuned for a pre-print soon!
 
 # Poster
 
