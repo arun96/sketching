@@ -3,9 +3,11 @@ Code used to run my sketching read classification experiments.
 
 I will continue to add to it and update the README to reflect any changes. Stay tuned for a pre-print soon!
 
-# Poster
+# Pre-prints, Posters and Presentations
 
-The poster displaying results of this work can be found here: https://drive.google.com/file/d/1gFN_F26f3UZwSZawbVyWXuP3DnGB9_sH/view?usp=sharing
+The poster of this work at RECOMB 2021 can be found here: https://drive.google.com/file/d/1rNIQLJqiZzNdNJfhrTTExDxzFXM7-LLD/view?usp=sharing, and the lightning talk for this poster from RECOMB 2021 can be found here: (coming soon!).
+
+The poster of this work at Biological Data Science 2020 can be found here: https://drive.google.com/file/d/1gFN_F26f3UZwSZawbVyWXuP3DnGB9_sH/view?usp=sharing.
 
 # Genomes
 The MBARC-26, ZYMO, and MBARC + ZYMO genomes can be downloaded here: https://drive.google.com/drive/folders/1c-6B-G1-RGbIqzDhxzkV5smyv8XB32Xa?usp=sharing.
