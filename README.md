@@ -5,7 +5,7 @@ I will continue to add to it and update the README to reflect any changes. Stay 
 
 # Pre-prints, Posters and Presentations
 
-The poster of this work at RECOMB 2021 can be found here: https://drive.google.com/file/d/1rNIQLJqiZzNdNJfhrTTExDxzFXM7-LLD/view?usp=sharing, and the lightning talk for this poster from RECOMB 2021 can be found here: (coming soon!).
+The poster of this work at RECOMB 2021 can be found here: https://drive.google.com/file/d/1rNIQLJqiZzNdNJfhrTTExDxzFXM7-LLD/view?usp=sharing, and the lightning talk for this poster from RECOMB 2021 can be found here: https://youtu.be/MMX2kbkRmYI.
 
 The poster of this work at Biological Data Science 2020 can be found here: https://drive.google.com/file/d/1gFN_F26f3UZwSZawbVyWXuP3DnGB9_sH/view?usp=sharing.
 
