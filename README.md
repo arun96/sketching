@@ -1,6 +1,8 @@
 # Overview
 Code used to run my sketching read classification experiments.
 
+This README contains details about the code and how to use it, information about the auxiliary scripts used to analyze the results, and then details about how to generate simulated reads and access the data we used.
+
 I will continue to add to it and update the README to reflect any changes. Stay tuned for a pre-print soon!
 
 # Pre-prints, Posters and Presentations
@@ -9,34 +11,12 @@ The poster of this work at RECOMB 2021 can be found here: https://drive.google.c
 
 The poster of this work at Biological Data Science 2020 can be found here: https://drive.google.com/file/d/1gFN_F26f3UZwSZawbVyWXuP3DnGB9_sH/view?usp=sharing.
 
-# Genomes
-The MBARC-26, ZYMO, and MBARC + ZYMO genomes can be downloaded here: https://drive.google.com/drive/folders/1c-6B-G1-RGbIqzDhxzkV5smyv8XB32Xa?usp=sharing.
+# Implementation Details
+The tool is built in java, and provides a way to generate a "screen" (sketched representation) of an input set of genomes, and either save the screen or classify input reads against this screen. For read classification, these may be reads drawn from the same set of genomes in the screen (either simulated using the approach above, or from another source), or a totally different set of reads.
 
-# Generating Reads
-The read simulator is a modified version of Melanie Kirsche's read simulator (https://github.com/schatzlab/centroTools/tree/master/java). To generate reads for a set of genomes, run `generate_reads.sh` using the following syntax:
-```
-./generate_reads.sh <path to directory containing read simulator> <directory containing genomes> <directory where reads will be saved> <SNP rate> <Insertion rate> <Deletion rate> <Mean Read Length> <Coverage>
-```
+There are three distinct approaches for screen-generation: a MinHash-based approach (with a few variants), a Minimizer-based approach, and a Uniform sampling approach. For each of these approaches, the size of the screen can either be calculated based on user-specified input parameters (the expected read length, the expected read error, the sizes of the genomes, and the number of shared samples each read should aim to have with its correct genome), or can be specified ahead of time by the user.
 
-For example, `./generate_reads.sh readsim MBARC_ZYMO reads_MBARC_ZYMO 0.0034 0.0033 0.0033 10000 10` will simulate reads from all .fasta/.fna/.fa genome files in `MBARC_ZYMO`, and save a readset for each genome in `reads_MBARC_ZYMO`. The reads will have a mean length of 10K, a SNP rate of 0.34%, insertion and deletion rates of 0.33% each, and enough reads will be generated to have a coverage of 10x on each genome.
-
-### Read Length Options (Not recommended)
-
-By default, this script will generate reads with read lengths that are normally distributed around the input read length (with standard deviation equal to the square root of this mean length). However, you can generate reads with the following read length distributions:
-
-- Exact [`XL`]: All reads will be the same length.
-- Exponentially Distribution [`E`]: Read lengths will be drawn from an exponential distribution around the provided read length.
-- Exponentially Distribution with Minimum Length [`EM`]: Read lengths will be drawn from an exponential distribution around the provided read length, with a minimum length of half the input length - if a read length is sampled that is lower than this minimum, that read's length will be the minimum value. This will result in many reads having read length exactly half the input length, so the next option is preferred for more realistic read lengths.
-- Exponentially Distribution with Minimum Length v2 [`EL`]: Read lengths will be drawn from an exponential distribution around the provided read length, with a minimum length of half the input length. However, if a read length is below the minimum value, the length is sampled again. This creates more realistic read lengths.
-
-By default, the normal distribution will be used. However, to use any of the other four options, simply add the appropriate string (`XL/E/EM/EL`) as an additional parameter when generating reads - for example, running the command above with `XL` added (`./generate_reads.sh readsim MBARC_ZYMO reads_MBARC_ZYMO 0.0034 0.0033 0.0033 10000 10`) will now generate reads of exactly length 10KB.
-
-# Java Implementation
-The Java implementation provides a way to generate a "screen" (sketched representation) of an input set of genomes, and either save the screen or classify input reads against this screen. For read classification, these may be reads drawn from the same set of genomes in the screen (either simulated using the approach above, or from another source), or a totally different set of reads.
-
-There are three distinct approaches for screen-generation: a MinHash-based approach, a Minimizer-based approach, and a Uniform sampling approach. For each of these approaches, the size of the screen can either be calculated based on user-specified input parameters (the expected read length, the expected read error, the sizes of the genomes, and the number of shared samples each read should aim to have with its correct genome), or can be specified ahead of time by the user.
-
-To see details of how to do any of the experiments outlined above, or how to adjust certain options/settings, please read the following sections of the README.
+To see details of how to do any of the experiments outlined above, or how to adjust certain options/settings, please read the later sections of the README.
 
 As always, make sure to compile: `javac -cp jars/\* screen_java/*.java`.
 
@@ -216,9 +196,31 @@ As I add more to this folder, I will update the README to include descriptions o
 
 # Analyzing Results
 
-This is still new, and I will update this over the coming weeks.
+This is still new, and I will update this as things get added!
 
 In the `analysis` folder, you can find some scripts that are useful for analyzing the results of the screening process.
 - `extract_results.py`: Use `python3 extract_results.py <Path to output file>` to generate a summary of the experiment. This will give you the total number of correctly and incorrectly classified reads, as well as a few other metrics. It will also generate a histogram with the classification accuracy of reads from each organism.
 - `aggregate_read_logs.py`: This is for analyzing results at the end of a matched run. Use `python3 aggregate_read_logs.py <Path to folder with read logs>` to get read set-by-read set breakdown of the classification accuracy, as well as a matrix showing how many reads were correctly or incorrectly classified to each member of the community. The matrix is interpreted as follows - the value at` Matrix[x][y]` is the number of reads from organism `x` that were classified as being from organism `y`. Note that this can only be used in matched mode, if read logging was enabled. This file will also generate a number of plots and visualizations, such as the breakdown of how each readset was classified, a visualization of the classification matrix, and a distribution of how many matches reads had with their source genome.
 - `aggregate_classification_logs.py`: This is for analyzing results at the end of an unmatched run. Use `python3 aggregate_classification_logs.py <Path to folder with read logs>` to generate a series of histograms showing the breakdown of how many reads were classified to each genome in the screen for each readset that was classified. The folder containing these log files will be the location stored in the `READ_LOCATION` parameter in `Settings.java`. As with the previous file, there will also be a number of plots and visualizations generated.
+
+# Generating Reads
+The read simulator is a modified version of Melanie Kirsche's read simulator (https://github.com/schatzlab/centroTools/tree/master/java). To generate reads for a set of genomes, run `generate_reads.sh` using the following syntax:
+```
+./generate_reads.sh <path to directory containing read simulator> <directory containing genomes> <directory where reads will be saved> <SNP rate> <Insertion rate> <Deletion rate> <Mean Read Length> <Coverage>
+```
+
+For example, `./generate_reads.sh readsim MBARC_ZYMO reads_MBARC_ZYMO 0.0034 0.0033 0.0033 10000 10` will simulate reads from all .fasta/.fna/.fa genome files in `MBARC_ZYMO`, and save a readset for each genome in `reads_MBARC_ZYMO`. The reads will have a mean length of 10K, a SNP rate of 0.34%, insertion and deletion rates of 0.33% each, and enough reads will be generated to have a coverage of 10x on each genome.
+
+### Read Length Options (Not recommended)
+
+By default, this script will generate reads with read lengths that are normally distributed around the input read length (with standard deviation equal to the square root of this mean length). However, you can generate reads with the following read length distributions:
+
+- Exact [`XL`]: All reads will be the same length.
+- Exponentially Distribution [`E`]: Read lengths will be drawn from an exponential distribution around the provided read length.
+- Exponentially Distribution with Minimum Length [`EM`]: Read lengths will be drawn from an exponential distribution around the provided read length, with a minimum length of half the input length - if a read length is sampled that is lower than this minimum, that read's length will be the minimum value. This will result in many reads having read length exactly half the input length, so the next option is preferred for more realistic read lengths.
+- Exponentially Distribution with Minimum Length v2 [`EL`]: Read lengths will be drawn from an exponential distribution around the provided read length, with a minimum length of half the input length. However, if a read length is below the minimum value, the length is sampled again. This creates more realistic read lengths.
+
+By default, the normal distribution will be used. However, to use any of the other four options, simply add the appropriate string (`XL/E/EM/EL`) as an additional parameter when generating reads - for example, running the command above with `XL` added (`./generate_reads.sh readsim MBARC_ZYMO reads_MBARC_ZYMO 0.0034 0.0033 0.0033 10000 10`) will now generate reads of exactly length 10KB.
+
+# Data availability
+The MBARC-26, ZYMO, and MBARC + ZYMO genomes can be downloaded here: https://drive.google.com/drive/folders/1c-6B-G1-RGbIqzDhxzkV5smyv8XB32Xa?usp=sharing.
