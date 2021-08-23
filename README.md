@@ -1,15 +1,18 @@
 # Overview
-Code used to run my sketching read classification experiments.
+All the code used for "Analyzing sketching and sampling approaches for fast and accurate long read classification".
 
-This README contains details about the code and how to use it, information about the auxiliary scripts used to analyze the results, and then details about how to generate simulated reads and access the data we used.
+This README contains details about the code and how to use it, information about the auxiliary scripts used to analyze the results, and then details about how to generate simulated reads and access the data we used. This repository
 
-I will continue to add to it and update the README to reflect any changes. Stay tuned for a pre-print soon!
+I will continue to add to it and update the README to reflect any changes.
 
 # Pre-prints, Posters and Presentations
 
-The poster of this work at RECOMB 2021 can be found here: https://drive.google.com/file/d/1rNIQLJqiZzNdNJfhrTTExDxzFXM7-LLD/view?usp=sharing, and the lightning talk for this poster from RECOMB 2021 can be found here: https://youtu.be/MMX2kbkRmYI.
+Stay tuned for a pre-print very soon!
 
-The poster of this work at Biological Data Science 2020 can be found here: https://drive.google.com/file/d/1gFN_F26f3UZwSZawbVyWXuP3DnGB9_sH/view?usp=sharing.
+- [The poster of this work at RECOMB 2021](https://drive.google.com/file/d/1rNIQLJqiZzNdNJfhrTTExDxzFXM7-LLD/view?usp=sharing)
+- [The lightning talk for this poster from RECOMB 2021](https://youtu.be/MMX2kbkRmYI).
+
+- [The poster of this work at Biological Data Science 2020](https://drive.google.com/file/d/1gFN_F26f3UZwSZawbVyWXuP3DnGB9_sH/view?usp=sharing).
 
 # Implementation Details
 The tool is built in java, and provides a way to generate a "screen" (sketched representation) of an input set of genomes, and either save the screen or classify input reads against this screen. For read classification, these may be reads drawn from the same set of genomes in the screen (either simulated using the approach above, or from another source), or a totally different set of reads.
@@ -204,7 +207,7 @@ In the `analysis` folder, you can find some scripts that are useful for analyzin
 - `aggregate_classification_logs.py`: This is for analyzing results at the end of an unmatched run. Use `python3 aggregate_classification_logs.py <Path to folder with read logs>` to generate a series of histograms showing the breakdown of how many reads were classified to each genome in the screen for each readset that was classified. The folder containing these log files will be the location stored in the `READ_LOCATION` parameter in `Settings.java`. As with the previous file, there will also be a number of plots and visualizations generated.
 
 # Generating Reads
-The read simulator is a modified version of Melanie Kirsche's read simulator (https://github.com/schatzlab/centroTools/tree/master/java). To generate reads for a set of genomes, run `generate_reads.sh` using the following syntax:
+The read simulator is a modified version of [Melanie Kirsche's read simulator](https://github.com/schatzlab/centroTools/tree/master/java). To generate reads for a set of genomes, run `generate_reads.sh` using the following syntax:
 ```
 ./generate_reads.sh <path to directory containing read simulator> <directory containing genomes> <directory where reads will be saved> <SNP rate> <Insertion rate> <Deletion rate> <Mean Read Length> <Coverage>
 ```
@@ -223,4 +226,4 @@ By default, this script will generate reads with read lengths that are normally 
 By default, the normal distribution will be used. However, to use any of the other four options, simply add the appropriate string (`XL/E/EM/EL`) as an additional parameter when generating reads - for example, running the command above with `XL` added (`./generate_reads.sh readsim MBARC_ZYMO reads_MBARC_ZYMO 0.0034 0.0033 0.0033 10000 10`) will now generate reads of exactly length 10KB.
 
 # Data availability
-The MBARC-26, ZYMO, and MBARC + ZYMO genomes can be downloaded here: https://drive.google.com/drive/folders/1c-6B-G1-RGbIqzDhxzkV5smyv8XB32Xa?usp=sharing.
+The MBARC-26, ZYMO, and MBARC + ZYMO genomes can be downloaded [at this link](https://drive.google.com/drive/folders/1c-6B-G1-RGbIqzDhxzkV5smyv8XB32Xa?usp=sharing).
