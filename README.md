@@ -5,6 +5,26 @@ This README contains details about the code and how to use it, information about
 
 I will continue to add to it and update the README to reflect any changes.
 
+# Sections
+- [Pre-prints, Posters and Presentations](#pre-prints--posters-and-presentations)
+- [Implementation Details](#implementation-details)
+    + [Brief overview of the approach](#brief-overview-of-the-approach)
+    + [Running the code and explanation of parameters](#running-the-code-and-explanation-of-parameters)
+    + [Syntax Examples](#syntax-examples)
+    + [Further implementation details](#further-implementation-details)
+      - [Hash Function Options](#hash-function-options)
+      - [Threads](#threads)
+      - [Read Loading](#read-loading)
+      - [Screen/Sketch Generation Only](#screen-sketch-generation-only)
+      - [Read Logging](#read-logging)
+        * [Matched Mode](#matched-mode)
+        * [Unmatched Mode](#unmatched-mode)
+      - [Using External JARs](#using-external-jars)
+- [Analyzing Results](#analyzing-results)
+- [Generating Reads](#generating-reads)
+    + [Read Length Options (Not recommended)](#read-length-options--not-recommended-)
+- [Data availability](#data-availability)
+
 # Pre-prints, Posters and Presentations
 
 Stay tuned for a pre-print very soon!
