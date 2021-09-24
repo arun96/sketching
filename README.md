@@ -14,6 +14,7 @@ I will continue to add to it and update the README to reflect any changes.
     + [Further implementation details](#further-implementation-details)
       - [Hash Function Options](#hash-function-options)
       - [Threads](#threads)
+      - [Specifying input files](#specifying-input-files)
       - [Read Loading](#read-loading)
       - [Screen/Sketch Generation Only](#screen-sketch-generation-only)
       - [Read Logging](#read-logging)
