@@ -112,7 +112,6 @@ public class Settings {
     Options options = new Options();
 
     // ---- Hyperparams ----
-
     // K-mer size
     Option k = new Option("k", "kmer", true, "K-mer Size (default = 21)");
     k.setRequired(false);
@@ -181,7 +180,6 @@ public class Settings {
     options.addOption(unmatched);
 
     // ---- MinHash options ----
-
     // Weighted
     Option weighted = new Option("wmh", "weighted-minhash", false, "Use the weighted minhash approach (default = false, only usable in a minhash screen).");
     weighted.setRequired(false);
@@ -248,7 +246,6 @@ public class Settings {
     read_location.setRequired(false);
     options.addOption(read_location);
 
-
     // ---- Cluster Parameters ----
     Option cluster = new Option("ct", "cluster", false, "Use cluster-based approach (default = false).");
     cluster.setRequired(false);
@@ -280,7 +277,6 @@ public class Settings {
     options.addOption(filter_reads);
 
     // Parse
-
     CommandLineParser parser = new DefaultParser();
     HelpFormatter formatter = new HelpFormatter();
     CommandLine cmd;
@@ -389,7 +385,6 @@ public class Settings {
       CLUSTER_BASED = false;
     }
 
-
     if (cmd.hasOption("css")) {
       CLUSTER_SKETCH_SIZE = Integer.parseInt(cmd.getOptionValue("css"));
     } else {
@@ -425,7 +420,6 @@ public class Settings {
       DOWNSAMPLE_FACTOR = 1;
     }
 
-
     // Read Filtering
     if (cmd.hasOption("fr")) {
       FILTER_READS = true;
@@ -435,7 +429,6 @@ public class Settings {
 
 
     // KEY PARAMETERS
-
     // Folder containing genomes
     GENOME_FOLDER = cmd.getOptionValue("g");
 
@@ -586,59 +579,74 @@ public class Settings {
       return;
     }
 
-    // Screen Generation only - TODO: Add option for fixed size screens
-    if (SCREEN_ONLY) {
+    // --- Loading genomes and reads ----
+
+    // TODO - figure out way to have just genome names, not full path names, as names of elements of screen/read sets
+
+    // Grab the genomes needed for the screen (unless we are loading the screen)
+    if (!LOAD_SCREEN) {
+
       // Get a sorted list list of all genomes in the input folder
       List<String> genomes_list = new ArrayList<String>();
-      File dir = new File(GENOME_FOLDER);
-      for (File file : dir.listFiles()) {
-        if (file.getName().endsWith((".fasta")) || file.getName().endsWith((".fna")) || file.getName().endsWith((".fa"))) {
-          genomes_list.add(file.getName());
+      // Get the file/folder
+      File genomeDir = new File(GENOME_FOLDER);
+
+      // If a file is provided, load list of genomes from there
+      if (genomeDir.isFile()) {
+        Scanner s = new Scanner(genomeDir);
+        while (s.hasNextLine()){
+            genomes_list.add(s.nextLine());
+        }
+        s.close();
+
+      // Remove reference to the file
+      GENOME_FOLDER = "";
+
+      }
+
+      // If a folder is provided, load list of genomes from there
+      else {
+        for (File file : genomeDir.listFiles()) {
+          if (file.getName().endsWith((".fasta")) || file.getName().endsWith((".fna")) || file.getName().endsWith((".fa"))) {
+            genomes_list.add(file.getName());
+          }
         }
       }
+
+      // Sort the list
       Collections.sort(genomes_list);
       GENOMES = new String[genomes_list.size()];
       GENOMES = genomes_list.toArray(GENOMES);
+    }
 
-    // Load a pre-generated screen - TODO: FINISH THIS
-    } else if (LOAD_SCREEN) {
+    // Grab the reads we will classify (unless we are only doing screen generation)
+    if (!SCREEN_ONLY) {
 
       // Get a sorted list of all readsets in the input folder
       List<String> reads_list = new ArrayList<String>();
       File readDir = new File(READS_FOLDER);
-      for (File readFile : readDir.listFiles()) {
-        if (readFile.getName().endsWith((".fasta")) || readFile.getName().endsWith((".fna")) || readFile.getName().endsWith((".fa"))) {
-          reads_list.add(readFile.getName());
+
+      // If a file is provided, load list of reads from there
+      if (readDir.isFile()) {
+        Scanner s = new Scanner(readDir);
+        while (s.hasNextLine()){
+            reads_list.add(s.nextLine());
+        }
+        s.close();
+
+        // Remove reference to the file
+        READS_FOLDER = "";
+      }
+
+      else {
+        // If a folder is provided, load list of reads from there
+        for (File readFile : readDir.listFiles()) {
+          if (readFile.getName().endsWith((".fasta")) || readFile.getName().endsWith((".fna")) || readFile.getName().endsWith((".fa"))) {
+            reads_list.add(readFile.getName());
+          }
         }
       }
-      Collections.sort(reads_list);
-      READ_SETS = new String[reads_list.size()];
-      READ_SETS = reads_list.toArray(READ_SETS);
-
-
-    // Default option - screen generation and read screening
-    } else {
-
-      // Get a sorted list list of all genomes in the input folder
-      List<String> genomes_list = new ArrayList<String>();
-      File dir = new File(GENOME_FOLDER);
-      for (File file : dir.listFiles()) {
-        if (file.getName().endsWith((".fasta")) || file.getName().endsWith((".fna")) || file.getName().endsWith((".fa"))) {
-          genomes_list.add(file.getName());
-        }
-      }
-      Collections.sort(genomes_list);
-      GENOMES = new String[genomes_list.size()];
-      GENOMES = genomes_list.toArray(GENOMES);
-
-      // Get a sorted list of all readsets in the input folder
-      List<String> reads_list = new ArrayList<String>();
-      File readDir = new File(READS_FOLDER);
-      for (File readFile : readDir.listFiles()) {
-        if (readFile.getName().endsWith((".fasta")) || readFile.getName().endsWith((".fna")) || readFile.getName().endsWith((".fa"))) {
-          reads_list.add(readFile.getName());
-        }
-      }
+      // Sort the list
       Collections.sort(reads_list);
       READ_SETS = new String[reads_list.size()];
       READ_SETS = reads_list.toArray(READ_SETS);

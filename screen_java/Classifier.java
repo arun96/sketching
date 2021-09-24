@@ -116,9 +116,15 @@ public class Classifier {
     {
       int score = 0;
       // Get and store overlap
+
+      // Different scores depending on what mode is enabled
+      // TODO - make it so that WEIGHTED + ORDER can be used at once
+
       if (Settings.WEIGHTED) {
         // System.out.println("Weighted");
         score = getOverlapHashWeighted(sg.sketch_hash.get(i), readMers, sg.weights, sg.genomeNames.length);
+      } else if (Settings.ORDER) {
+        score = getOverlapHashOrder(sg.sketch_hash.get(i), readMers, sg.order.get(i));
       } else {
         score = getOverlapHash(sg.sketch_hash.get(i), readMers);
       }
@@ -210,6 +216,34 @@ public class Classifier {
     return weight;
   }
 
+  // Order MinHash
+  // Finds number of shared elements between a sketch and a list of query kmers, taking overall order into account
+  int getOverlapHashOrder(HashSet<Integer> sketch_set, ArrayList<Integer> readMers_list, Map<Integer, Integer> order)
+  {
+    int overlap = 0;
+
+    // Build a list of k-mers in order they are seen in
+    ArrayList<Integer> matched_mers = new ArrayList<Integer>();
+
+    // Iterate through all the k-mers in the read, compare them to the sketch set
+    for (int i = 0; i < readMers_list.size(); i++) {
+      int curr = readMers_list.get(i);
+      if (sketch_set.contains(curr)) {
+        matched_mers.add(curr);
+      }
+    }
+
+    // Go through overlap mers, and check if they are in the right order - if they are, then count them
+    for (int m = 1; m < (matched_mers.size() - 1); m++) {
+      int curr = matched_mers.get(m);
+      // If they are in order
+      if ((order.get(matched_mers.get(m-1)) < order.get(curr)) && (order.get(matched_mers.get(m+1)) > order.get(curr))) {
+        overlap++;
+      }
+    }
+
+    return overlap;
+  }
 
   // ---- CLUSTER SCREENING ----
 

@@ -78,7 +78,10 @@ public class MinHashScreen extends Screen {
       // If Order MinHash is enabled
       if (Settings.ORDER) {
         Map<Integer, Integer> sketch_position = new HashMap<Integer, Integer>();
+
         sketch_hash.add(getOrderMinHashes(genomes[x], sketch_size[x], k, sketch_position));
+
+        // Save the positions of selected k-mers
         order.add(sketch_position);
 
       // Regular MinHash

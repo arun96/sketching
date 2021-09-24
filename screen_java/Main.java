@@ -26,6 +26,7 @@ public class Main {
 
   public static void main(String[] args) throws Exception {
 
+    // Parse inputs and populate settings variables
     Settings.parseArgs(args);
 
     // If the genomes and reads are paired, we can  report accuracy/know the ground truth
@@ -39,8 +40,6 @@ public class Main {
     if (Settings.READ_LOGGING){
       System.out.println("Read Logging is enabled - logs will be saved here: " + Settings.READ_LOCATION);
     }
-
-    // System.out.println(Settings.READ_LENGTH + " " + Settings.READ_ERROR + " " + Settings.TARGET_MATCHES);
 
     // Runs the read screening
     if (Settings.BAD_INPUT) {
@@ -60,7 +59,6 @@ public class Main {
         run();
       }
     }
-
   }
 
   // ---- Vanilla screen-generation and read-screening ----
@@ -68,6 +66,7 @@ public class Main {
 
     Screen screen = null;
 
+    // MinHash
     if (Settings.MINHASH){
       screen = new MinHashScreen();
 
@@ -99,7 +98,7 @@ public class Main {
     }
   }
 
-  // ---- Save screens (either as a whole, or individually) ----
+  // ---- Save screens, does not do read classification ----
   static void run_screen() throws Exception {
 
     System.out.println("Generating and saving screen!");
@@ -128,7 +127,6 @@ public class Main {
 
   // ---- Load a pre-generated screen, and then run regular read screening. ----
   static void run_load() throws Exception {
-    // Runs the read screening
 
     // Load saved screen
     LoadScreen ls = new LoadScreen();
@@ -137,7 +135,6 @@ public class Main {
 
     if (Settings.MINHASH) {
       screen = new MinHashScreen(ls.genomeNames, ls.sketch, ls.weights);
-
 
     } else if (Settings.MINIMIZER){
       screen = new MinimizerScreen(ls.genomeNames, ls.sketch);
@@ -179,14 +176,14 @@ public class Main {
     if (Settings.MINHASH){
       screen = new MinHashScreen();
 
-
     } else if (Settings.MINIMIZER){
       screen = new MinimizerScreen();
 
     } else if (Settings.UNIFORM) {
       screen = new UniformScreen();
 
-      // TODO - exhaustive option?
+    } else if (Settings.EXHAUSTIVE) {
+      screen = new ExhaustiveScreen();
 
     } else {
       System.out.println("Invalid input parameters - please read the README!");

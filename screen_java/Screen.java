@@ -96,6 +96,7 @@ public class Screen {
     }
     return ret;
   }
+
   // Get the lexicographically smaller of a k-mer and its reverse complement
   String getCanonical(String seq){
     String forward_mer = seq.toUpperCase();
@@ -178,6 +179,7 @@ public class Screen {
     return combined_sketch;
 
   }
+
   // Helper function to populate a weights hashmap with weights of k-mers in a sketch
   Map<Integer, Integer> getSketchWeights(String g, HashSet<Integer> sketch, int k, Map<Integer, Integer> map){
 
@@ -215,7 +217,8 @@ public class Screen {
     return map;
   }
 
-  // Order MinHash - TODO: Finish this
+  // Order MinHash - version with all k-mer positions being stored
+  // Only does first position
   HashSet<Integer> getOrderMinHashes(String g, int sketch_size, int k, Map<Integer, Integer> sketch_position){
     int gl = g.length();
     int boundary = gl - k;
@@ -252,8 +255,55 @@ public class Screen {
       sketch_position.put(curr_hash, hashmer_position.get(curr_hash));
     }
 
-    // TODO - return this order dictionary/map along with sketch
+    // Return sketch
     return minhashvals;
+  }
+
+  // TODO - FINISH THIS
+  // Order MinHash - version with L k-mers picked at once, but not done as minhashes
+  // Instead, done with random positions
+  // Gets n minimal hashes from a given string
+  HashSet<Integer> getOrderMinHashes(String g, int sketch_size, int k, ArrayList<int[]> sketch_order){
+    int gl = g.length();
+    int boundary = gl - k;
+
+    HashSet<Integer> selected_hashes = new HashSet<Integer>();
+
+    Random r = new Random();
+
+    int kmer_count = 0;
+
+    // TODO - add some map that shows which l-tuple a given k-mer falls into
+
+    while (kmer_count < sketch_size) {
+
+      // Increment to count the ORDER_LEN new k-mers we've sampled
+      kmer_count = kmer_count + Settings.ORDER_LEN;
+
+      // Tuple that stores the ORDER_LEN k-mers in the right order
+      int[] l_tuple = new int[Settings.ORDER_LEN];
+
+      // Select the positions
+      for (int i = 0; i < Settings.ORDER_LEN; i++) {
+        l_tuple[i] = r.nextInt(boundary);
+      }
+      // Sort
+      Arrays.sort(l_tuple);
+
+      // Get the k-mers
+      for (int i = 0; i < Settings.ORDER_LEN; i++) {
+        int start = l_tuple[i];
+        int mer = getHash(getCanonical(g.substring(start, start+k)));
+        l_tuple[i] = mer;
+        // Add to sketch too
+        selected_hashes.add(mer);
+      }
+      // Store the l-tuple
+      sketch_order.add(l_tuple);
+    }
+
+    // Return the sketch
+    return selected_hashes;
   }
 
 
@@ -307,11 +357,4 @@ public class Screen {
     }
     return minimizers;
   }
-
-  // ----- WEIGHTED MINHASH HELPER FUNCTIONS ------
-  // TODO
-  // Map<Integer, Integer> getWeights
-
-  // ----- ORDER MINHASH HELPER FUNCTIONS ------
-  // TODO
 }

@@ -63,8 +63,8 @@ java -cp screen_java:jars/\* Main <options>
 This code uses the `commons.cli` argument parser, so the order of arguments does not matter. Below is a breakdown of the parameters/arguments that can be used.
 
 Key Parameters:
-- `-g/--genome <Directory>`: The directory containing the genomes that are to be sketched into a screen. Only not necessary if we are using pre-generated screens (`-ls/--load-screens`). In this situation, the pre-generated screens stored at `-sl` will be used.
-- `-r/--reads <Directory>`: The directory containing the reads that are to be classified against the screen. Only not necessary if we are in "screen-only" mode (`-so/--screen-only`).
+- `-g/--genome <Directory>`: The directory containing the genomes that are to be sketched into a screen. Only not necessary if we are using pre-generated screens (`-ls/--load-screens`). In this situation, the pre-generated screens stored at `-sl` will be used. You can also pass in a file containing a list of files (with absolute paths) instead of specifying a folder - for more information on this, see [this section](#specifying-input-files).
+- `-r/--reads <Directory>`: The directory containing the reads that are to be classified against the screen. Only not necessary if we are in "screen-only" mode (`-so/--screen-only`). You can also pass in a file containing a list of files (with absolute paths) instead of specifying a folder - for more information on this, see [this section](#specifying-input-files).
 - `-rl/--read-length <Integer>`: The expected read length of reads that will be classified against this screen. Not necessary if a fixed size screen (`-f`) is being generated.
 - `-re/--read-error <Double>`: The expected error rate of reads that will be classified against this screen. Not necessary if a fixed size screen (`-f`) is being generated.
 - `-tm/--target-matches <Integer>`: The target number of matches between a read and its correct source in the screen. Not necessary if a fixed size screen (`-f`) is being generated.
@@ -175,6 +175,10 @@ I will be adding more hash functions soon!
 #### Threads
 
 The number of threads parameter determines the number of reads processed at once. Going forward, I hope to parallelize the process of screen generation too.
+
+#### Specifying Input Files
+
+Instead of passing in a folder containing the genomes or reads, you may instead pass in a file containing a list of files to be used. To generate such a file you can navigate to the folder you want, and use the command `ls -d "$PWD"/* > genomes.txt` to generate a list of files in the folder, listed with absolute path. This option allows you to pick and choose which files in a folder you want to include, instead of just using the entire folder.
 
 #### Read Loading
 
