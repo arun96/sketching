@@ -474,7 +474,7 @@ public class Settings {
     if (cmd.hasOption("wmhw") && WEIGHTED) {
       WEIGHTING = Integer.parseInt(cmd.getOptionValue("wmhw"));
     } else {
-      WEIGHTING = 0;
+      WEIGHTING = 1;
     }
 
     // Order
