@@ -28,7 +28,9 @@ I will continue to add to it and update the README to reflect any changes.
 
 # Pre-prints, Posters and Presentations
 
-Stay tuned for a pre-print very soon!
+Stay tuned for a pre-print very soon (est. Nov 2021)!
+
+- [The poster of this work at Genome Informatics 2021](https://drive.google.com/file/d/1CUPuw4Wv_yJiZ4jZkDbVVVF8dx3MMoC6/view?usp=sharing). Link to the lightning talk for this will be posted soon!
 
 - [The poster of this work at RECOMB 2021](https://drive.google.com/file/d/1rNIQLJqiZzNdNJfhrTTExDxzFXM7-LLD/view?usp=sharing), and [my poster presentation](https://drive.google.com/file/d/1bjxqqSY75X8wEqR6_EUYMB_PbVK78IAL/view?usp=sharing).
 - [The lightning talk for this poster from RECOMB 2021](https://youtu.be/MMX2kbkRmYI).
