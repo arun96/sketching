@@ -1,9 +1,7 @@
 # Overview
 All the code used for "Analyzing sketching and sampling approaches for fast and accurate long read classification".
 
-This README contains details about the code and how to use it, information about the auxiliary scripts used to analyze the results, and then details about how to generate simulated reads and access the data we used. This repository
-
-I will continue to add to it and update the README to reflect any changes.
+This README contains the reference implementations we built, details about the code and how to use it, information about the auxiliary scripts used to analyze the results, and then details about how to generate simulated reads and access the data we used. Final updates to all of this are coming soon!
 
 # Sections
 - [Pre-prints, Posters and Presentations](#pre-prints--posters-and-presentations)
