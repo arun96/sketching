@@ -28,7 +28,7 @@ I will continue to add to it and update the README to reflect any changes.
 
 # Pre-prints, Posters and Presentations
 
-Stay tuned for a pre-print very soon (est. Nov 2021)!
+- The pre-print is out! You can find here, on bioRxiv: https://www.biorxiv.org/content/10.1101/2021.11.04.467374v1
 
 - [The poster of this work at Genome Informatics 2021](https://drive.google.com/file/d/1CUPuw4Wv_yJiZ4jZkDbVVVF8dx3MMoC6/view?usp=sharing). Link to the lightning talk for this will be posted soon!
 
