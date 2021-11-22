@@ -11,6 +11,7 @@ ext = ".csv"
 
 CLARK_files = glob.glob(CLARK_folder + '*' + ext)
 CLARK_files.sort()
+
 results = []
 for filename in CLARK_files:
     results_csv = pd.read_csv(filename, skipinitialspace = True)
@@ -23,5 +24,10 @@ for filename in CLARK_files:
 for i in range(len(results)):
     # print(r)
     r = results[i]
-    print(CLARK_files[i])
-    print([[x,r.count(x)] for x in set(r)])
+    # print(CLARK_files[i])
+    # print(r)
+    # print([[x,r.count(x)] for x in set(r)])
+
+# Save list of files, and assignments in each file
+np.save("CLARK_files.npy", CLARK_files)
+np.save("CLARK_results.npy", results)

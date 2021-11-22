@@ -1,7 +1,7 @@
 # Overview
 All the code used for "Analyzing sketching and sampling approaches for fast and accurate long read classification".
 
-This README contains the reference implementations we built, details about the code and how to use it, information about the auxiliary scripts used to analyze the results, and then details about how to generate simulated reads and access the data we used. Final updates to all of this are coming soon!
+This README contains the reference implementations we built, details about the code and how to use it, scripts for running and extracting results from existing tools, and details about how to generate simulated reads and access the data we used. Final updates, including any bug fixes and detailed analysis scripts and notebooks, are coming soon!
 
 # Sections
 - [Pre-prints, Posters and Presentations](#pre-prints--posters-and-presentations)
@@ -26,7 +26,7 @@ This README contains the reference implementations we built, details about the c
 
 # Pre-prints, Posters and Presentations
 
-- The pre-print is out! You can find here, on bioRxiv: https://www.biorxiv.org/content/10.1101/2021.11.04.467374v1
+- [The pre-print is out! You can find here, on bioRxiv!](https://www.biorxiv.org/content/10.1101/2021.11.04.467374v1)
 
 - [The poster of this work at Genome Informatics 2021](https://drive.google.com/file/d/1CUPuw4Wv_yJiZ4jZkDbVVVF8dx3MMoC6/view?usp=sharing). Link to the lightning talk for this will be posted soon!
 
@@ -70,7 +70,7 @@ Key Parameters:
 - `-re/--read-error <Double>`: The expected error rate of reads that will be classified against this screen. Not necessary if a fixed size screen (`-f`) is being generated.
 - `-tm/--target-matches <Integer>`: The target number of matches between a read and its correct source in the screen. Not necessary if a fixed size screen (`-f`) is being generated.
 - `-s/--screen-type`: The method of screen-generation to be used for this screen. Choose between MinHash-based (default), [m]inimizer based, [u]niform sampling or [e]xhaustive.
-- `-hf/--hash <Hash Type>`: The hash function to use throughout the process. Choose between Java's built in hashcode (default), [mmh3] (MurmurHash3) or [mmh3_128] (the 128-bit variant of MurmurHash3).
+- `-hf/--hash <Hash Type>`: The hash function to use throughout the process. Choose between Java's built in hashcode (default), mmh3 (MurmurHash3) or mmh3_128 (the 128-bit variant of MurmurHash3).
 - `-th/--threshold <Integer>`: This is the number of matches a read must have with a source genome to be classified. By default, it is 5 - however, this should be adjusted based on the level of confidence we want in classification calls. Reads below this threshold will be flagged as insufficient. This value should always be below the number of target matches, and usually just a fraction of the target matches (so that reads are classified as often as possible).
 
 Matched Reads/Genomes vs Classification without a ground truth:
@@ -224,7 +224,7 @@ As I add more to this folder, I will update the README to include descriptions o
 
 # Analyzing Results
 
-This is still new, and I will update this as things get added!
+This is still unpolished, but will be wrapped up and updated soon! I am planning on updating all these files, as well as adding a simple notebook to walkthrough the analysis of output from these experiments.
 
 In the `analysis` folder, you can find some scripts that are useful for analyzing the results of the screening process.
 - `extract_results.py`: Use `python3 extract_results.py <Path to output file>` to generate a summary of the experiment. This will give you the total number of correctly and incorrectly classified reads, as well as a few other metrics. It will also generate a histogram with the classification accuracy of reads from each organism.
@@ -251,6 +251,8 @@ By default, this script will generate reads with read lengths that are normally 
 By default, the normal distribution will be used. However, to use any of the other four options, simply add the appropriate string (`XL/E/EM/EL`) as an additional parameter when generating reads - for example, running the command above with `XL` added (`./generate_reads.sh readsim MBARC_ZYMO reads_MBARC_ZYMO 0.0034 0.0033 0.0033 10000 10`) will now generate reads of exactly length 10KB.
 
 # Data availability
+
+The genomes for each of the mentioned experiments can be found here:
 
 ZYMO: https://www.zymoresearch.com/collections/zymobiomics-microbial-community-standards
 

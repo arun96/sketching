@@ -23,5 +23,10 @@ for filename in centrifuge_files:
 for i in range(len(results)):
     # print(r)
     r = results[i]
-    print(centrifuge_files[i])
-    print([[x,r.count(x)] for x in set(r)])
+    # print(centrifuge_files[i])
+    # print(r)
+    # print([[x,r.count(x)] for x in set(r)])
+
+# Save list of files, and assignments in each file
+np.save("centrifuge_files.npy", centrifuge_files)
+np.save("centrifuge_results.npy", results)

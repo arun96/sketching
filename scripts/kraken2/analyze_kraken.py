@@ -56,4 +56,5 @@ for reads_file in kraken_files:
     predictions.append(read_predictions)
     # print(Counter(read_predictions))
 
+# Save the classification of each read
 np.save("kraken_classification.npy", predictions)
