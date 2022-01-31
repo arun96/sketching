@@ -1,7 +1,7 @@
 # Overview
 All the code used for "Analyzing sketching and sampling approaches for fast and accurate long read classification".
 
-This README contains the reference implementations we built, details about the code and how to use it, scripts for running and extracting results from existing tools, and details about how to generate simulated reads and access the data we used. Final updates, including any bug fixes and detailed analysis scripts and notebooks, are coming soon!
+This README contains the unoptimized reference implementations we built, details about the code and how to use it, scripts for running and extracting results from existing tools, and details about how to generate simulated reads and access the data we used. Final updates, including any bug fixes and detailed analysis scripts and notebooks, are coming soon!
 
 # Sections
 - [Pre-prints, Posters and Presentations](#pre-prints--posters-and-presentations)
@@ -36,7 +36,7 @@ This README contains the reference implementations we built, details about the c
 - [The poster of this work at Biological Data Science 2020](https://drive.google.com/file/d/1gFN_F26f3UZwSZawbVyWXuP3DnGB9_sH/view?usp=sharing).
 
 # Implementation Details
-The tool is built in java, and provides a way to generate a "screen" (sketched representation) of an input set of genomes, and either save the screen or classify input reads against this screen. For read classification, these may be reads drawn from the same set of genomes in the screen (either simulated using the approach above, or from another source), or a totally different set of reads.
+The tool is built in Java, and provides a way to generate a "screen" (sketched representation) of an input set of genomes, and either save the screen or classify input reads against this screen. For read classification, these may be reads drawn from the same set of genomes in the screen (either simulated using the approach above, or from another source), or a totally different set of reads.
 
 There are three distinct approaches for screen-generation: a MinHash-based approach (with a few variants), a Minimizer-based approach, and a Uniform sampling approach. For each of these approaches, the size of the screen can either be calculated based on user-specified input parameters (the expected read length, the expected read error, the sizes of the genomes, and the number of shared samples each read should aim to have with its correct genome), or can be specified ahead of time by the user.
 
