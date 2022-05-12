@@ -26,9 +26,9 @@ This README contains the unoptimized reference implementations we built, details
 
 # Pre-prints, Posters and Presentations
 
-- [The pre-print is out! You can find here, on bioRxiv!](https://www.biorxiv.org/content/10.1101/2021.11.04.467374v1)
+- [The pre-print is out! You can find here, on bioRxiv!](https://www.biorxiv.org/content/10.1101/2021.11.04.467374v2). We will be further updating this in May 2022, with the poster for RECOMB 2022 and RECOMB-Seq 2022 being added as well.
 
-- [The poster of this work at Genome Informatics 2021](https://drive.google.com/file/d/1CUPuw4Wv_yJiZ4jZkDbVVVF8dx3MMoC6/view?usp=sharing). Link to the lightning talk for this will be posted soon!
+- [The poster of this work at Genome Informatics 2021](https://drive.google.com/file/d/1CUPuw4Wv_yJiZ4jZkDbVVVF8dx3MMoC6/view?usp=sharing), and [the lightning talk for this poster from Genome Informatics 2021](https://www.youtube.com/watch?v=ihtHIgk_ARY)
 
 - [The poster of this work at RECOMB 2021](https://drive.google.com/file/d/1rNIQLJqiZzNdNJfhrTTExDxzFXM7-LLD/view?usp=sharing) (where it won the award for "Best Poster"!), and [my poster presentation](https://drive.google.com/file/d/1bjxqqSY75X8wEqR6_EUYMB_PbVK78IAL/view?usp=sharing).
 - [The lightning talk for this poster from RECOMB 2021](https://youtu.be/MMX2kbkRmYI).
