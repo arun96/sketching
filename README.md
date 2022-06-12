@@ -252,8 +252,6 @@ By default, the normal distribution will be used. However, to use any of the oth
 
 # Data and Code Availability
 
-The genomes for each of the mentioned datasets can be found here:
-
 Genomes:
 - ZYMO: https://www.zymoresearch.com/collections/zymobiomics-microbial-community-standards
 
@@ -265,4 +263,8 @@ Reads:
 
 - PacBio HiFi Microbiome reads: https://www.pacb.com/blog/data-release-human-microbiome-samples-demonstrate-advances-in-hifi-enabled-metagenomic-sequencing/
 
-- All simulated reads are generated as above, and all code used to run these experiments is provided in this repository.
+- All simulated reads are generated as above.
+
+Code:
+
+All code used is in this repository, and all external tools are cited in the publication.
