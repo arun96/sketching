@@ -250,14 +250,19 @@ By default, this script will generate reads with read lengths that are normally 
 
 By default, the normal distribution will be used. However, to use any of the other four options, simply add the appropriate string (`XL/E/EM/EL`) as an additional parameter when generating reads - for example, running the command above with `XL` added (`./generate_reads.sh readsim MBARC_ZYMO reads_MBARC_ZYMO 0.0034 0.0033 0.0033 10000 10`) will now generate reads of exactly length 10KB.
 
-# Data availability
+# Data and Code Availability
 
-The genomes for each of the mentioned experiments can be found here:
+The genomes for each of the mentioned datasets can be found here:
 
-ZYMO: https://www.zymoresearch.com/collections/zymobiomics-microbial-community-standards
+Genomes:
+- ZYMO: https://www.zymoresearch.com/collections/zymobiomics-microbial-community-standards
 
-MBARC-26: https://www.nature.com/articles/sdata201681
+- MBARC-26: https://www.nature.com/articles/sdata201681
 
-CGR: https://www.nature.com/articles/s41587-018-0008-8
+- CGR: https://www.nature.com/articles/s41587-018-0008-8
 
-PacBio HiFi Microbiome reads: https://www.pacb.com/blog/data-release-human-microbiome-samples-demonstrate-advances-in-hifi-enabled-metagenomic-sequencing/
+Reads:
+
+- PacBio HiFi Microbiome reads: https://www.pacb.com/blog/data-release-human-microbiome-samples-demonstrate-advances-in-hifi-enabled-metagenomic-sequencing/
+
+- All simulated reads are generated as above, and all code used to run these experiments is provided in this repository.
