@@ -252,18 +252,19 @@ By default, the normal distribution will be used. However, to use any of the oth
 
 # Data and Code Availability
 
-Genomes:
+The microbial datasets used can be found at the following links:
+
 - ZYMO: https://www.zymoresearch.com/collections/zymobiomics-microbial-community-standards
 
 - MBARC-26: https://www.nature.com/articles/sdata201681
 
 - CGR: https://www.nature.com/articles/s41587-018-0008-8
 
-Reads:
+The PacBio reads used in our final results section can be found here:
 
 - PacBio HiFi Microbiome reads: https://www.pacb.com/blog/data-release-human-microbiome-samples-demonstrate-advances-in-hifi-enabled-metagenomic-sequencing/
 
-- All simulated reads are generated as above.
+All simulated reads are generated as described above, using the datasets mentioned.
 
 Code:
 
