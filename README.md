@@ -22,7 +22,7 @@ This README contains the unoptimized reference implementations we built, details
 - [Analyzing Results](#analyzing-results)
 - [Generating Reads](#generating-reads)
     + [Read Length Options (Not recommended)](#read-length-options--not-recommended-)
-- [Data availability](#data-availability)
+- [Data availability](#data-and-code-availability)
 
 # Pre-prints, Posters and Presentations
 
