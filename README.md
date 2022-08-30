@@ -232,6 +232,9 @@ In the `analysis` folder, you can find some scripts that are useful for analyzin
 - `aggregate_classification_logs.py`: This is for analyzing results at the end of an unmatched run. Use `python3 aggregate_classification_logs.py <Path to folder with read logs>` to generate a series of histograms showing the breakdown of how many reads were classified to each genome in the screen for each readset that was classified. The folder containing these log files will be the location stored in the `READ_LOCATION` parameter in `Settings.java`. As with the previous file, there will also be a number of plots and visualizations generated.
 
 # Generating Reads
+
+The read simulator used here is very simple. For a target read length, this simulator will generate reads with lengths that are normally distributed around the input read length, with standard deviation equal to the square root of this mean length. Once the read length is decided, a sequence of that length from anywhere within the selected genome is extracted, and each base in the selected read is mutated according to the desired error rate. Mutations can be base changes, insertions of a random base, or a deletion.
+
 The read simulator is a modified version of [Melanie Kirsche's read simulator](https://github.com/schatzlab/centroTools/tree/master/java). To generate reads for a set of genomes, run `generate_reads.sh` using the following syntax:
 ```
 ./generate_reads.sh <path to directory containing read simulator> <directory containing genomes> <directory where reads will be saved> <SNP rate> <Insertion rate> <Deletion rate> <Mean Read Length> <Coverage>
